@@ -35,7 +35,7 @@ def install_service(service_name, service_file):
   cmd('sudo systemctl enable {}'.format(service_name))
   cmd('sudo systemctl daemon-reload')
   cmd('sudo systemctl start {}'.format(service_name))
-  cmd('sudo systemctl status {}'.format(service_name))
+  # cmd('sudo systemctl status {}'.format(service_name))
 
 def setup():
   # cmd('sudo apt-get install python3')
