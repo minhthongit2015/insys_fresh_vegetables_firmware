@@ -12,6 +12,11 @@ class Gardener():
     self.controllers = insysFirmware.controllers
     self.plants = plants
     self.lazy = lazy
+    self.auto = True
+    self.controllers.pins[0].eventDetect = self.onSetAutoState
+
+  def onSetAutoState(self, pin):
+    self.auto = pin.state
 
   def appendPlant(self, plant):
     self.plants.append(plant)
