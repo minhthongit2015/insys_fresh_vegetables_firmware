@@ -53,6 +53,3 @@ def setup():
 
 if __name__ == "__main__":
   setup()
-
-  cmd('sudo systemctl insys')
-  cmd('sudo systemctl insys_update')
