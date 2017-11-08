@@ -1,4 +1,5 @@
-import core.RPi.GPIO as GPIO
+try: import RPi.GPIO as GPIO
+except: import core.RPi.GPIO as GPIO
 import time
 
 GPIO.setmode(GPIO.BCM)
