@@ -7,15 +7,14 @@ from subprocess import call
 
 
 class Updater:
-  def __init__(self, update_url, install_path, refresh_time=10):
+  def __init__(self, update_url, refresh_time=10):
     self.update_url = update_url
     self.refresh_time = refresh_time
-    self.install_path = install_path
     
     try:
       f = open('version.ini', 'r+')
       self.curversion = f.read()
-      print("[SYS] > Current version: {}".format(self.curversion))
+      print("[SYS] > Current firmware version: {}".format(self.curversion))
     except:
       self.curversion = ''
       pass
@@ -40,16 +39,9 @@ class Updater:
     new_version = lines[0]
     if new_version <= self.curversion: return
 
-    call('sudo systemctl stop insys'.split(' '))
-    for line in lines:
-      part = line.split(" ")
-      new_file = requests.get(part[1]).text
-      f = open("{}/{}".format(self.install_path, part[0]), 'w')
-      f.write(new_file)
-      f.close()
-
+    call('git pull'.split(' '))
+    call('sudo systemctl restart insys'.split(' '))
 
 if __name__ == "__main__":
-  insys_updater = Updater("https://drive.google.com/uc?export=download&id=0B-_M0TAaeEKgY1ZjQ2lXQ2I5dkk",
-    '/home/pi/Desktop/INSYS', 30)
+  insys_updater = Updater("https://drive.google.com/uc?export=download&id=0B-_M0TAaeEKgY1ZjQ2lXQ2I5dkk", 30)
   insys_updater.keep_up_date()

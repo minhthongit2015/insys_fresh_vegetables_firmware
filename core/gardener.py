@@ -17,6 +17,7 @@ class Gardener():
 
   def onSetAutoState(self, pin):
     self.auto = pin.state
+    print("[SYS] > Auto mode is {}".format('on' if pin.state else 'off'))
 
   def appendPlant(self, plant):
     self.plants.append(plant)
@@ -29,7 +30,7 @@ class Gardener():
 
   def _work(self):
     while True:
-      self.waterByTime()
+      if self.auto: self.waterByTime()
       sleep(self.lazy)
 
   def waterByTime(self):
