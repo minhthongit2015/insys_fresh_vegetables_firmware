@@ -1,3 +1,6 @@
 /__pycache__
 /RPi
 /Adafruit_DHT.py
+/core/RPi
+/core/Adafruit_DHT.py
+/core/__pycache__
