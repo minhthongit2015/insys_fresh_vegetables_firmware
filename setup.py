@@ -3,7 +3,7 @@
 from subprocess import call
 import os
 
-def generate_service_file(exec_path, working_directory):
+def generate_service_file(service_name, exec_path, working_directory):
   return """# /etc/systemd/system
 
 [Unit]
@@ -18,8 +18,8 @@ Restart=always
 
 [Install]
 WantedBy=multi-user.target
-Alias=insys_update.service
-""".format(working_directory, exec_path, working_directory)
+Alias={}.service
+""".format(working_directory, exec_path, working_directory, exec_path)
 
 def cmd(command):
   call(command.split(' '))
@@ -44,11 +44,11 @@ def setup():
 
   # Install main service
   cmd('sudo chmod +x ./startup')
-  install_service('insys', generate_service_file('startup', cwd))
+  install_service('insys', generate_service_file('insys', 'startup', cwd))
 
   # Install update service
   cmd('sudo chmod +x ./update.py')
-  install_service('insys_update', generate_service_file('update.py', cwd))
+  install_service('insys_update', generate_service_file('insys_update', 'update.py', cwd))
 
 
 if __name__ == "__main__":
