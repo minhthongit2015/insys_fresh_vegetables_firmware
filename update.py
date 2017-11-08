@@ -39,8 +39,12 @@ class Updater:
     new_version = lines[0]
     if new_version <= self.curversion: return
 
+    print("[SYS] > Newer firmware found. Start installing newer version!")
+
     call('git pull'.split(' '))
     call('sudo systemctl restart insys'.split(' '))
+    fnew = open('version.ini', 'w')
+    fnew.write(new_version)
 
 if __name__ == "__main__":
   insys_updater = Updater("https://drive.google.com/uc?export=download&id=0B-_M0TAaeEKgY1ZjQ2lXQ2I5dkk", 30)

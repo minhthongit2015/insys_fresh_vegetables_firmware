@@ -2,28 +2,9 @@
 
 from subprocess import call
 import os
-cwd = os.getcwd()
 
-insys_service = """
-# /etc/systemd/system
-
-[Unit]
-Description=INSYS FRESH VEGETABLES
-After=multi-user.target
-
-[Service]
-Type=idle
-ExecStart=/bin/bash {}/startup
-WorkingDirectory={}
-Restart=always
-
-[Install]
-WantedBy=multi-user.target
-Alias=insys.service
-""".format(cwd, cwd)
-
-insys_update_service = """
-# /etc/systemd/system
+def generate_service_file(exec_path, working_directory):
+  return """# /etc/systemd/system
 
 [Unit]
 Description=INSYS FRESH VEGETABLES UPDATE SERVICE
@@ -31,20 +12,22 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/bin/bash {}/update.py
+ExecStart=/bin/bash {}/{}
 WorkingDirectory={}
 Restart=always
 
 [Install]
 WantedBy=multi-user.target
 Alias=insys_update.service
-""".format(cwd, cwd)
+""".format(working_directory, exec_path, working_directory)
 
 def cmd(command):
   call(command.split(' '))
 
 def install_service(service_name, service_file):
-  insys_service_file = open('insys.service', 'w')
+  service_name = service_name.replace(' ', '')
+  print('[SYS] > Install {} service'.format(service_name))
+  insys_service_file = open('{}.service'.format(service_name), 'w')
   insys_service_file.write(service_file)
   insys_service_file.close()
   cmd('sudo mv {}.service /etc/systemd/system'.format(service_name))
@@ -55,14 +38,21 @@ def install_service(service_name, service_file):
   cmd('sudo systemctl status {}'.format(service_name))
 
 def setup():
+  # cmd('sudo apt-get install python3')
+
+  cwd = os.getcwd()
+
   # Install main service
   cmd('sudo chmod +x ./startup')
-  install_service('insys', insys_service)
+  install_service('insys', generate_service_file('startup', cwd))
 
   # Install update service
   cmd('sudo chmod +x ./update.py')
-  install_service('insys_update', insys_update_service)
+  install_service('insys_update', generate_service_file('update.py', cwd))
 
 
 if __name__ == "__main__":
   setup()
+
+  cmd('sudo systemctl insys')
+  cmd('sudo systemctl insys_update')
