@@ -62,10 +62,13 @@ if __name__ == "__main__":
 
   parser = argparse.ArgumentParser(description='InSys firmware updater')
   parser.add_argument('-r', action='store_true', help='Hard update current firmware')
+  parser.add_argument('-v', action='store_true', help='View current version (version.ini)')
 
   args = parser.parse_args()
   if args.r:
     print('[SYS] > Hard update current firmware ({})'.format(insys_updater.cur_version.vstring))
     insys_updater.hard_update()
+  elif args.v:
+    print('[SYS] > Current Firmware Version: {}'.format(insys_updater.cur_version.vstring))
   else:
     insys_updater.keep_up_date()
