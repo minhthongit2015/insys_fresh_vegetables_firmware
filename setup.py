@@ -17,7 +17,7 @@ WorkingDirectory={}
 Restart=always
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=network.target multi-user.target
 Alias={}.service
 """.format(working_directory, exec_path, working_directory, service_name)
 
