@@ -12,7 +12,7 @@ After=multi-user.target
 
 [Service]
 Type=idle
-ExecStart=/bin/bash {}/{}
+ExecStart={}/{}
 WorkingDirectory={}
 Restart=always
 
