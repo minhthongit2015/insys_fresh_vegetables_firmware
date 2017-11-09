@@ -47,8 +47,8 @@ def setup():
   install_service('insys', generate_service_file('insys', 'startup', cwd))
 
   # Install update service
-  cmd('sudo chmod +x ./update.py')
-  install_service('insys_update', generate_service_file('insys_update', 'update.py', cwd))
+  cmd('sudo chmod +x ./update')
+  install_service('insys_update', generate_service_file('insys_update', 'update', cwd))
 
 
 if __name__ == "__main__":
