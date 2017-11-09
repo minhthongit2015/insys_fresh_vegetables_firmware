@@ -8,7 +8,7 @@ def generate_service_file(service_name, exec_path, working_directory):
 
 [Unit]
 Description=INSYS FRESH VEGETABLES UPDATE SERVICE
-After=multi-user.target
+After=network.target multi-user.target
 
 [Service]
 Type=idle
