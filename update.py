@@ -34,6 +34,10 @@ class Updater:
       pass
   
   def keep_up_date(self):
+    thread = threading.Thread(target=self.update)
+    thread.start()
+
+  def update(self):
     while True:
       try:
         request = requests.get(self.update_url)
