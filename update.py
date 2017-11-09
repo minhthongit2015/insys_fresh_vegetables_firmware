@@ -24,27 +24,28 @@ class Updater:
       pass
   
   def keep_up_date(self):
-    # update_thread = threading.Thread(target=self.update)
-    # update_thread.start()
-    self.update()
-
-  def update(self):
     while True:
       try:
         request = requests.get(self.update_url)
         self.resolveResult(request.text)
-      except:
+      except Exception as e:
+        print(e)
         pass
       time.sleep(self.refresh_time)
-  
+
   def resolveResult(self, result):
     lines = result.split('\r\n')
     if len(lines) <= 0: return
     new_version = lines[0]
-    if new_version <= self.cur_version: return
+    if new_version == self.cur_version: return
+
+    i_new_version = new_version.split('.')
+    i_cur_version = self.cur_version.split('.')
+    for (new, cur) in zip(i_new_version, i_cur_version):
+      if new < cur: return
 
     print("[SYS] > Newer firmware found. Start installing newer version!")
-    self.hard_update()
+    self.hard_update(new_version)
 
   def hard_update(self, new_version=''):
     cmd('git fetch --all')
