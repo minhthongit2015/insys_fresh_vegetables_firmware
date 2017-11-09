@@ -21,7 +21,7 @@ class Updater:
       self.cur_version = LooseVersion(f.read())
       print("[SYS] > Current firmware version: {}".format(self.cur_version.vstring))
     except:
-      self.cur_version = LooseVersion('')
+      self.cur_version = LooseVersion('0.0.0.0')
       pass
   
   def keep_up_date(self):
@@ -65,7 +65,7 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
   if args.r:
-    print('[SYS] > Hard update current firmware')
+    print('[SYS] > Hard update current firmware ({})'.format(insys_updater.cur_version.vstring))
     insys_updater.hard_update()
   else:
     insys_updater.keep_up_date()
