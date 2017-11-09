@@ -19,7 +19,7 @@ Restart=always
 [Install]
 WantedBy=multi-user.target
 Alias={}.service
-""".format(working_directory, exec_path, working_directory, exec_path)
+""".format(working_directory, exec_path, working_directory, service_name)
 
 def cmd(command):
   call(command.split(' '))
