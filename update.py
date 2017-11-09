@@ -19,7 +19,7 @@ class Updater:
     try:
       f = open('version.ini', 'r+')
       self.cur_version = LooseVersion(f.read())
-      print("[SYS] > Current firmware version: {}".format(self.cur_version))
+      print("[SYS] > Current firmware version: {}".format(self.cur_version.vstring))
     except:
       self.cur_version = LooseVersion('')
       pass
@@ -41,17 +41,17 @@ class Updater:
     if new_version <= self.cur_version: return
     else:
       print("[SYS] > Newer firmware found. Start installing newer version!")
-      print("[SYS] > Update from {} to {}".format(self.cur_version, new_version))
-      self.hard_update(new_version)
+      print("[SYS] > Update from {} to {}".format(self.cur_version.vstring, new_version.vstring))
+      self.hard_update(new_version.vstring)
 
   def hard_update(self, new_version=''):
     cmd('git fetch --all')
     cmd('git reset --hard origin/master')
     
     fnew = open('version.ini', 'w')
-    fnew.write(new_version if new_version != '' else self.cur_version)
+    fnew.write(new_version if new_version != '' else self.cur_version.vstring)
     fnew.close()
-    
+
     cmd('sudo chmod +x ./startup')
     cmd('sudo systemctl restart insys')
     cmd('sudo chmod +x ./update.py')
@@ -60,7 +60,7 @@ class Updater:
 if __name__ == "__main__":
   insys_updater = Updater("https://drive.google.com/uc?export=download&id=0B-_M0TAaeEKgY1ZjQ2lXQ2I5dkk", 30)
 
-  parser = argparse.ArgumentParser(description='Update InSys firmware')
+  parser = argparse.ArgumentParser(description='InSys firmware updater')
   parser.add_argument('-r', action='store_true', help='Hard update current firmware')
 
   args = parser.parse_args()
