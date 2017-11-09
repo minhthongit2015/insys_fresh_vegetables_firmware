@@ -1,5 +1,5 @@
-#!/usr/bin/python
 # coding=utf-8
+
 import requests
 import datetime
 import threading
@@ -36,14 +36,19 @@ class Updater:
   def keep_up_date(self):
     self.thread = threading.Thread(target=self.update)
     self.thread.start()
+    self.update()
 
   def update(self):
+    print("update")
     while True:
       try:
+        print("try")
         request = requests.get(self.update_url)
+        print("text")
         self.resolveResult(request.text)
       except Exception as e:
         print(e)
+        print("errr")
         pass
       time.sleep(self.refresh_time)
 
