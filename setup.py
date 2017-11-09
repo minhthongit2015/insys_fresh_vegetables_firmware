@@ -31,7 +31,7 @@ def install_service(service_name, service_file):
   insys_service_file.write(service_file)
   insys_service_file.close()
   cmd('sudo mv {}.service /etc/systemd/system'.format(service_name))
-  cmd('sudo chmod +x /etc/systemd/system/{}.service'.format(service_name))
+  cmd('chmod +x /etc/systemd/system/{}.service'.format(service_name))
   cmd('sudo systemctl enable {}'.format(service_name))
   cmd('sudo systemctl daemon-reload')
   cmd('sudo systemctl start {}'.format(service_name))
