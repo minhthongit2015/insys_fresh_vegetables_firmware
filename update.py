@@ -56,6 +56,7 @@ class Updater:
     cmd('sudo systemctl restart insys_update')
     fnew = open('version.ini', 'w')
     fnew.write(new_version if new_version != '' else self.cur_version)
+    fnew.close()
 
 if __name__ == "__main__":
   insys_updater = Updater("https://drive.google.com/uc?export=download&id=0B-_M0TAaeEKgY1ZjQ2lXQ2I5dkk", 30)
