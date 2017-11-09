@@ -9,6 +9,15 @@ import datetime
 def getLocalDeviceId(fname):
   with open(fname) as f: return f.readline()[:24]
 
+def getFirmwareVersion():
+  try:
+    with open('version.ini', 'r+') as f:
+      ver = f.read()
+      return ver if ver != '' else '0.0.0.0'
+  except:
+    return '0.0.0.0'
+    pass
+
 class InsysFirmware(InSysServices):
   def __init__(self, deviceId, switchPins=[], sensorPin=-1, refreshTimeControl=4, refreshTimeSensor=10):
     InSysServices.__init__(self, 'insysdemo.azurewebsites.net')
@@ -18,7 +27,9 @@ class InsysFirmware(InSysServices):
     self.sensors = DHT22(sensorPin)
     self.refreshTimeControl = refreshTimeControl
     self.refreshTimeSensor = refreshTimeSensor
-    print("[SYS] > System Started up! - {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+    print("[SYS] > System Started Up!")
+    print("[SYS] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+    print("[SYS] > Firmware Version: {}".format(getFirmwareVersion()))
 
   def getSwitchStates(self):
     getStatusAPI = BaseAPI('post', '/api/device/getstatus', {}, self.paramsToJSON({'deviceId': self._deviceId}),

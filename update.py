@@ -10,6 +10,15 @@ from distutils.version import LooseVersion, StrictVersion
 
 def cmd(command):
   call(command.split(' '))
+  
+def getFirmwareVersion():
+  try:
+    with open('version.ini', 'r+') as f:
+      ver = f.read()
+      return ver if ver != '' else '0.0.0.0'
+  except:
+    return '0.0.0.0'
+    pass
 
 class Updater:
   def __init__(self, update_url, refresh_time=10):
@@ -71,4 +80,7 @@ if __name__ == "__main__":
   elif args.v:
     print('[SYS] > Current Firmware Version: {}'.format(insys_updater.cur_version.vstring))
   else:
+    print('[SYS] > InSys Updating Service Started Up!')
+    print("[SYS] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+    print("[SYS] > Firmware Version: {}".format(getFirmwareVersion()))
     insys_updater.keep_up_date()
