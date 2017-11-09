@@ -51,7 +51,8 @@ class Updater:
     else:
       print("[SYS] > Newer firmware found. Start installing newer version!")
       print("[SYS] > Update from {} to {}".format(self.cur_version.vstring, new_version.vstring))
-      self.hard_update(new_version.vstring)
+      self.cur_version = new_version
+      self.hard_update()
 
   def hard_update(self, new_version=''):
     cmd('git fetch --all')
