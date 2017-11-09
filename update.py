@@ -49,9 +49,9 @@ class Updater:
   def hard_update(self, new_version=''):
     cmd('git fetch --all')
     cmd('git reset --hard origin/master')
-    cmd('chmod +x startup')
+    cmd('sudo chmod +x ./startup')
     cmd('sudo systemctl restart insys')
-    cmd('chmod +x update.py')
+    cmd('sudo chmod +x ./update.py')
     cmd('sudo systemctl restart insys_update')
     fnew = open('version.ini', 'w')
     fnew.write(new_version if new_version != '' else self.cur_version)
@@ -64,6 +64,7 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
   if args.r:
+    print('[SYS] > Hard update current firmware')
     insys_updater.hard_update()
   else:
     insys_updater.keep_up_date()
