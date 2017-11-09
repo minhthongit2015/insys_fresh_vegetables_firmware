@@ -58,7 +58,7 @@ class Updater:
     cmd('sudo systemctl restart insys_update')
 
 if __name__ == "__main__":
-  insys_updater = Updater("https://drive.google.com/uc?export=download&id=0B-_M0TAaeEKgY1ZjQ2lXQ2I5dkk", 30)
+  insys_updater = Updater("https://raw.githubusercontent.com/minhthongit2015/insys_fresh_vegetables_firmware/master/version.ini", 30)
 
   parser = argparse.ArgumentParser(description='InSys firmware updater')
   parser.add_argument('-r', action='store_true', help='Hard update current firmware')
