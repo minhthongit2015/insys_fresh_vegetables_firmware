@@ -49,7 +49,10 @@ class Updater:
   def hard_update(self, new_version=''):
     cmd('git fetch --all')
     cmd('git reset --hard origin/master')
+    cmd('chmod +x startup')
     cmd('sudo systemctl restart insys')
+    cmd('chmod +x update.py')
+    cmd('sudo systemctl restart insys_update')
     fnew = open('version.ini', 'w')
     fnew.write(new_version if new_version != '' else self.cur_version)
 
@@ -59,8 +62,8 @@ if __name__ == "__main__":
   parser = argparse.ArgumentParser(description='Update InSys firmware')
   parser.add_argument('-r', action='store_true', help='Hard update current firmware')
 
-  args = parser.parse_args(['-h'])
-  if args['r']:
+  args = parser.parse_args()
+  if args.r:
     insys_updater.hard_update()
   else:
     insys_updater.keep_up_date()
