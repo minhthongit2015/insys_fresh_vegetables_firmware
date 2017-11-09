@@ -34,8 +34,8 @@ class Updater:
       pass
   
   def keep_up_date(self):
-    thread = threading.Thread(target=self.update)
-    thread.start()
+    self.thread = threading.Thread(target=self.update)
+    self.thread.start()
 
   def update(self):
     while True:
@@ -51,6 +51,7 @@ class Updater:
     lines = result.split('\r\n')
     if len(lines) <= 0: return
     new_version = LooseVersion(lines[0])
+    print('[SYS] > Newest version: {}'.format(new_version.vstring))
     if new_version <= self.cur_version: return
     else:
       print("[SYS] > Newer firmware found. Start installing newer version!")
