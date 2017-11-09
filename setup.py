@@ -43,12 +43,12 @@ def setup():
   cwd = os.getcwd()
 
   # Install main service
-  cmd('sudo chmod +x ./startup')
+  cmd('chmod +x ./startup')
   install_service('insys', generate_service_file('insys', 'startup', cwd))
 
   # Install update service
-  cmd('sudo chmod +x ./update')
-  cmd('sudo chmod +x ./update.py')
+  cmd('chmod +x ./update')
+  cmd('chmod +x ./update.py')
   install_service('insys_update', generate_service_file('insys_update', 'update', cwd))
 
 

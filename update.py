@@ -62,10 +62,10 @@ class Updater:
     fnew.write(new_version if new_version != '' else self.cur_version.vstring)
     fnew.close()
 
-    cmd('sudo chmod +x ./startup')
+    cmd('chmod +x ./startup')
     cmd('sudo systemctl restart insys')
-    cmd('sudo chmod +x ./update')
-    cmd('sudo chmod +x ./update.py')
+    cmd('chmod +x ./update')
+    cmd('chmod +x ./update.py')
     cmd('sudo systemctl restart insys_update')
 
 if __name__ == "__main__":
