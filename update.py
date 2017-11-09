@@ -64,6 +64,7 @@ class Updater:
 
     cmd('sudo chmod +x ./startup')
     cmd('sudo systemctl restart insys')
+    cmd('sudo chmod +x ./update')
     cmd('sudo chmod +x ./update.py')
     cmd('sudo systemctl restart insys_update')
 

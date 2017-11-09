@@ -48,6 +48,7 @@ def setup():
 
   # Install update service
   cmd('sudo chmod +x ./update')
+  cmd('sudo chmod +x ./update.py')
   install_service('insys_update', generate_service_file('insys_update', 'update', cwd))
 
 
