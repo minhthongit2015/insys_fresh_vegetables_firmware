@@ -21,7 +21,7 @@ def getFirmwareVersion():
     pass
 
 class InsysFirmware(InSysServices):
-  def __init__(self, deviceId, switchPins=[], sensors=[17, 0x04], refreshTimeControl=4, refreshTimeSensor=10):
+  def __init__(self, deviceId, switchPins=[], sensors=[4, 0x04], refreshTimeControl=4, refreshTimeSensor=10):
     InSysServices.__init__(self, 'insysdemo.azurewebsites.net')
     self._deviceId = deviceId
     self.controllers = ListPin(switchPins, reverse=[True], default=[False], emitter=[self.sync_switch_state])

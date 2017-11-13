@@ -7,7 +7,7 @@ from plants.salad import *
 
 if __name__ == "__main__":
   try:
-    device = InsysFirmware(getLocalDeviceId('ID.txt'), [26,19,13,6], [17, 0x04], 2, 300)
+    device = InsysFirmware(getLocalDeviceId('ID.txt'), [26,19,13,6], [4, 0x04], 2, 300)
     device.run()
 
     gardener = Gardener(device, lazy=2)
