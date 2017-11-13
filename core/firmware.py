@@ -65,16 +65,15 @@ class InsysFirmware(InSysServices):
     print("> Send sync to server pin {} to {}".format(pin.pin, pin.state))
 
   def putSensorData(self):
-    sensorData = self.sensors['hutemp'].value
+    hutemp = self.sensors['hutemp'].value
     pHValue = self.sensors['pH'].value
-    print("> check pH: {}".format(pHValue))
     putSensorDataAPI = BaseAPI('put', '/api/device/updates', {}, self.paramsToJSON({
       "gateWayId": "59336609883fa03a18cd48d7",
       "token": "c3RyaW5nOjJBd29uWEc5UEwwZXRLN01zejcvdWc9PQ==",
       "devices": [{
         "deviceId": self._deviceId,
-        "humidity": sensorData[0],
-        "temperature": sensorData[1],
+        "humidity": hutemp[0],
+        "temperature": hutemp[1],
         "pH": pHValue
       }]
     }), headers = {"Content-type": "application/json"})
