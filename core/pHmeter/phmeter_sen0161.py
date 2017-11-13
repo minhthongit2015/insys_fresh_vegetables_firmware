@@ -9,7 +9,7 @@ class SEN0161:
   
   @property
   def value(self):
-    return struct.unpack('f', bytearray(self.bus.read_i2c_block_data(self.address, 0, 4)))
+    return struct.unpack('f', bytearray(self.bus.read_i2c_block_data(self.address, 0, 4)))[0]
 
   def read(self):
-    self.value
+    return self.value
