@@ -2,6 +2,8 @@
 from core.api import InSysServices, BaseAPI
 from core.pins import Pin, ListPin
 from core.hutemp_module_dht22 import DHT22
+from core.pHmeter.phmeter_sen0161 import SEN0161
+
 import threading
 from time import sleep, time
 import datetime
@@ -19,12 +21,11 @@ def getFirmwareVersion():
     pass
 
 class InsysFirmware(InSysServices):
-  def __init__(self, deviceId, switchPins=[], sensorPin=-1, refreshTimeControl=4, refreshTimeSensor=10):
+  def __init__(self, deviceId, switchPins=[], sensors=[-1, 0x40], refreshTimeControl=4, refreshTimeSensor=10):
     InSysServices.__init__(self, 'insysdemo.azurewebsites.net')
     self._deviceId = deviceId
     self.controllers = ListPin(switchPins, reverse=[True], default=[False], emitter=[self.sync_switch_state])
-    # self.controllers.setEventDetect([self.sync_switch_state])
-    self.sensors = DHT22(sensorPin)
+    self.sensors = {"hutemp": DHT22(sensors[0]), "pH": SEN0161(sensors[1])}
     self.refreshTimeControl = refreshTimeControl
     self.refreshTimeSensor = refreshTimeSensor
     print("[SYS] > System Started Up!")
@@ -59,7 +60,9 @@ class InsysFirmware(InSysServices):
     print("> Send sync to server pin {} to {}".format(pin.pin, pin.state))
 
   def putSensorData(self):
-    sensorData = self.sensors.read()
+    sensorData = self.sensors.hutemp.value
+    pHValue = self.sensors.pH.value
+    print("check pH: {}".format(pHValue))
     putSensorDataAPI = BaseAPI('put', '/api/device/updates', {}, self.paramsToJSON({
       "gateWayId": "59336609883fa03a18cd48d7",
       "token": "c3RyaW5nOjJBd29uWEc5UEwwZXRLN01zejcvdWc9PQ==",
@@ -67,6 +70,7 @@ class InsysFirmware(InSysServices):
         "deviceId": self._deviceId,
         "humidity": sensorData[0],
         "temperature": sensorData[1],
+        "pH": pHValue
       }]
     }), headers = {"Content-type": "application/json"})
     self.request(putSensorDataAPI, callback=lambda x,y: 1)

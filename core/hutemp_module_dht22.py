@@ -13,8 +13,12 @@ class DHT22(Pin):
     self.sensor = Adafruit_DHT.DHT22
     self.precision = precision
 
-  def read(self):
+  @property
+  def value(self):
     humidity, temperature = Adafruit_DHT.read_retry(self.sensor, self.pin)
     while humidity is None or temperature is None or humidity > 100 or humidity < 0:
       humidity, temperature = Adafruit_DHT.read_retry(self.sensor, self.pin)
     return (round(humidity,self.precision), round(temperature,self.precision))
+
+  def read(self):
+    return self.value
