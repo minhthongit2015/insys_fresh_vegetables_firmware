@@ -39,11 +39,16 @@ class InsysFirmware(InSysServices):
 
   def resolveDeviceStatus(self, response, api):
     result = response.read()
-    status = self.parseResult(result)
-    if len(status['data']) > 0:
-      pinStates = status['data'][0]['frame'].split('#')
-      for (pin, state) in zip(self.controllers.pins, pinStates):
-        pin.turn(state)
+    try:
+      status = self.parseResult(result)
+      if len(status['data']) > 0:
+        pinStates = status['data'][0]['frame'].split('#')
+        for (pin, state) in zip(self.controllers.pins, pinStates):
+          pin.turn(state)
+    except Exception as e:
+      print("[SYS] > Failed to resolve device status result. Detail as below:")
+      print(e)
+      print('------------------ End error detail ------------------')
 
   def getSwitchStatesLoop(self):
     while True:
@@ -62,7 +67,7 @@ class InsysFirmware(InSysServices):
   def putSensorData(self):
     sensorData = self.sensors['hutemp'].value
     pHValue = self.sensors['pH'].value
-    print("check pH: {}".format(pHValue))
+    print("> check pH: {}".format(pHValue))
     putSensorDataAPI = BaseAPI('put', '/api/device/updates', {}, self.paramsToJSON({
       "gateWayId": "59336609883fa03a18cd48d7",
       "token": "c3RyaW5nOjJBd29uWEc5UEwwZXRLN01zejcvdWc9PQ==",
