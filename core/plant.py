@@ -1,31 +1,29 @@
 # -*- coding: utf-8 -*-
 
 """
-Phân lớp module:
-----------------
+## Phân lớp module:
 + 1 ``Plant`` có nhiều ``GrowthStage``
 + 1 ``GrowthStage`` có nhiều ``WaterPoints``
 + 1 ``WaterPoints`` có nhiều ``WaterTime``
 ____________________________________
 
-Mô tả các module:
------------------
-``Plant``: Quản lý thông tin cơ bản cây trồng
+## Mô tả các module:
+**Plant** - Quản lý thông tin cơ bản cây trồng
   * Tên
   * Các giai đoạn phát triển
 
-``GrowthStage``: Quản lý thông tin các giai đoạn phát triển cây trồng
+**GrowthStage** - Quản lý thông tin các giai đoạn phát triển cây trồng
   * Thứ tự giai đoạn
   * Tên giai đoạn
   * Ngày bắt đầu và kết thúc của giai đoạn
   * Lịch trình tưới nước trong giai đoạn đó
 
-``WaterPoints``: Quản lý các thời điểm tưới nước/bón phân
+**WaterPoints** - Quản lý các thời điểm tưới nước/bón phân
   * Các thời điểm tưới trong ngày
   * Thời gian tưới tương ứng
   * Lưu lượng tưới tương ứng
 
-``WaterTime``: Thông tin thời điểm tưới trong ngày
+**WaterTime** - Thông tin thời điểm tưới trong ngày
   * Thời điểm bắt đầu và kết thúc
   * Kéo dài trong bao lâu
 """
