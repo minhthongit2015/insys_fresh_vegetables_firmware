@@ -1,6 +1,6 @@
 # coding=utf-8
 from core.api import InSysServices, BaseAPI
-from core.pins import Pin, ListPin
+from core.pins import Pin, ListPin, clean
 from core.hutemp_module_dht22 import DHT22
 from core.pHmeter.phmeter_sen0161 import SEN0161
 
@@ -21,14 +21,14 @@ def getFirmwareVersion():
     pass
 
 class InsysFirmware(InSysServices):
-  def __init__(self, deviceId, switchPins=[], sensors=[-1, 0x04], refreshTimeControl=4, refreshTimeSensor=10):
+  def __init__(self, deviceId, switchPins=[], sensors=[17, 0x04], refreshTimeControl=4, refreshTimeSensor=10):
     InSysServices.__init__(self, 'insysdemo.azurewebsites.net')
     self._deviceId = deviceId
     self.controllers = ListPin(switchPins, reverse=[True], default=[False], emitter=[self.sync_switch_state])
     self.sensors = {"hutemp": DHT22(sensors[0]), "pH": SEN0161(sensors[1])}
     self.refreshTimeControl = refreshTimeControl
     self.refreshTimeSensor = refreshTimeSensor
-    print("[SYS] > System Started Up!")
+    print("[SYS] >>> System Started Up!")
     print("[SYS] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
     print("[SYS] > Firmware Version: {}".format(getFirmwareVersion()))
 
@@ -48,7 +48,7 @@ class InsysFirmware(InSysServices):
     except Exception as e:
       print("[SYS] > Failed to resolve device status result. Detail as below:")
       print(e)
-      print('------------------ End error detail ------------------')
+      print('-------------- {} --------------'.format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
 
   def getSwitchStatesLoop(self):
     while True:
@@ -87,11 +87,17 @@ class InsysFirmware(InSysServices):
         sleep(self.refreshTimeSensor-2)
 
   def run(self):
-    syncThread = threading.Thread(target=self.getSwitchStatesLoop)
     sensorThread = threading.Thread(target=self.putSensorDataLoop)
+    syncThread = threading.Thread(target=self.getSwitchStatesLoop)
+
+    print("[SYS] > Start 'Sensor' thread")
+    sensorThread.start()
 
     print("[SYS] > Start 'Control' thread")
     syncThread.start()
-    
-    print("[SYS] > Start 'Sensor' thread")
-    sensorThread.start()
+
+    sensorThread.join()
+    syncThread.join()
+  
+  def clean(self):
+    clean()

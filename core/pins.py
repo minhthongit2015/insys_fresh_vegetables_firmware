@@ -166,8 +166,10 @@ except: import core.RPi.GPIO as GPIO
 import time
 
 GPIO.setmode(GPIO.BCM)
-GPIO.cleanup()
 GPIO.setwarnings(False)
+
+def clean():
+  GPIO.cleanup()
 
 class Pin():
   def __init__(self, pin, isOutput=True, default=True, reverse=False, eventDetect=False, emitter=False): # Setup GPIO Pin for output by default
