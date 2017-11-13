@@ -1,0 +1,144 @@
+[
+  {
+    "name": "Xà lách mỡ (Butterhead Lettuce)",
+    "planting_date": "20/11/2017",
+    "growth_stages": [
+      {
+        "stage_order": 1,
+        "stage_name": "Ươm mầm",
+        "from": 1, "to": 7,
+        "enviroment": [
+          {
+            "name": "water",
+            "water": [
+              {
+                "time": "6:20, 17:20",
+                "duration": "15"
+              }
+            ]
+          },
+          {
+            "name": "temperature",
+            "temperature": [25, 28]
+          },
+          {
+            "name": "pH",
+            "pH": [6.5, 7.5]
+          },
+          {
+            "name": "light",
+            "light": "3 tiếng sáng sớm hoặc chiều"
+          }
+        ]
+      },
+      {
+        "stage_order": 2,
+        "stage_name": "Chăm cây mầm",
+        "from": 8, "to": 14,
+        "enviroment": [
+          {
+            "name": "water",
+            "water": [
+              {
+                "time": "6:20, 17:20",
+                "duration": "15"
+              }
+            ]
+          },
+          {
+            "name": "temperature",
+            "temperature": [25, 28]
+          },
+          {
+            "name": "light",
+            "light": "3 tiếng sáng sớm hoặc chiều"
+          },
+          {
+            "name": "pH",
+            "pH": [6, 6.5]
+          },
+          {
+            "name": "EC",
+            "EC": [1, 1.2]
+          },
+          {
+            "name": "PPM",
+            "PPM": [560, 840]
+          }
+        ]
+      },
+      {
+        "stage_order": 3,
+        "stage_name": "Phát triển tuần 1,2",
+        "from": 15, "to": 28,
+        "enviroment": [
+          {
+            "name": "water",
+            "water": [
+              {
+                "time": "6:20, 17:20",
+                "duration": "15"
+              }
+            ]
+          },
+          {
+            "name": "temperature",
+            "temperature": [18, 25]
+          },
+          {
+            "name": "light",
+            "light": "ưa ánh sáng và bóng râm"
+          },
+          {
+            "name": "pH",
+            "pH": [6, 6.5]
+          },
+          {
+            "name": "EC",
+            "EC": [1, 1.2]
+          },
+          {
+            "name": "PPM",
+            "PPM": [560, 840]
+          }
+        ]
+      },
+      {
+        "stage_order": 4,
+        "stage_name": "Phát triển tuần 3,4,5",
+        "from": 22, "to": 28,
+        "enviroment": [
+          {
+            "name": "water",
+            "water": [
+              {
+                "time": "6:20, 17:20",
+                "duration": "15"
+              }
+            ]
+          },
+          {
+            "name": "temperature",
+            "temperature": [18, 25]
+          },
+          {
+            "name": "light",
+            "light": "ưa ánh sáng và bóng râm"
+          },
+          {
+            "name": "pH",
+            "pH": [6, 6.5]
+          },
+          {
+            "name": "EC",
+            "EC": [1.4, 1.5]
+          },
+          {
+            "name": "PPM",
+            "PPM": [560, 840]
+          }
+        ]
+      }
+    ] 
+  }
+]

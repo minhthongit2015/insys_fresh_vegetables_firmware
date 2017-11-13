@@ -51,9 +51,9 @@ class WaterTime:
 
 class WaterPoints:
   """ Thông tin 1 lần tưới trong ngày """
-  def __init__(self, timeInfo, duration, amount):
+  def __init__(self, timeInfo, duration, amount=1):
     self.duration = duration  # Kéo dài bao lâu
-    self.amount = amount      # Công suất tưới
+    self.amount = amount      # Công suất tưới (hiện tại chưa điều khiển được công suất tưới)
     timeInfo = timeInfo.replace(' ','').split(',')
     self.waterTimes = []
     for waterTime in timeInfo:
@@ -73,7 +73,7 @@ class WaterPoints:
 class GrowthStage:
   """ Thông tin 1 giai đoạn phát triển cây trồng """
   def __init__(self, stage, name, timeRange, schedule=[]):
-    self.stage = name               # Tên giai đoạn
+    self.stageName = name           # Tên giai đoạn
     self.stageNumber = stage        # Số thứ tự của giai đoạn
     self.start = timeRange[0]       # Bắt đầu từ ngày thứ mấy
     self.end = timeRange[1]         # Kết thúc vào ngày thứ mấy
