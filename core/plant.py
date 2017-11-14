@@ -83,7 +83,7 @@ class GrowthStage:
 
 class Plant:
   """ Thông tin cây trồng, nhiều giai đoạn phát triển """
-  def __init__(self, name, plantingDate, growthStages=[]):
+  def __init__(self, name, planting_date, growth_stages=[]):
     self.name = name
-    self.plantingDate = plantingDate
-    self.growthStages = growthStages
+    self.planting_date = planting_date
+    self.growth_stages = growth_stages

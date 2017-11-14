@@ -4,3 +4,5 @@
 /core/RPi
 /core/Adafruit_DHT.py
 /core/__pycache__
+/smbus.py
+/.vscode

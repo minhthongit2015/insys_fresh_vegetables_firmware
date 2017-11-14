@@ -86,17 +86,13 @@ class InsysFirmware(InSysServices):
         sleep(self.refreshTimeSensor-2)
 
   def run(self):
-    sensorThread = threading.Thread(target=self.putSensorDataLoop)
-    syncThread = threading.Thread(target=self.getSwitchStatesLoop)
-
+    self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
+    self.sensorThread.start()
     print("[SYS] > Start 'Sensor' thread")
-    sensorThread.start()
 
+    self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
+    self.controlThread.start()
     print("[SYS] > Start 'Control' thread")
-    syncThread.start()
-
-    sensorThread.join()
-    syncThread.join()
   
   def clean(self):
     clean()

@@ -11,11 +11,15 @@ if __name__ == "__main__":
     device.run()
 
     plant_lib = PlantLibrary('./plants/vegetables.json')
-    butterhead_lettuce = plant_lib.library[0]
+    butterhead_lettuce = plant_lib.plant_parse(plant_lib.library[0])
 
     gardener = Gardener(device, lazy=2)
     gardener.appendPlant(butterhead_lettuce)
     gardener.work()
+
+    device.sensorThread.join()
+    device.controlThread.join()
+    gardener.worker.join()
   except KeyboardInterrupt:
     device.clean()
     print("[SYS] >>> System shutdown!")
