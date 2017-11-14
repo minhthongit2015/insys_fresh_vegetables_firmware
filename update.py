@@ -29,7 +29,8 @@ class Updater:
     try:
       f = open('version.ini', 'r+')
       self.cur_version = LooseVersion(f.read())
-      print("[SYS] > Current firmware version: {}".format(self.cur_version.vstring))
+      f.close()
+      print("[UPDATER] > Current firmware version: {}".format(self.cur_version.vstring))
     except:
       self.cur_version = LooseVersion('0.0.0.0')
       pass
@@ -53,21 +54,17 @@ class Updater:
     lines = result.split('\r\n')
     if len(lines) <= 0: return
     new_version = LooseVersion(lines[0])
-    print('[SYS] > Newest version: {}'.format(new_version.vstring))
+    print('[UPDATER] > Newest version: {}'.format(new_version.vstring))
     if new_version <= self.cur_version: return
     else:
-      print("[SYS] > Newer firmware found. Start installing newer version!")
-      print("[SYS] > Update from {} to {}".format(self.cur_version.vstring, new_version.vstring))
+      print("[UPDATER] > Newer firmware found. Start installing newer version!")
+      print("[UPDATER] > Update from {} to {}".format(self.cur_version.vstring, new_version.vstring))
       self.cur_version = new_version
       self.hard_update()
 
-  def hard_update(self, new_version=''):
+  def hard_update(self):
     cmd('git fetch --all')
     cmd('git reset --hard origin/master')
-    
-    fnew = open('version.ini', 'w')
-    fnew.write(new_version if new_version != '' else self.cur_version.vstring)
-    fnew.close()
 
     cmd('chmod +x ./startup')
     cmd('sudo systemctl restart insys')
@@ -84,12 +81,12 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
   if args.r:
-    print('[SYS] > Hard update current firmware ({})'.format(insys_updater.cur_version.vstring))
+    print('[UPDATER] > Hard update current firmware ({})'.format(insys_updater.cur_version.vstring))
     insys_updater.hard_update()
   elif args.v:
-    print('[SYS] > Current Firmware Version: {}'.format(insys_updater.cur_version.vstring))
+    print('[UPDATER] > Current Firmware Version: {}'.format(insys_updater.cur_version.vstring))
   else:
-    print('[SYS] > InSys Updating Service Started Up!')
-    print("[SYS] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
-    print("[SYS] > Firmware Version: {}".format(getFirmwareVersion()))
+    print('[UPDATER] > InSys Updating Service Started Up!')
+    print("[UPDATER] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+    print("[UPDATER] > Firmware Version: {}".format(getFirmwareVersion()))
     insys_updater.keep_up_date()

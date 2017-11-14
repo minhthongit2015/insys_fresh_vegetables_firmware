@@ -26,7 +26,7 @@ def cmd(command):
 
 def install_service(service_name, service_file):
   service_name = service_name.replace(' ', '')
-  print('[SYS] > Install {} service'.format(service_name))
+  print('[SETUP] > Install {} service'.format(service_name))
   insys_service_file = open('{}.service'.format(service_name), 'w')
   insys_service_file.write(service_file)
   insys_service_file.close()
