@@ -34,7 +34,12 @@ class PlantLibrary:
       if env['name'] == 'water':
         water_times = []
         for water in env['water']:
-          water_times.append(WaterPoints(water['time'], water['duration']))
+          if 'duration' not in water:
+            water['duration'] = '15'  # default is water for 15 minutes
+          if 'every' in water:
+            water_times.append(WaterPoints(every=water['every'], duration=water['duration']))
+          elif 'time' in water:
+            water_times.append(WaterPoints(water['time'], water['duration']))
         enviroments_parsed['water'] = water_times
       else:
         enviroments_parsed[env['name']] = env[env['name']]

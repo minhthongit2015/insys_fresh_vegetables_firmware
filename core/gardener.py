@@ -42,10 +42,10 @@ class Gardener():
     self.plants.append(plant)
 
   def work(self):
-    self.worker = threading.Thread(target=self._work)
-    self.worker.start()
+    # self.worker = threading.Thread(target=self._work)
+    # self.worker.start()
     print("[SYS] >> Gardener start working")
-    # self._work()
+    self._work()
 
   def _work(self):
     while True:
@@ -55,7 +55,7 @@ class Gardener():
   def waterByTime(self):
     now = datetime.datetime.now().time()
     for plant in self.plants:               # Duyệt qua tất cả cây trồng
-      for stage in plant.growth_stages:      # Duyệt qua tất cả giai đoạn phát triển
-        for waterPoints in stage.schedule:  # Duyệt qua tất cả các thời điểm tưới nước/bón phân trong ngày
-          waterPoints.waterIfInTime(self.controllers.pins[3])
+      for stage in plant.growth_stages:     # Duyệt qua tất cả giai đoạn phát triển
+        if stage.water_if_in_stage(plant, self.controllers.pins[3]):
+          pass
 
