@@ -47,6 +47,8 @@ class InsysFirmware(InSysServices):
           pin.turn(state)
     except Exception as e:
       print("[SYS] > Failed to resolve device status result. Detail as below:")
+      if "Error 403 - This web app is stopped" in str(result):
+        print(' + [DEEP_DEBUGGING] > Error 403 - This web app is stopped')
       print(e)
       print('-------------- {} --------------'.format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
 
