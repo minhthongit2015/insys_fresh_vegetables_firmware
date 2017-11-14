@@ -44,7 +44,7 @@ class Gardener():
   def work(self):
     self.worker = threading.Thread(target=self._work)
     self.worker.start()
-    print("[SYS] > Gardener start working")
+    print("[SYS] >> Gardener start working")
     # self._work()
 
   def _work(self):

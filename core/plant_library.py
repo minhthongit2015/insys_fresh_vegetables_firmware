@@ -8,10 +8,10 @@ class PlantLibrary:
     try:
       f = open(lib_file, 'r', encoding='utf-8')
     except:
-      print("[ERR] > Failed to load plant library (file name: {}".format(lib_file))
+      print("[ERR] >> Failed to load plant library (check lirary file: {})".format(lib_file))
       return
     self.library = json.loads(f.read(), encoding="utf-8")
-    print("[SYS] > Plant library loaded.")
+    print("[SYS] >> Plant library loaded.")
   
   def get_list(self):
     if not self.library: return

@@ -29,8 +29,8 @@ class InsysFirmware(InSysServices):
     self.refreshTimeControl = refreshTimeControl
     self.refreshTimeSensor = refreshTimeSensor
     print("[SYS] >>> System Started Up!")
-    print("[SYS] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
-    print("[SYS] > Firmware Version: {}".format(getFirmwareVersion()))
+    print("[SYS] >>> Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+    print("[SYS] >>> Firmware Version: {}".format(getFirmwareVersion()))
 
   def getSwitchStates(self):
     getStatusAPI = BaseAPI('post', '/api/device/getstatus', {}, self.paramsToJSON({'deviceId': self._deviceId}),
@@ -90,11 +90,11 @@ class InsysFirmware(InSysServices):
   def run(self):
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
     self.sensorThread.start()
-    print("[SYS] > Start 'Sensor' thread")
+    print("[SYS] >> Start 'Sensor' thread")
 
     self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
     self.controlThread.start()
-    print("[SYS] > Start 'Control' thread")
+    print("[SYS] >> Start 'Control' thread")
   
   def clean(self):
     clean()
