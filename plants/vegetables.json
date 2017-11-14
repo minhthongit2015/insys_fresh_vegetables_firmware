@@ -16,8 +16,8 @@
                 "duration": "15"
               },
               {
-                "every": "0:0:15",
-                "duration": "0:0:5"
+                "every": "0:15:00",
+                "duration": "0:1"
               }
             ]
           },
