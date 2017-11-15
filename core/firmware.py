@@ -3,6 +3,7 @@ from core.api import InSysServices, BaseAPI
 from core.pins import Pin, ListPin, clean
 from core.hutemp_module_dht22 import DHT22
 from core.pHmeter.phmeter_sen0161 import SEN0161
+from core.logger import Logger
 
 import threading
 from time import sleep, time
@@ -28,6 +29,7 @@ class InsysFirmware(InSysServices):
     self.sensors = {"hutemp": DHT22(sensors[0]), "pH": SEN0161(sensors[1])}
     self.refreshTimeControl = refreshTimeControl
     self.refreshTimeSensor = refreshTimeSensor
+    self.logger = Logger('./log', 'humi_temp_pH')
     print("[SYS] >>> System Started Up!")
     print("[SYS] >>> Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
     print("[SYS] >>> Firmware Version: {}".format(getFirmwareVersion()))
@@ -79,13 +81,19 @@ class InsysFirmware(InSysServices):
         "pH": pHValue
       }]
     }), headers = {"Content-type": "application/json"})
-    self.request(putSensorDataAPI, callback=lambda x,y: 1)
+    record = "{} {} {}".format(hutemp[0], hutemp[1], pHValue)
+    self.request(putSensorDataAPI, callback=lambda rs,api: self.checkSensorPutResponse(rs,api,record))
   
   def putSensorDataLoop(self):
     while True:
       self.putSensorData()
       if self.refreshTimeSensor-2 > 0:
         sleep(self.refreshTimeSensor-2)
+
+  def checkSensorPutResponse(self, result, api, record):
+    pass
+    self.logger.record(record)
+
 
   def run(self):
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
@@ -95,6 +103,8 @@ class InsysFirmware(InSysServices):
     self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
     self.controlThread.start()
     print("[SYS] >> Start 'Control' thread")
+
+    self.putSensorData()
   
   def clean(self):
     clean()
