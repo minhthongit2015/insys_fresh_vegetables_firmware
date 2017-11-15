@@ -4,6 +4,7 @@ from core.pins import Pin, ListPin, clean
 from core.hutemp_module_dht22 import DHT22
 from core.pHmeter.phmeter_sen0161 import SEN0161
 from core.logger import Logger
+import http.client as httplib
 
 import threading
 from time import sleep, time
@@ -82,7 +83,9 @@ class InsysFirmware(InSysServices):
       }]
     }), headers = {"Content-type": "application/json"})
     record = "{} {} {}".format(hutemp[0], hutemp[1], pHValue)
-    self.request(putSensorDataAPI, callback=lambda rs,api: self.checkSensorPutResponse(rs,api,record))
+    test = self.request(putSensorDataAPI, callback=lambda res,api: self.checkSensorPutResponse(record,res,api))
+    if not isinstance(test, httplib.HTTPSConnection):
+      self.checkSensorPutResponse(record)
   
   def putSensorDataLoop(self):
     while True:
@@ -90,10 +93,9 @@ class InsysFirmware(InSysServices):
       if self.refreshTimeSensor-2 > 0:
         sleep(self.refreshTimeSensor-2)
 
-  def checkSensorPutResponse(self, result, api, record):
-    pass
-    self.logger.record(record)
-
+  def checkSensorPutResponse(self, record, response=None, api=None):
+    if (response != None and response.code != 200) or response == None:
+      self.logger.record(record)
 
   def run(self):
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
@@ -104,7 +106,5 @@ class InsysFirmware(InSysServices):
     self.controlThread.start()
     print("[SYS] >> Start 'Control' thread")
 
-    self.putSensorData()
-  
   def clean(self):
     clean()
