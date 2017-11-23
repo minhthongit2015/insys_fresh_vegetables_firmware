@@ -1,8 +1,8 @@
 #include <Wire.h>
 #define __DEBUG__
-#undef __DEBUG__
+//#undef __DEBUG__
 
-#define SensorPin A3        // pH data pin
+#define SensorPin A0        // pH data pin
 #define ArrayLenth 40       // sample array lenght
 #define SLAVE_ADDRESS 0x04  // i2c address
 
@@ -18,7 +18,6 @@ int samplingInterval = 20;
 void setup(void)
 {
   #ifdef __DEBUG__
-    Serial setup
     Serial.begin(9600);
     Serial.println("<*> pH meter SEN0161 <*>");
     Serial.println("[SYS] > pH meter SEN0161");
@@ -96,5 +95,9 @@ void receiveData(int byteCount){
 void sendData() {
   double voltage = avergearray(pHArray, ArrayLenth) * 5.0 / 1024;
   pHValue.floatVal = 3.5 * voltage + Offset;
+  Serial.print(pHValue.bytes[0]); Serial.print(",");
+  Serial.print(pHValue.bytes[1]); Serial.print(",");
+  Serial.print(pHValue.bytes[2]); Serial.print(",");
+  Serial.print(pHValue.bytes[3]);
   Wire.write(pHValue.bytes, 4);
 }

@@ -72,6 +72,8 @@ class InsysFirmware(InSysServices):
   def putSensorData(self):
     hutemp = self.sensors['hutemp'].value
     pHValue = self.sensors['pH'].value
+    print("pH: {}, hu: {}, temp: {}".format(pHValue, hutemp[0], hutemp[1]))
+
     putSensorDataAPI = BaseAPI('put', '/api/device/updates', {}, self.paramsToJSON({
       "gateWayId": "59336609883fa03a18cd48d7",
       "token": "c3RyaW5nOjJBd29uWEc5UEwwZXRLN01zejcvdWc9PQ==",
