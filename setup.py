@@ -39,7 +39,7 @@ def install_service(service_name, service_file):
 
 def setup():
   # cmd('sudo apt-get install python3')
-  cmd('sudo apt-get update')
+  # cmd('sudo apt-get update')
   cmd('sudo apt-get install build-essential python-dev')
 
   cmd('git clone https://github.com/adafruit/Adafruit_Python_DHT.git')
