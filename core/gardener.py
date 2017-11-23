@@ -42,10 +42,10 @@ class Gardener():
     self.plants.append(plant)
 
   def work(self):
-    # self.worker = threading.Thread(target=self._work)
-    # self.worker.start()
+    self.worker = threading.Thread(target=self._work)
+    self.worker.start()
     print("[SYS] >> Gardener start working")
-    self._work()
+    # self._work()
 
   def _work(self):
     while True:

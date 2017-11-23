@@ -19,7 +19,7 @@ if __name__ == "__main__":
 
     device.sensorThread.join()
     device.controlThread.join()
-    # gardener.worker.join()
+    gardener.worker.join()
   except KeyboardInterrupt:
     device.clean()
     print("[SYS] >>> System shutdown!")

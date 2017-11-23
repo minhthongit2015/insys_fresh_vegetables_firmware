@@ -6,3 +6,5 @@
 /core/__pycache__
 /smbus.py
 /.vscode
+/log
+/core/*.pyc
