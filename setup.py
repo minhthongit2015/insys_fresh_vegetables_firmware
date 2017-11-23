@@ -3,11 +3,11 @@
 from subprocess import call
 import os
 
-def generate_service_file(service_name, exec_path, working_directory):
+def generate_service_file(service_name, exec_path, working_directory, description):
   return """# /etc/systemd/system
 
 [Unit]
-Description=INSYS FRESH VEGETABLES UPDATE SERVICE
+Description={}
 After=network.target multi-user.target
 
 [Service]
@@ -19,7 +19,7 @@ Restart=always
 [Install]
 WantedBy=network.target multi-user.target
 Alias={}.service
-""".format(working_directory, exec_path, working_directory, service_name)
+""".format(description, working_directory, exec_path, working_directory, service_name)
 
 def cmd(command):
   call(command.split(' '))
@@ -39,17 +39,19 @@ def install_service(service_name, service_file):
 
 def setup():
   # cmd('sudo apt-get install python3')
+  cmd('git clone https://github.com/adafruit/Adafruit_Python_DHT.git')
+  cmd('sudo python Adafruit_Python_DHT/setup.py install')
 
   cwd = os.getcwd()
 
   # Install main service
   cmd('chmod +x ./startup')
-  install_service('insys', generate_service_file('insys', 'startup', cwd))
+  install_service('insys', generate_service_file('insys', 'startup', cwd, 'INSYS FRESH VEGETABLES SERVICE'), )
 
   # Install update service
   cmd('chmod +x ./update')
   cmd('chmod +x ./update.py')
-  install_service('insys_update', generate_service_file('insys_update', 'update', cwd))
+  install_service('insys_update', generate_service_file('insys_update', 'update', cwd, 'INSYS FRESH VEGETABLES UPDATE SERVICE'))
 
 
 if __name__ == "__main__":
