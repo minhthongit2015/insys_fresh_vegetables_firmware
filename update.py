@@ -38,7 +38,6 @@ class Updater:
   def keep_up_date(self):
     self.thread = threading.Thread(target=self.update)
     self.thread.start()
-    self.thread.join()
 
   def update(self):
     while True:
@@ -90,3 +89,4 @@ if __name__ == "__main__":
     print("[UPDATER] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
     print("[UPDATER] > Firmware Version: {}".format(getFirmwareVersion()))
     insys_updater.keep_up_date()
+    insys_updater.thread.join()

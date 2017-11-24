@@ -15,6 +15,7 @@ Type=idle
 ExecStart={}/{}
 WorkingDirectory={}
 Restart=always
+User=pi
 
 [Install]
 WantedBy=network.target multi-user.target
