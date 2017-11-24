@@ -24,8 +24,8 @@ class PlantLibrary:
     growth_stages = []
     for stage in plant_in_lib['growth_stages']:
       env = self.enviroment_translator(stage['enviroment'])
-      growth_stages.append(GrowthStage(stage['stage_order'], stage['stage_name'], (stage['from'], stage['to']),
-        env['water']))
+      growth_stages.append( GrowthStage(stage['stage_order'], stage['stage_name'], (stage['from'], stage['to']),
+        env['water'], temperature=env['temperature'], pH=env['pH']) )
     return Plant(plant_in_lib['name'], plant_in_lib['planting_date'], growth_stages)
 
   def enviroment_translator(self, enviroments):

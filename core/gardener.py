@@ -21,6 +21,10 @@ class Gardener():
     if 'Gardener' not in self.cfg:
       self.cfg['Gardener'] = {}
       self.auto = True
+
+    ###
+    self.pump = self.controllers.pins[3]
+    self.temperature = self.sensors['hutemp']
   
   def save(self):
     with open(self.config_path, 'w') as f: self.cfg.write(f)
@@ -49,13 +53,34 @@ class Gardener():
 
   def _work(self):
     while True:
-      if self.auto: self.waterByTime()
+      if self.auto: self.water()
       sleep(self.lazy)
 
-  def waterByTime(self):
+  def water(self):
     now = datetime.datetime.now().time()
     for plant in self.plants:               # Duyệt qua tất cả cây trồng
       for stage in plant.growth_stages:     # Duyệt qua tất cả giai đoạn phát triển
-        if stage.water_if_in_stage(plant, self.controllers.pins[3]):
-          pass
+        if stage.is_in_stage(plant):
+          if self.water_by_temperature(stage):
+            return True
+          if self.water_by_time(stage, plant):
+            return True
+    if self.pump.off():
+      self.pump.emitter(self.pump)
+
+  def water_by_time(self, stage, plant):
+    if stage.is_water_time(plant):
+      if self.pump.on():
+        self.pump.emitter(self.pump)
+      return True
+    return False
+  
+  def water_by_temperature(self, stage):
+    temperature = self.temperature.value[0]
+    if not stage.temperature[0] < temperature < stage.temperature[1]:
+      if self.pump.on():
+        self.pump.emitter(self.pump)
+      return True
+    return False
+
 

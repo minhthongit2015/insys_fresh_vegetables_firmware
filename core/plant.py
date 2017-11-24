@@ -99,28 +99,29 @@ class WaterPoints:
 
 class GrowthStage:
   """ Thông tin 1 giai đoạn phát triển cây trồng """
-  def __init__(self, stage, name, time_range, schedule=[]):
+  def __init__(self, stage, name, time_range, schedule=[], temperature=None, humidity=None, pH=None):
     self.stageName = name           # Tên giai đoạn
     self.stageNumber = stage        # Số thứ tự của giai đoạns
     self.start = time_range[0]      # Bắt đầu từ ngày thứ mấy
     self.end = time_range[1]        # Kết thúc vào ngày thứ mấy
     self.schedule = schedule        # Các thời điểm tưới trong ngày (WaterPoints)
+    self.temperature = temperature  # Khoảng nhiệt độ thích hợp để cây phát triển ([min, max])
+    self.humidity = humidity        # Khoảng độ ẩm thích hợp để cây phát triển ([min, max])
+    self.pH = pH                    # Khoảng pH thích hợp để cây phát triển ([min, max])
   
-  def water_if_in_stage(self, plant, pumb):
+  def is_in_stage(self, plant):
     start = plant.planting_date
     now = datetime.datetime.now()
     daypass = now - start
-    if daypass.days >= self.start and daypass.days < self.end:
-      for waterPoints in self.schedule:  # Duyệt qua tất cả các thời điểm tưới nước/bón phân trong ngày
-        if waterPoints.is_time_for_water(start):
-          if pumb and pumb.on():
-            pumb.emitter(pumb)
-          break
-      else:
-        if pumb and pumb.off():
-          pumb.emitter(pumb)
-      return True
+    return self.start <= daypass.days + 1 < self.end
+
+  def is_water_time(self, plant):
+    start = plant.planting_date
+    for waterPoints in self.schedule:  # Duyệt qua tất cả các thời điểm tưới nước/bón phân trong ngày
+      if waterPoints.is_time_for_water(start):
+        return True
     return False
+
 
 class Plant:
   """ Thông tin cây trồng, nhiều giai đoạn phát triển """
