@@ -7,7 +7,7 @@ from core.plant_library import PlantLibrary
 
 if __name__ == "__main__":
   try:
-    device = InsysFirmware(getLocalDeviceId('ID.txt'), [26,19,13,6], [4, 0x04], 2, 300)
+    device = InsysFirmware(getLocalDeviceId('ID.txt'), [26,19,13,6], [4, 0x04], 2, 2)
     device.run()
 
     plant_lib = PlantLibrary('./plants/vegetables.json')

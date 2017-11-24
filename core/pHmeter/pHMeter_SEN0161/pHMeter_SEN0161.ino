@@ -13,7 +13,8 @@ union {
   byte bytes[4];
 } pHValue;
 float Offset = -0.42;         //deviation compensate
-int samplingInterval = 20;
+long samplingInterval = 100;
+long printInterval = samplingInterval*ArrayLenth;
 
 void setup(void)
 {
@@ -38,7 +39,6 @@ void loop(void)
   if (pHArrayIndex == ArrayLenth) pHArrayIndex = 0;
   delay(samplingInterval);
   #ifdef __DEBUG__
-    static unsigned long printInterval = 800;
     static unsigned long printTime = millis();
     static float voltage;
     if (millis() - printTime > printInterval)
@@ -88,16 +88,19 @@ void receiveData(int byteCount){
   int number = 0;
   while (Wire.available()) {
     number = Wire.read();
-    Serial.print("data received: ");
-    Serial.println(number);
+//    Serial.print("data received: ");
+//    Serial.println(number);
   }
 }
 void sendData() {
   double voltage = avergearray(pHArray, ArrayLenth) * 5.0 / 1024;
   pHValue.floatVal = 3.5 * voltage + Offset;
+  #define testz
+  #ifdef test
   Serial.print(pHValue.bytes[0]); Serial.print(",");
   Serial.print(pHValue.bytes[1]); Serial.print(",");
   Serial.print(pHValue.bytes[2]); Serial.print(",");
   Serial.print(pHValue.bytes[3]);
+  #endif
   Wire.write(pHValue.bytes, 4);
 }

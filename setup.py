@@ -42,8 +42,15 @@ def setup():
   # cmd('sudo apt-get update')
   cmd('sudo apt-get install build-essential python-dev')
 
-  cmd('git clone https://github.com/adafruit/Adafruit_Python_DHT.git')
-  cmd('sudo python3 Adafruit_Python_DHT/setup.py install')
+  while True:
+    try:
+      import Adafruit_DHT
+      break
+    except:
+      cmd('git clone https://github.com/adafruit/Adafruit_Python_DHT.git')
+      cmd('cd Adafruit_Python_DHT')
+      cmd('sudo python3 setup.py install')
+      cmd('cd ..')
 
   cwd = os.getcwd()
 
