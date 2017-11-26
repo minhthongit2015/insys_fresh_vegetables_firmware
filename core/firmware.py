@@ -74,8 +74,12 @@ class InsysFirmware(InSysServices):
     print("> Send sync to server pin {} to {}".format(pin.pin, pin.state))
 
   def putSensorData(self):
-    hutemp = self.sensors['hutemp'].value
-    if hutemp == (0, 0): hutemp = self.sensors['hutemp'].default
+    while True:
+      hutemp = self.sensors['hutemp'].value
+      if hutemp == (0, 0): hutemp = self.sensors['hutemp'].default
+      if hutemp != self.sensors['hutemp'].default:
+        break
+      
     pHValue = self.sensors['pH'].value
     print("pH: {}, hu: {}, temp: {}".format(pHValue, hutemp[0], hutemp[1]))
 
