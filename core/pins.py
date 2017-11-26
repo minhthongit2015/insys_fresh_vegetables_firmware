@@ -218,9 +218,9 @@ class Pin():
 
   def set(self, state):
     newState = self._verifyState(state)
-    if self.state^newState:
-      self.oldState = self.state
-      self.state = newState
+    self.oldState = self.state
+    self.state = newState
+    if self.oldState^newState:
       GPIO.output(self.pin, GPIO.HIGH if self.state^self.reverse else GPIO.LOW)
       if self.eventDetect: self.eventDetect(self)
       return True

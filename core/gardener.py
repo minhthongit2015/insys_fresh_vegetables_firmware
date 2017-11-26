@@ -13,8 +13,9 @@ class Gardener():
     self.controllers = insysFirmware.controllers
     self.plants = plants
     self.lazy = lazy
-    self.controllers.pins[0].eventDetect = self.onSetAutoState
-    # self.controllers.pins[0].eventDetect = self.onSetAutoAdjust
+    self.pump = self.controllers.pins[3]
+    self.autopin = self.controllers.pins[0]
+    
     self.config_path = 'config.cfg'
     self.cfg = cfg.ConfigParser()
     self.cfg.read(self.config_path)
@@ -22,26 +23,29 @@ class Gardener():
       self.cfg['Gardener'] = {}
       self.auto = True
 
-    ###
-    pin = self.pump = self.controllers.pins[3]
+    self.autopin.turn(self.auto)
+    self.controllers.pins[0].eventDetect = self.onSetAutoState
+
     self.temperature = self.sensors['hutemp']
-    print("[SYS] > Auto mode is {}".format('on' if pin.state else 'off'))
+    print("[GARDENER] > Auto mode is {}".format('on' if self.autopin.state else 'off'))
   
   def save(self):
     with open(self.config_path, 'w') as f: self.cfg.write(f)
 
   @property
   def auto(self):
-    return self.cfg['Gardener']['auto']
+    return self.cfg.getboolean('Gardener', 'auto')
 
   @auto.setter
   def auto(self, state):
-    self.cfg['Gardener']['auto'] = str(bool(state))
+    self.autopin.turn(state)
+    print("[GARDENER] > Auto mode is {}".format('on' if state else 'off'))
+    self.cfg['Gardener']['auto'] = str(bool(state)) # option value must be string!
     self.save()
 
   def onSetAutoState(self, pin):
     self.auto = pin.state
-    print("[SYS] > Auto mode is {}".format('on' if pin.state else 'off'))
+    print("[GARDENER] > Auto mode is {}".format('on' if pin.state else 'off'))
 
   def appendPlant(self, plant):
     self.plants.append(plant)
@@ -49,7 +53,7 @@ class Gardener():
   def work(self):
     self.worker = threading.Thread(target=self._work)
     self.worker.start()
-    print("[SYS] >> Gardener start working")
+    print("[GARDENER] >> Gardener start working")
     # self._work()
 
   def _work(self):
@@ -66,8 +70,8 @@ class Gardener():
     for plant in self.plants:               # Duyệt qua tất cả cây trồng
       for stage in plant.growth_stages:     # Duyệt qua tất cả giai đoạn phát triển
         if stage.is_in_stage(plant):
-          # if self.water_by_temperature(stage):
-            # return True
+          if self.water_by_temperature(stage):
+            return True
           if self.water_by_time(stage, plant):
             return True
     if self.pump.off():

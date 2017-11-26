@@ -47,6 +47,7 @@ class InsysFirmware(InSysServices):
       if len(status['data']) > 0:
         pinStates = status['data'][0]['frame'].split('#')
         for (pin, state) in zip(self.controllers.pins, pinStates):
+          # print("Pin {} to {}".format(pin, state))
           pin.turn(state)
     except Exception as e:
       print("[SYS] > Failed to resolve device status result. Detail as below:")
