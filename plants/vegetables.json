@@ -1,7 +1,7 @@
 [
   {
     "name": "Xà lách mỡ (Butterhead Lettuce)",
-    "planting_date": "10/11/2017",
+    "planting_date": "21/11/2017",
     "growth_stages": [
       {
         "stage_order": 1,
@@ -23,7 +23,7 @@
           },
           {
             "name": "temperature",
-            "temperature": [25, 28]
+            "temperature": [25, 28, 2]
           },
           {
             "name": "pH",
@@ -55,7 +55,7 @@
           },
           {
             "name": "temperature",
-            "temperature": [25, 28]
+            "temperature": [25, 28, 2]
           },
           {
             "name": "light",
@@ -95,7 +95,7 @@
           },
           {
             "name": "temperature",
-            "temperature": [18, 25]
+            "temperature": [18, 25, 3]
           },
           {
             "name": "light",
@@ -131,7 +131,7 @@
           },
           {
             "name": "temperature",
-            "temperature": [18, 25]
+            "temperature": [18, 25, 3]
           },
           {
             "name": "light",

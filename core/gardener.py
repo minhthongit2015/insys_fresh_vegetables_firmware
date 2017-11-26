@@ -77,7 +77,7 @@ class Gardener():
   
   def water_by_temperature(self, stage):
     temperature = self.temperature.value[0]
-    if not stage.temperature[0] < temperature < stage.temperature[1]:
+    if not stage.temperature[0] - stage.temperature[3] < temperature < stage.temperature[1] + stage.temperature[3]:
       if self.pump.on():
         self.pump.emitter(self.pump)
       return True

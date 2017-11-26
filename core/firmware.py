@@ -71,6 +71,7 @@ class InsysFirmware(InSysServices):
 
   def putSensorData(self):
     hutemp = self.sensors['hutemp'].value
+    if hutemp == (0, 0): hutemp = self.sensors['hutemp'].default
     pHValue = self.sensors['pH'].value
     print("pH: {}, hu: {}, temp: {}".format(pHValue, hutemp[0], hutemp[1]))
 

@@ -12,7 +12,8 @@ class DHT22(Pin):
     Pin.__init__(self, pin, False)
     self.sensor = Adafruit_DHT.DHT22
     self.precision = precision
-    self.last_result = (80, 20)
+    self.default = (80, 20)
+    self.last_result = self.default
     self.last_result_time = 0
     self.min_result_freq_time = 4
 
@@ -27,7 +28,7 @@ class DHT22(Pin):
       retry += 1
       humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
       sleep(2)
-      if retry > 5: return (80, 20)
+      if retry > 5: return self.default
     hutemp = (round(humidity,self.precision), round(temperature,self.precision))
     self.last_result = hutemp
     self.last_result_time = time()
