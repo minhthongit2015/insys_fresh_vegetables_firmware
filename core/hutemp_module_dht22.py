@@ -3,7 +3,7 @@
 try: import Adafruit_DHT
 except: import core.Adafruit_DHT as Adafruit_DHT
 
-from time import sleep
+from time import sleep, time
 from datetime import datetime
 from core.pins import Pin
 
@@ -12,18 +12,26 @@ class DHT22(Pin):
     Pin.__init__(self, pin, False)
     self.sensor = Adafruit_DHT.DHT22
     self.precision = precision
+    self.last_result = (80, 20)
+    self.last_result_time = 0
+    self.min_result_freq_time = 4
 
   @property
   def value(self):
+    if time() - self.last_result_time < self.min_result_freq_time:
+      return self.last_result
     humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
     retry = 1
     while humidity is None or temperature is None or humidity > 100 or humidity < 0:
       print("[WARNING] > Hutemp module is failed to read. Retry %d" % retry)
       retry += 1
       humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
-      sleep(1)
+      sleep(2)
       if retry > 5: return (80, 20)
-    return (round(humidity,self.precision), round(temperature,self.precision))
+    hutemp = (round(humidity,self.precision), round(temperature,self.precision))
+    self.last_result = hutemp
+    self.last_result_time = time()
+    return hutemp
 
   def read(self):
     return self.value
