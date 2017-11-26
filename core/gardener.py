@@ -1,6 +1,5 @@
 # coding=utf-8
 
-from datetime import datetime
 from time import time,sleep
 import datetime
 import threading
@@ -52,9 +51,13 @@ class Gardener():
     # self._work()
 
   def _work(self):
+    last = 0
     while True:
       if self.auto: self.water()
-      sleep(self.lazy)
+      delta = time() - last
+      if delta < self.lazy:
+        sleep(self.lazy - delta)
+      last = time()
 
   def water(self):
     now = datetime.datetime.now().time()

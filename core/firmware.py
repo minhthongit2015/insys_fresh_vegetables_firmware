@@ -56,9 +56,13 @@ class InsysFirmware(InSysServices):
       print('-------------- {} --------------'.format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
 
   def getSwitchStatesLoop(self):
+    last = 0
     while True:
       self.getSwitchStates()
-      sleep(self.refreshTimeControl)
+      delta = time() - last
+      if delta < self.refreshTimeControl:
+        sleep(self.refreshTimeControl - delta)
+      last = time()
 
   def sync_switch_state(self, pin):
     switchAPI = BaseAPI('put', '/api/device/Buttons/Active', {}, self.paramsToJSON({
@@ -91,10 +95,13 @@ class InsysFirmware(InSysServices):
       self.checkSensorPutResponse(record)
   
   def putSensorDataLoop(self):
+    last = 0
     while True:
       self.putSensorData()
-      if self.refreshTimeSensor-2 > 0:
-        sleep(self.refreshTimeSensor-2)
+      delta = time() - last
+      if delta < self.refreshTimeSensor:
+        sleep(self.refreshTimeSensor - delta)
+      last = time()
 
   def checkSensorPutResponse(self, record, response=None, api=None):
     if (response != None and response.code != 200) or response == None:
