@@ -21,12 +21,11 @@ class Gardener():
     if 'Gardener' not in self.cfg:
       self.cfg['Gardener'] = {}
       self.auto = True
-    pin = self.pump = self.controllers[3]
-    print("[SYS] > Auto mode is {}".format('on' if pin.state else 'off'))
 
     ###
-    self.pump = self.controllers.pins[3]
+    pin = self.pump = self.controllers.pins[3]
     self.temperature = self.sensors['hutemp']
+    print("[SYS] > Auto mode is {}".format('on' if pin.state else 'off'))
   
   def save(self):
     with open(self.config_path, 'w') as f: self.cfg.write(f)
@@ -67,17 +66,19 @@ class Gardener():
     for plant in self.plants:               # Duyệt qua tất cả cây trồng
       for stage in plant.growth_stages:     # Duyệt qua tất cả giai đoạn phát triển
         if stage.is_in_stage(plant):
-          if self.water_by_temperature(stage):
-            return True
+          # if self.water_by_temperature(stage):
+            # return True
           if self.water_by_time(stage, plant):
             return True
     if self.pump.off():
       self.pump.emitter(self.pump)
+      print("[GARDENER] > stop watering {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
 
   def water_by_time(self, stage, plant):
     if stage.is_water_time(plant):
       if self.pump.on():
         self.pump.emitter(self.pump)
+        print("[GARDENER] > start watering {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
       return True
     return False
   
@@ -86,6 +87,7 @@ class Gardener():
     if not stage.temperature[0] - stage.temperature[2] < temperature < stage.temperature[1] + stage.temperature[2]:
       if self.pump.on():
         self.pump.emitter(self.pump)
+        print("[GARDENER] > start watering {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
       return True
     return False
 

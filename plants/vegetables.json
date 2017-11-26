@@ -16,7 +16,7 @@
                 "duration": "15"
               },
               {
-                "every": "15",
+                "every": "6",
                 "duration": "1"
               }
             ]
@@ -48,7 +48,7 @@
                 "duration": "15"
               },
               {
-                "every": "15",
+                "every": "6",
                 "duration": "1"
               }
             ]
@@ -88,7 +88,7 @@
                 "duration": "15"
               },
               {
-                "every": "15",
+                "every": "6",
                 "duration": "1"
               }
             ]
@@ -126,6 +126,10 @@
               {
                 "time": "6:20, 17:20",
                 "duration": "15"
+              },
+              {
+                "every": "6",
+                "duration": "1"
               }
             ]
           },
