@@ -14,6 +14,7 @@ class Gardener():
     self.plants = plants
     self.lazy = lazy
     self.controllers.pins[0].eventDetect = self.onSetAutoState
+    # self.controllers.pins[0].eventDetect = self.onSetAutoAdjust
     self.config_path = 'config.cfg'
     self.cfg = cfg.ConfigParser()
     self.cfg.read(self.config_path)
@@ -80,7 +81,7 @@ class Gardener():
   
   def water_by_temperature(self, stage):
     temperature = self.temperature.value[0]
-    if not stage.temperature[0] - stage.temperature[3] < temperature < stage.temperature[1] + stage.temperature[3]:
+    if not stage.temperature[0] - stage.temperature[2] < temperature < stage.temperature[1] + stage.temperature[2]:
       if self.pump.on():
         self.pump.emitter(self.pump)
       return True
