@@ -21,6 +21,8 @@ class Gardener():
     if 'Gardener' not in self.cfg:
       self.cfg['Gardener'] = {}
       self.auto = True
+    pin = self.pump = self.controllers[3]
+    print("[SYS] > Auto mode is {}".format('on' if pin.state else 'off'))
 
     ###
     self.pump = self.controllers.pins[3]
