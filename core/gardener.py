@@ -82,16 +82,16 @@ class Gardener():
     if stage.is_water_time(plant):
       if self.pump.on():
         self.pump.emitter(self.pump)
-        print("[GARDENER] > start watering {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+        print("[GARDENER] > start watering by time {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
       return True
     return False
   
   def water_by_temperature(self, stage):
-    temperature = self.temperature.value[0]
+    temperature = self.temperature.value[1]
     if temperature > stage.temperature[1] + stage.temperature[2]:
       if self.pump.on():
         self.pump.emitter(self.pump)
-        print("[GARDENER] > start watering {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+        print("[GARDENER] > start watering by temp {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
       return True
     return False
 
