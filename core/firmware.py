@@ -57,7 +57,7 @@ class InsysFirmware(InSysServices):
       print('-------------- {} --------------'.format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
 
   def getSwitchStatesLoop(self):
-    last = 0
+    last = time()
     while True:
       self.getSwitchStates()
       delta = time() - last
@@ -78,8 +78,9 @@ class InsysFirmware(InSysServices):
     while True:
       hutemp = self.sensors['hutemp'].value
       if hutemp == (0, 0): hutemp = self.sensors['hutemp'].default
-      if hutemp != self.sensors['hutemp'].default:
-        break
+      # if hutemp != self.sensors['hutemp'].default:
+      #   break
+      break
       
     pHValue = self.sensors['pH'].value
     print("pH: {}, hu: {}, temp: {}".format(pHValue, hutemp[0], hutemp[1]))
@@ -100,7 +101,7 @@ class InsysFirmware(InSysServices):
       self.checkSensorPutResponse(record)
   
   def putSensorDataLoop(self):
-    last = 0
+    last = time()
     while True:
       self.putSensorData()
       delta = time() - last
@@ -113,12 +114,14 @@ class InsysFirmware(InSysServices):
       self.logger.record(record)
 
   def run(self):
-    self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
-    self.sensorThread.start()
+    # self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
+    # self.sensorThread.start()
+    self.putSensorDataLoop()
     print("[SYS] >> Start 'Sensor' thread")
 
-    self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
-    self.controlThread.start()
+    # self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
+    # self.controlThread.start()
+    self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
 
   def clean(self):

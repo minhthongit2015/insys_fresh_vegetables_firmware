@@ -8,7 +8,7 @@ from datetime import datetime
 from core.pins import Pin
 
 class DHT22(Pin):
-  def __init__(self, pin, precision=2):
+  def __init__(self, pin, precision=2, retry=15):
     Pin.__init__(self, pin, False)
     self.sensor = Adafruit_DHT.DHT22
     self.precision = precision
@@ -16,6 +16,7 @@ class DHT22(Pin):
     self.last_result = self.default
     self.last_result_time = 0
     self.min_result_freq_time = 4
+    self.retry = retry
 
   @property
   def value(self):
@@ -28,7 +29,7 @@ class DHT22(Pin):
       retry += 1
       humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
       sleep(2)
-      if retry > 5: return self.default
+      if retry > self.retry: return self.default
     hutemp = (round(humidity,self.precision), round(temperature,self.precision))
     self.last_result = hutemp
     self.last_result_time = time()

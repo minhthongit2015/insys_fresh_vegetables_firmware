@@ -57,7 +57,7 @@ class Gardener():
     # self._work()
 
   def _work(self):
-    last = 0
+    last = time()
     while True:
       if self.auto: self.water()
       delta = time() - last
