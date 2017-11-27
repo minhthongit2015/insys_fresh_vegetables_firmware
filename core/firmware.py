@@ -114,14 +114,14 @@ class InsysFirmware(InSysServices):
       self.logger.record(record)
 
   def run(self):
-    # self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
-    # self.sensorThread.start()
-    self.putSensorDataLoop()
+    self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
+    self.sensorThread.start()
+    # self.putSensorDataLoop()
     print("[SYS] >> Start 'Sensor' thread")
 
-    # self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
-    # self.controlThread.start()
-    self.getSwitchStatesLoop()
+    self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
+    self.controlThread.start()
+    # self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
 
   def clean(self):

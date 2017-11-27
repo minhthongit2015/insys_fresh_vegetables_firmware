@@ -51,10 +51,10 @@ class Gardener():
     self.plants.append(plant)
 
   def work(self):
-    self.worker = threading.Thread(target=self._work)
-    self.worker.start()
+    # self.worker = threading.Thread(target=self._work)
+    # self.worker.start()
     print("[GARDENER] >> Gardener start working")
-    # self._work()
+    self._work()
 
   def _work(self):
     last = time()
@@ -88,7 +88,7 @@ class Gardener():
   
   def water_by_temperature(self, stage):
     temperature = self.temperature.value[0]
-    if not stage.temperature[0] - stage.temperature[2] < temperature < stage.temperature[1] + stage.temperature[2]:
+    if temperature > stage.temperature[1] + stage.temperature[2]:
       if self.pump.on():
         self.pump.emitter(self.pump)
         print("[GARDENER] > start watering {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))

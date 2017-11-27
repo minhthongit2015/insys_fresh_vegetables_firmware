@@ -38,7 +38,7 @@
       {
         "stage_order": 2,
         "stage_name": "Chăm cây mầm",
-        "from": 8, "to": 14,
+        "from": 7, "to": 14,
         "enviroment": [
           {
             "name": "water",
@@ -79,7 +79,7 @@
       {
         "stage_order": 3,
         "stage_name": "Phát triển tuần 1,2",
-        "from": 15, "to": 28,
+        "from": 14, "to": 28,
         "enviroment": [
           {
             "name": "water",
@@ -120,7 +120,7 @@
       {
         "stage_order": 4,
         "stage_name": "Phát triển tuần 3,4,5",
-        "from": 29, "to": 49,
+        "from": 28, "to": 49,
         "enviroment": [
           {
             "name": "water",

@@ -113,7 +113,7 @@ class GrowthStage:
     start = plant.planting_date
     now = datetime.datetime.now()
     daypass = now - start
-    return self.start <= daypass.days + 1 < self.end
+    return self.start <= daypass.days + 1 < self.end + 1
 
   def is_water_time(self, plant):
     start = plant.planting_date
