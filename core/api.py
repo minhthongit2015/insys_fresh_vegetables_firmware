@@ -45,6 +45,7 @@ class InSysServices:
     try:
       conn = httplib.HTTPSConnection(self._server)
       conn.request(api.method, api.path + api.paramsStr, api.body, headers)
+      res = conn.getresponse()
     except Exception as err:
       if self.lastNetwork:
         print(">> Network error at: {}\r\n{}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), str(err)))
@@ -54,8 +55,7 @@ class InSysServices:
     if not self.lastNetwork:
       print(">> Network is online at: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
       self.lastNetwork = True
-
-    res = conn.getresponse()
+    
     if callback != None: callback(res, api)
     # else: self._defaultHandler(res)
 
