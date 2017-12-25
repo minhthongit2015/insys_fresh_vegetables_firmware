@@ -17,9 +17,8 @@ if __name__ == "__main__":
     gardener.appendPlant(butterhead_lettuce)
     gardener.work()
 
-    device.sensorThread.join()
-    device.controlThread.join()
-    gardener.worker.join()
+    device.join()
+    gardener.join()
   except KeyboardInterrupt:
     device.clean()
     print("[SYS] >>> System shutdown!")

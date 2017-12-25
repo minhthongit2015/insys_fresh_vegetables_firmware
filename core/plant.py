@@ -93,7 +93,8 @@ class WaterPoints:
     now = datetime.datetime.now()
     dnow = timedelta(hours=now.hour, minutes=now.minute, seconds=now.second)
     for waterTime in self.waterTimes:
-      if (waterTime.start != None and waterTime.end != None and waterTime.start < dnow < waterTime.end) or (waterTime.every != None and ((now-start) % waterTime.every) <= waterTime.duration):
+      if (waterTime.start != None and waterTime.end != None and waterTime.start < dnow < waterTime.end)\
+       or (waterTime.every != None and ((now-start) % waterTime.every) <= waterTime.duration):
         return True
     return False
 
@@ -108,12 +109,6 @@ class GrowthStage:
     self.temperature = temperature  # Khoảng nhiệt độ thích hợp để cây phát triển ([min, max])
     self.humidity = humidity        # Khoảng độ ẩm thích hợp để cây phát triển ([min, max])
     self.pH = pH                    # Khoảng pH thích hợp để cây phát triển ([min, max])
-  
-  def is_in_stage(self, plant):
-    start = plant.planting_date
-    now = datetime.datetime.now()
-    daypass = now - start
-    return self.start <= daypass.days + 1 < self.end + 1
 
   def is_water_time(self, plant):
     start = plant.planting_date
@@ -130,3 +125,11 @@ class Plant:
     day,month,year = planting_date.split('/')
     self.planting_date = datetime.datetime(day=int(day), month=int(month), year=int(year))
     self.growth_stages = growth_stages
+
+  def get_current_growth_stage(self):
+    start = self.planting_date
+    now = datetime.datetime.now()
+    daypass = now - start
+    for stage in self.growth_stages:
+      if stage.start <= daypass.days + 1 < stage.end + 1:
+        return stage

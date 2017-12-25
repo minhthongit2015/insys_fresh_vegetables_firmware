@@ -46,6 +46,8 @@ class InsysFirmware(InSysServices):
       status = self.parseResult(result)
       if len(status['data']) > 0:
         pinStates = status['data'][0]['frame'].split('#')
+        if bool(int(pinStates[0])): # if auto mode is on, then skip overwrite pin state
+          return
         for (pin, state) in zip(self.controllers.pins, pinStates):
           # print("Pin {} to {}".format(pin, state))
           pin.turn(state)
@@ -123,6 +125,10 @@ class InsysFirmware(InSysServices):
     self.controlThread.start()
     # self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
+
+  def join(self):
+    self.sensorThread.join()
+    self.controlThread.join()
 
   def clean(self):
     clean()

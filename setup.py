@@ -57,12 +57,16 @@ def setup():
 
   # Install main service
   cmd('chmod +x ./startup')
-  install_service('insys', generate_service_file('insys', 'startup', cwd, 'INSYS FRESH VEGETABLES SERVICE'), )
+  install_service('insys', generate_service_file('insys', 'startup', cwd, 'INSYS FRESH VEGETABLES - CORE SERVICE'), )
 
   # Install update service
   cmd('chmod +x ./update')
   cmd('chmod +x ./update.py')
-  install_service('insys_update', generate_service_file('insys_update', 'update', cwd, 'INSYS FRESH VEGETABLES UPDATE SERVICE'))
+  install_service('insys_update', generate_service_file('insys_update', 'update', cwd, 'INSYS FRESH VEGETABLES - UPDATE SERVICE'))
+
+  # Install Camera streaming service
+  cmd('chmod +x ./core/camera')
+  install_service('insys_camera', generate_service_file('insys_camera', 'core/camera', cwd, 'INSYS FRESH VEGETABLES - CAMERA TRACKING SERVICE'))
 
 
 if __name__ == "__main__":
