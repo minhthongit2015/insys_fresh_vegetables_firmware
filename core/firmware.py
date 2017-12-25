@@ -133,6 +133,8 @@ class InsysFirmware(InSysServices):
     self.controlThread.start()
     # self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
+    
+    self.blue.run()
 
   def join(self):
     self.sensorThread.join()
