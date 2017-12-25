@@ -120,8 +120,9 @@ class InsysFirmware(InSysServices):
   def onClientConnect(self, client):
     client_sock = client[0]
     client_info = client[1]
-    print(client[0])
-    print(client[1])
+    data = client_sock.recv(1024)
+    print(data)
+    client_sock.send(data)
 
   def run(self):
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
@@ -133,7 +134,7 @@ class InsysFirmware(InSysServices):
     self.controlThread.start()
     # self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
-    
+
     self.blue.run()
 
   def join(self):

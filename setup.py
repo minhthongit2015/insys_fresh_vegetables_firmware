@@ -60,6 +60,7 @@ def setup():
     except:
       cmd('sudo apt-get install bluetooth libbluetooth-dev')
       cmd('pip3 install pybluez')
+      cmd('sudo systemctl start bluetooth && sleep 1 && echo -e "power on\nconnect \t \nquit" | bluetoothctl')
       """
       I'm guessing that you don't have the Serial Port Profile loaded? To do that, you'll need to
 Code: Select all
