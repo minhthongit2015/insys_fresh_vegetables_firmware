@@ -49,7 +49,6 @@ class Gardener():
 
   def onSetAutoState(self, pin):
     self.auto = pin.state
-    print("[GARDENER] > Auto mode is {}".format('on' if pin.state else 'off'))
 
   def appendPlant(self, plant):
     self.plants.append(plant)

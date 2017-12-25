@@ -150,6 +150,7 @@ class InsysFirmware(InSysServices):
           client_sock.send(str(self.controllers.pins))
     except:
       client_sock.close()
+      print("Close client {}".format(client_info))
     
 
   def run(self):

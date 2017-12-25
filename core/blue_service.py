@@ -2,12 +2,24 @@
 from bluetooth import *
 import threading
 
+from subprocess import call
+def cmd(command):
+  call(command.split(' '))
+
 class BluetoothService:
   def __init__(self, handler):
     self.onRequest = handler
     self.clients = []
   
   def run(self):
+    cmd("""sudo bluetoothctl <<EOF
+power on
+discoverable on
+pairable on
+agent NoInputNoOutput
+default-agent 
+EOF""")
+
     self.sock = BluetoothSocket(RFCOMM)
     self.sock.bind(("", PORT_ANY))
     self.sock.listen(1)
