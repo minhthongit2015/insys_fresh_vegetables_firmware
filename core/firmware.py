@@ -147,10 +147,12 @@ class InsysFirmware(InSysServices):
           client_sock.send(str(1))
         elif int(data[0]) == 2: # get device state
           print("___ bluetooth send sync state: {}".format(str(self.controllers)))
-          client_sock.send(str(self.controllers.pins))
-    except:
-      client_sock.close()
+          client_sock.send(str(self.controllers))
+    except Exception as e:
       print("Close client {}".format(client_info))
+      print("Reason: {}".format(e))
+      client_sock.close()
+      
     
 
   def run(self):
