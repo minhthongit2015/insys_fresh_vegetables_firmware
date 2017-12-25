@@ -5,6 +5,7 @@ from core.hutemp_module_dht22 import DHT22
 from core.pHmeter.phmeter_sen0161 import SEN0161
 from core.logger import Logger
 import http.client as httplib
+from core.blue_service import BluetoothService
 
 import threading
 from time import sleep, time
@@ -31,6 +32,7 @@ class InsysFirmware(InSysServices):
     self.refreshTimeControl = refreshTimeControl
     self.refreshTimeSensor = refreshTimeSensor
     self.logger = Logger('./log', 'humi_temp_pH')
+    self.blue = BluetoothService(self.onClientConnect)
     print("[SYS] >>> System Started Up!")
     print("[SYS] >>> Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
     print("[SYS] >>> Firmware Version: {}".format(getFirmwareVersion()))
@@ -114,6 +116,12 @@ class InsysFirmware(InSysServices):
   def checkSensorPutResponse(self, record, response=None, api=None):
     if (response != None and response.code != 200) or response == None:
       self.logger.record(record)
+
+  def onClientConnect(self, client):
+    client_sock = client[0]
+    client_info = client[1]
+    print(client[0])
+    print(client[1])
 
   def run(self):
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)

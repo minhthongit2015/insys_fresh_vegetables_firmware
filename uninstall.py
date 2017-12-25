@@ -7,6 +7,8 @@ def cmd(command):
 
 cmd('sudo systemctl stop insys')
 cmd('sudo systemctl stop insys_update')
+cmd('sudo systemctl stop insys_camera')
 cmd('sudo systemctl disable insys')
 cmd('sudo systemctl disable insys_update')
+cmd('sudo systemctl disable insys_camera')
 cmd('sudo rm /etc/systemd/system/insys*')
