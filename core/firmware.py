@@ -169,8 +169,11 @@ class InsysFirmware(InSysServices):
     print("[SYS] >> Start 'Bluetooth Control' thread")
 
   def join(self):
-    self.sensorThread.join()
-    self.controlThread.join()
+    try:
+      self.sensorThread.join()
+      self.controlThread.join()
+    except:
+      pass
 
   def clean(self):
     clean()
