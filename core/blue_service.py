@@ -12,7 +12,7 @@ class BluetoothService:
     self.clients = []
 
   def setupBluetooth(self):
-    cmd('echo -e "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\ndefault-agent\n | bluetoothctl')
+    cmd('echo -e "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\ndefault-agent\n" | bluetoothctl')
   
   def run(self):
     threading.Thread(target=self.setupBluetooth).start()
