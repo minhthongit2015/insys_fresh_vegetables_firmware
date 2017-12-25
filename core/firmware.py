@@ -146,7 +146,7 @@ class InsysFirmware(InSysServices):
           self.controllers.pins[pin].emitter(self.controllers.pins[pin])
           client_sock.send(str(1))
         elif int(data[0]) == 2: # get device state
-          print("___ bluetooth send sync state: {}".format(str(self.controllers.pins)))
+          print("___ bluetooth send sync state: {}".format(str(self.controllers)))
           client_sock.send(str(self.controllers.pins))
     except:
       client_sock.close()
