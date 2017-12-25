@@ -142,12 +142,12 @@ class InsysFirmware(InSysServices):
 
   def run(self):
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
-    self.sensorThread.start()
+    # self.sensorThread.start()
     # self.putSensorDataLoop()
     print("[SYS] >> Start 'Sensor' thread")
 
     self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
-    self.controlThread.start()
+    # self.controlThread.start()
     # self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
 
