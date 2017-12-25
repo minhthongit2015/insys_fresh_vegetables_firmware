@@ -24,12 +24,10 @@ class BluetoothService:
       while True:
         client = self.sock.accept()
         print("Accepted connection from ", client[1])
-        self.clients.append(client)
-        try:
-          self.onRequest(client)
-        except:
-          client[0].close()
-          self.clients.remove(client)
+        # self.clients.append(client)
+        t = threading.Thread(target=self.onRequest, args=(client))
+        t.start()
+        # self.clients.remove(client)
     except:
       self.sock.close()
   

@@ -6,6 +6,7 @@ from core.pHmeter.phmeter_sen0161 import SEN0161
 from core.logger import Logger
 import http.client as httplib
 from core.blue_service import BluetoothService
+import random
 
 import threading
 from time import sleep, time
@@ -122,7 +123,22 @@ class InsysFirmware(InSysServices):
     client_info = client[1]
     data = client_sock.recv(1024)
     print(data)
-    client_sock.send(data)
+    if int(data[0]) == 0: # auth/handshake
+      if self._deviceId == data[1:]:
+        self.token = random.randint(0, 255)
+        client_sock.send(self.token)
+        print("bluetooth handshake: {} => {}".format(data[1:], self.token))
+    elif int(data[0]) == 1: # command
+      pin = int(data[1])
+      state = bool(data[2])
+      print("bluetooth set pin {} to {}".format(pin, state))
+      self.controllers.pins[pin].turn(state)
+      self.controllers.pins[pin].emitter(self.controllers.pins[pin])
+      client_sock.send(1)
+    elif int(data[0]) == 2: # get device state
+      print("bluetooth send sync state: {}".format(str(self.controllers.pins)))
+      client_sock.send(str(self.controllers.pins))
+    
 
   def run(self):
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)

@@ -254,7 +254,7 @@ class ListPin():
     self.reverse = (reverse*self.size)[:self.size]
     self.eventDetect = (eventDetect*self.size)[:self.size]
     self.emitter = (emitter*self.size)[:self.size]
-    self.pins = []
+    self.pins = []    # Array contains Pin objects
     for (pin, out, deft, rev, event, emit) in zip(self.pinList, self.isOut, self.default, self.reverse, self.eventDetect, self.emitter):
       self.pins.append(Pin(pin, out, deft, rev, event, emit))
 
@@ -262,3 +262,9 @@ class ListPin():
     self.eventDetect = (eventDetect*self.size)[:self.size]
     for (pin, event) in zip(self.pins, self.eventDetect):
       pin.eventDetect = event
+
+  def __str__(self):
+    sz = ""
+    for i in range(len(self.pins)):
+      sz += self.pins[i].pin + ":" + self.pins[i].pin.state
+    return sz
