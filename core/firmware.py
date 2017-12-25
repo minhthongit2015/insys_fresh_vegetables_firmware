@@ -118,7 +118,8 @@ class InsysFirmware(InSysServices):
     if (response != None and response.code != 200) or response == None:
       self.logger.record(record)
 
-  def onClientConnect(self, client):
+  def onClientConnect(self, client, client2):
+    print(self, client, client2)
     client_sock = client[0]
     client_info = client[1]
     data = client_sock.recv(1024)
