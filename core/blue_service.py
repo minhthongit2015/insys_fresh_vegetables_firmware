@@ -10,15 +10,12 @@ class BluetoothService:
   def __init__(self, handler):
     self.onRequest = handler
     self.clients = []
+
+  def setupBluetooth(self):
+    cmd('echo -e "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\ndefault-agent\n | bluetoothctl')
   
   def run(self):
-    cmd("""sudo bluetoothctl <<EOF
-power on
-discoverable on
-pairable on
-agent NoInputNoOutput
-default-agent 
-EOF""")
+    threading.Thread(target=self.setupBluetooth).start()
 
     self.sock = BluetoothSocket(RFCOMM)
     self.sock.bind(("", PORT_ANY))
