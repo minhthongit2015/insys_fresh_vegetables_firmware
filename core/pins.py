@@ -266,5 +266,5 @@ class ListPin():
   def __str__(self):
     sz = ""
     for i in range(len(self.pins)):
-      sz += self.pins[i].pin + ":" + self.pins[i].pin.state
+      sz += "{}:{}".format( str(self.pins[i].pin), str(int(bool(self.pins[i].pin.state))) )
     return sz
