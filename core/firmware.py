@@ -123,19 +123,22 @@ class InsysFirmware(InSysServices):
     data = client_sock.recv(1024)
     print(data)
     if int(data[0]) == 0: # auth/handshake
+      print("___ case 0")
       if self._deviceId == data[1:]:
         self.token = random.randint(0, 255)
         client_sock.send(self.token)
-        print("bluetooth handshake: {} => {}".format(data[1:], self.token))
+        print("___ bluetooth handshake: {} => {}".format(data[1:], self.token))
     elif int(data[0]) == 1: # command
+      print("___ case 1")
       pin = int(data[1])
       state = bool(data[2])
-      print("bluetooth set pin {} to {}".format(pin, state))
+      print("___ bluetooth set pin {} to {}".format(pin, state))
       self.controllers.pins[pin].turn(state)
       self.controllers.pins[pin].emitter(self.controllers.pins[pin])
       client_sock.send(1)
     elif int(data[0]) == 2: # get device state
-      print("bluetooth send sync state: {}".format(str(self.controllers.pins)))
+      print("___ case 2")
+      print("___ bluetooth send sync state: {}".format(str(self.controllers.pins)))
       client_sock.send(str(self.controllers.pins))
     
 
