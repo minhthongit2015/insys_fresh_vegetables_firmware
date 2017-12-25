@@ -9,6 +9,7 @@ from core.blue_service import BluetoothService
 import random
 
 import threading
+import select
 from time import sleep, time
 import datetime
 
@@ -120,26 +121,35 @@ class InsysFirmware(InSysServices):
 
   def onClientConnect(self, client_sock, client_info):
     print(self, client_sock, client_info)
-    data = client_sock.recv(1024)
-    print(data)
-    if int(data[0]) == 0: # auth/handshake
-      print("___ case 0")
-      if self._deviceId == data[1:]:
-        self.token = random.randint(0, 255)
-        client_sock.send(self.token)
-        print("___ bluetooth handshake: {} => {}".format(data[1:], self.token))
-    elif int(data[0]) == 1: # command
-      print("___ case 1")
-      pin = int(data[1])
-      state = bool(data[2])
-      print("___ bluetooth set pin {} to {}".format(pin, state))
-      self.controllers.pins[pin].turn(state)
-      self.controllers.pins[pin].emitter(self.controllers.pins[pin])
-      client_sock.send(1)
-    elif int(data[0]) == 2: # get device state
-      print("___ case 2")
-      print("___ bluetooth send sync state: {}".format(str(self.controllers.pins)))
-      client_sock.send(str(self.controllers.pins))
+    try:
+      while True:
+        data = b''
+        ready = select.select([client_sock], [], [], 15)
+        if ready[0]:
+          data = client_sock.recv(1024)
+        # else:
+          # client_sock.close()
+          # return
+        
+        print(data)
+        if len(data) <= 0: return
+        if int(data[0]) == 0: # auth/handshake
+          if self._deviceId == data[1:].decode("utf-8"):
+            self.token = random.randint(0, 255)
+            client_sock.send(str(self.token))
+            print("___ bluetooth handshake: {} => {}".format(data[1:], self.token))
+        elif int(data[0]) == 1: # command
+          pin = int(data[1])
+          state = bool(data[2])
+          print("___ bluetooth set pin {} to {}".format(self.controllers.pins[pin].pin, state))
+          self.controllers.pins[pin].turn(state)
+          self.controllers.pins[pin].emitter(self.controllers.pins[pin])
+          client_sock.send(str(1))
+        elif int(data[0]) == 2: # get device state
+          print("___ bluetooth send sync state: {}".format(str(self.controllers.pins)))
+          client_sock.send(str(self.controllers.pins))
+    except:
+      client_sock.close()
     
 
   def run(self):

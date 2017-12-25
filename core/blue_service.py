@@ -25,8 +25,7 @@ class BluetoothService:
         client = self.sock.accept()
         print("Accepted connection from ", client[1])
         # self.clients.append(client)
-        t = threading.Thread(target=self.onRequest, args=(client))
-        t.start()
+        threading.Thread(target=self.onRequest, args=(client)).start()
         # self.clients.remove(client)
     except:
       self.sock.close()
