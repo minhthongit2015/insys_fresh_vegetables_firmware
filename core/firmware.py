@@ -118,10 +118,8 @@ class InsysFirmware(InSysServices):
     if (response != None and response.code != 200) or response == None:
       self.logger.record(record)
 
-  def onClientConnect(self, client, client2):
-    print(self, client, client2)
-    client_sock = client[0]
-    client_info = client[1]
+  def onClientConnect(self, client_sock, client_info):
+    print(self, client_sock, client_info)
     data = client_sock.recv(1024)
     print(data)
     if int(data[0]) == 0: # auth/handshake
