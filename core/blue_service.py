@@ -28,7 +28,7 @@ class BluetoothService:
         try:
           self.onRequest(client)
         except:
-          client.close()
+          client[0].close()
           self.clients.remove(client)
     except:
       self.sock.close()

@@ -135,7 +135,9 @@ class InsysFirmware(InSysServices):
     # self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
 
-    self.blue.run()
+    self.blueThread = threading.Thread(target=self.blue.run)
+    self.blueThread.start()
+    print("[SYS] >> Start 'Bluetooth Control' thread")
 
   def join(self):
     self.sensorThread.join()
