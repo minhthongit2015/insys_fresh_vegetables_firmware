@@ -53,6 +53,26 @@ def setup():
       cmd('sudo python3 setup.py install')
       cmd('cd ..')
 
+  while True:
+    try:
+      import bluetooth
+      break
+    except:
+      cmd('sudo apt-get install bluetooth libbluetooth-dev')
+      cmd('pip3 install pybluez')
+      """
+      I'm guessing that you don't have the Serial Port Profile loaded? To do that, you'll need to
+Code: Select all
+
+sudo sdptool add SP
+To do THAT, you need to run the Bluetooth daemon in 'compatibility' mode. Edit /etc/systemd/system/dbus-org.bluez.service and add '-C' after 'bluetoothd'. Reboot."""
+      """
+      Permission denies
+
+      sudo usermod -G bluetooth -a pi
+      sudo chgrp bluetooth /var/run/sdp
+      """
+
   cwd = os.getcwd()
 
   # Install main service
