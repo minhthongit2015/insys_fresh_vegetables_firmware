@@ -264,7 +264,7 @@ class ListPin():
       pin.eventDetect = event
 
   def __str__(self):
-    sz = ""
+    lst = []
     for i in range(len(self.pins)):
-      sz += "{}:{}".format( str(self.pins[i].pin), str(int(bool(self.pins[i].pin.state))) )
-    return sz
+      lst.append("{}:{}".format( str(self.pins[i].pin), str(int(bool(self.pins[i].state))) ))
+    return "|".join(lst)
