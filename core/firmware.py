@@ -42,7 +42,6 @@ class InsysFirmware(InSysServices):
     self.controllers.pins[0].eventDetect.append(self.onAutoModeChange)
     self.enviromentSignalLight = self.signalLights.pins[2]
     self.networkSignalLight = self.signalLights.pins[3]
-    self.checkSystemState()
 
     self.logger = Logger('./log', 'humi_temp_pH')
     self.blueService = BluetoothService(self.onClientConnect)
@@ -166,12 +165,12 @@ class InsysFirmware(InSysServices):
             client_sock.send(str(self.token))
             print("___ bluetooth handshake: {} => {}".format(data[1:], self.token))
         elif int(data[0]) == 1: # command
-          pin = int(data[1])
+          pinIndex = int(data[1])
           state = bool(data[2])
-          print("___ bluetooth set pin {} to {}".format(self.controllers.pins[pin].pin, state))
-          self.controllers.pins[pin].turn(state)
-          self.controllers.pins[pin].emitter(self.controllers.pins[pin])
-          client_sock.send(str(1))
+          print("___ bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state))
+          self.controllers.pins[pinIndex].turn(state)
+          self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
+          client_sock.send('1')
         elif int(data[0]) == 2: # get device state
           print("___ bluetooth send sync state: {}".format(str(self.controllers)))
           client_sock.send(str(self.controllers))
@@ -200,10 +199,13 @@ class InsysFirmware(InSysServices):
     self.blueThread.start()
     print("[SYS] >> Start 'Bluetooth Control' thread")
 
+    self.checkSystemState()
+
   def join(self):
     try:
       self.sensorThread.join()
       self.controlThread.join()
+      self.blueThread.join()
     except:
       pass
 

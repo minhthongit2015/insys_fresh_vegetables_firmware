@@ -61,15 +61,18 @@ class Gardener():
 
   def work(self):
     self.worker1 = threading.Thread(target=self._water)
-    self.worker1.start()
+    # self.worker1.start()
     self.worker2 = threading.Thread(target=self._manure)
-    self.worker2.start()
+    # self.worker2.start()
     print("[GARDENER] >> Gardener start working")
     # self._manure()
 
   def join(self):
-    self.worker1.join()
-    self.worker2.join()
+    try:
+      self.worker1.join()
+      self.worker2.join()
+    except:
+      pass
 
   def _water(self):
     last = time()
