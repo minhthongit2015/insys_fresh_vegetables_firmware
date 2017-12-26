@@ -189,7 +189,7 @@ class InsysFirmware(InSysServices):
 
   def run(self):
     print("[SYS] >> Start checking hardware (for now just sensors)")
-    self.checkSystemState()
+    # self.checkSystemState()
 
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
     self.sensorThread.start()
