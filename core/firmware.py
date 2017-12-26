@@ -103,7 +103,7 @@ class InsysFirmware(InSysServices):
     switchAPI = BaseAPI('put', '/api/device/Buttons/Active', {}, self.paramsToJSON({
       "localdeviceId": self._deviceId,
       "buttonId": pin.index,
-      "active": pinstate
+      "active": pin.state
     }), headers = {"Content-type": "application/json"})
     self.request(switchAPI)
     print("[SYS] > Send sync to server pin {} to {}".format(pin.pin, pin.state))
