@@ -161,27 +161,27 @@ class InsysFirmware(InSysServices):
           # client_sock.close()
           # return
         
-        print("___ recv: {}".format(data))
+        print("[BLUESRV] > recv: {}".format(data))
         if len(data) <= 0: return
         if int(data[0]) == 0: # auth/handshake
           if self._deviceId == data[1:].decode("utf-8"):
             self.token = random.randint(0, 255)
             client_sock.send(str(self.token))
-            print("___ bluetooth handshake: {} => {}".format(data[1:], self.token), flush=True)
+            print("[BLUESRV] > bluetooth handshake: {} => {}".format(data[1:], self.token), flush=True)
         elif int(data[0]) == 1: # command
           pinIndex = int(data[1])
           state = bool(data[2])
-          print("___ bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state), flush=True)
+          print("[BLUESRV] > via bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state), flush=True)
           self.controllers.pins[pinIndex].turn(state)
           self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
           client_sock.send('1')
         elif int(data[0]) == 2: # get device state
-          print("___ bluetooth send sync state: {}".format(str(self.controllers)), flush=True)
+          print("[BLUESRV] > via bluetooth get device state: {}".format(str(self.controllers)), flush=True)
           client_sock.send(str(self.controllers))
         # Close to avoid error
-        print("Close client {}".format(client_info))
-        client_sock.close()
-        clients.remove(client)
+        # print("Close client {}".format(client_info))
+        # client_sock.close()
+        # clients.remove(client)
 
     except Exception as e:
       print("Close client {}".format(client_info))

@@ -30,7 +30,6 @@ class BluetoothService:
     print("[BLUESRV] >> Waiting for connection on RFCOMM channel %d" % self.port)
 
     while True:
-      print("[BLUESRV] >> start while loop", flush=True)
       try:
         client = self.sock.accept()
         print("[BLUESRV] > Accepted connection from ", client[1], flush=True)
