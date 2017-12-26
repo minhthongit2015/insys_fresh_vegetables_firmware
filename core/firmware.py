@@ -192,11 +192,11 @@ class InsysFirmware(InSysServices):
     # self.checkSystemState()
 
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
-    # self.sensorThread.start()
+    self.sensorThread.start()
     print("[SYS] >> Start 'Sensor' thread")
 
     self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
-    # self.controlThread.start()
+    self.controlThread.start()
     print("[SYS] >> Start 'Control' thread")
 
     self.blueThread = threading.Thread(target=self.blueService.run)
@@ -207,9 +207,9 @@ class InsysFirmware(InSysServices):
     try:
       self.sensorThread.join()
       self.controlThread.join()
-      self.blueThread.join()
     except:
       pass
+    self.blueThread.join()
 
   def clean(self):
     clean()
