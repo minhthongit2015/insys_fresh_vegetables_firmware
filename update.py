@@ -66,6 +66,7 @@ class Updater:
     cmd('git reset --hard origin/master')
 
     cmd('chmod +x ./setup.py')
+    cmd('chmod +x ./uninstall.py')
     cmd('chmod +x ./startup')
     cmd('sudo systemctl restart insys.service')
     cmd('chmod +x ./update')

@@ -76,6 +76,8 @@ def setup():
   cmd('chmod +x ./camera')
   install_service('insys_camera', generate_service_file('insys_camera', 'camera', cwd, 'INSYS FRESH VEGETABLES - CAMERA TRACKING SERVICE'))
 
+  # Base
+  cmd('chmod +x ./uninstall.py')
 
 if __name__ == "__main__":
   setup()
