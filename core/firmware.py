@@ -53,6 +53,8 @@ class InsysFirmware(InSysServices):
     if self.sensors['hutemp'].check() and self.sensors['pH'].check():
       self.hardwareSignalLight.on()
       print("[SYS] >> Hardware running normally.")
+    else:
+      print("[SYS] >> Some sensors had broken. Check device log for more detail.")
 
   def onAutoModeChange(self, pin):
     self.automodeSignalLight.turn(pin.state)
@@ -146,7 +148,8 @@ class InsysFirmware(InSysServices):
     if (response != None and response.code != 200) or response == None:
       self.logger.record(record)
 
-  def onClientConnect(self, client_sock, client_info):
+  def onClientConnect(self, client_sock, client_info, clients):
+    print(clients, flush=True)
     try:
       while True:
         data = b''
@@ -163,16 +166,16 @@ class InsysFirmware(InSysServices):
           if self._deviceId == data[1:].decode("utf-8"):
             self.token = random.randint(0, 255)
             client_sock.send(str(self.token))
-            print("___ bluetooth handshake: {} => {}".format(data[1:], self.token))
+            print("___ bluetooth handshake: {} => {}".format(data[1:], self.token), flush=True)
         elif int(data[0]) == 1: # command
           pinIndex = int(data[1])
           state = bool(data[2])
-          print("___ bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state))
+          print("___ bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state), flush=True)
           self.controllers.pins[pinIndex].turn(state)
           self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
           client_sock.send('1')
         elif int(data[0]) == 2: # get device state
-          print("___ bluetooth send sync state: {}".format(str(self.controllers)))
+          print("___ bluetooth send sync state: {}".format(str(self.controllers)), flush=True)
           client_sock.send(str(self.controllers))
         # Close to avoid error
         client_sock.close()
@@ -186,13 +189,13 @@ class InsysFirmware(InSysServices):
 
   def run(self):
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
-    # self.sensorThread.start()
-    # self.putSensorDataLoop()
+    self.sensorThread.start()
+    self.putSensorDataLoop()
     print("[SYS] >> Start 'Sensor' thread")
 
     self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
-    # self.controlThread.start()
-    # self.getSwitchStatesLoop()
+    self.controlThread.start()
+    self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
 
     self.blueThread = threading.Thread(target=self.blueService.run)

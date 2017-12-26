@@ -28,15 +28,15 @@ class BluetoothService:
                       )
     print("[BLUESRV] >> Waiting for connection on RFCOMM channel %d" % self.port)
 
-    try:
-      while True:
+    while True:
+      try:
         client = self.sock.accept()
-        print("[BLUESRV] > Accepted connection from ", client[1])
-        # self.clients.append(client)
-        threading.Thread(target=self.onRequest, args=(client)).start()
-        # self.clients.remove(client)
-    except:
-      self.sock.close()
+        print("[BLUESRV] > Accepted connection from ", client[1], flush=True)
+        self.clients.append(client)
+        threading.Thread(target=self.onRequest, args=(client, self.clients)).start()
+      except:
+        print("[BLUESRV] > Something went wrong, bluetooth is down")
+        self.sock.close()
   
   @staticmethod
   def setupBluetooth():
