@@ -35,12 +35,12 @@ class BluetoothService:
         client = self.sock.accept()
         print("[BLUESRV] > Accepted connection from ", client[1], flush=True)
         self.clients.append(client)
-        t = threading.Thread(target=self.onRequest, kwargs=dict(client_sock=client[0], client_info=client[1], clients=self.clients))
+        t = threading.Thread(target=self.onRequest, kwargs=dict(client=client, clients=self.clients))
         self.clientThreads.append(t)
         t.start()
       except:
-        print("[BLUESRV] > Something went wrong, bluetooth is down")
-        self.sock.close()
+        print("[BLUESRV] > Something went wrong with client: {}", client[1])
+        # self.sock.close()
   
   @staticmethod
   def setupBluetooth():

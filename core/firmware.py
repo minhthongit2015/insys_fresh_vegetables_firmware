@@ -148,7 +148,9 @@ class InsysFirmware(InSysServices):
     if (response != None and response.code != 200) or response == None:
       self.logger.record(record)
 
-  def onClientConnect(self, client_sock, client_info, clients):
+  def onClientConnect(self, client, clients):
+    client_sock = client[0]
+    client_info = client[1]
     try:
       while True:
         data = b''
@@ -179,13 +181,13 @@ class InsysFirmware(InSysServices):
         # Close to avoid error
         print("Close client {}".format(client_info))
         client_sock.close()
-        clients.remove(client_sock)
+        clients.remove(client)
 
     except Exception as e:
       print("Close client {}".format(client_info))
       print("Reason: {}".format(e))
       client_sock.close()
-      clients.remove(client_sock)
+      clients.remove(client)
       
     
 
