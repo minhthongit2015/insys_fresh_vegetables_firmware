@@ -43,3 +43,9 @@ class BluetoothService:
     cmd('pip3 install pybluez')
     cmd('sudo systemctl start bluetooth && sleep 1')
     cmd('echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\ndefault-agent\n" | bluetoothctl')
+    
+    """I'm guessing that you don't have the Serial Port Profile loaded? To do that, you'll need to
+Code: Select all
+
+sudo sdptool add SP
+To do THAT, you need to run the Bluetooth daemon in 'compatibility' mode. Edit /etc/systemd/system/dbus-org.bluez.service and add '-C' after 'bluetoothd'. Reboot."""

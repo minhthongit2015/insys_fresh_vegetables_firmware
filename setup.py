@@ -60,18 +60,6 @@ def setup():
     except:
       from core.blue_service import BluetoothService
       BluetoothService.setupBluetooth()
-      """
-      I'm guessing that you don't have the Serial Port Profile loaded? To do that, you'll need to
-Code: Select all
-
-sudo sdptool add SP
-To do THAT, you need to run the Bluetooth daemon in 'compatibility' mode. Edit /etc/systemd/system/dbus-org.bluez.service and add '-C' after 'bluetoothd'. Reboot."""
-      """
-      Permission denies
-
-      sudo usermod -G bluetooth -a pi
-      sudo chgrp bluetooth /var/run/sdp
-      """
 
   cwd = os.getcwd()
 
@@ -85,8 +73,8 @@ To do THAT, you need to run the Bluetooth daemon in 'compatibility' mode. Edit /
   install_service('insys_update', generate_service_file('insys_update', 'update', cwd, 'INSYS FRESH VEGETABLES - UPDATE SERVICE'))
 
   # Install Camera streaming service
-  cmd('chmod +x ./core/camera')
-  install_service('insys_camera', generate_service_file('insys_camera', 'core/camera', cwd, 'INSYS FRESH VEGETABLES - CAMERA TRACKING SERVICE'))
+  cmd('chmod +x ./camera')
+  install_service('insys_camera', generate_service_file('insys_camera', 'camera', cwd, 'INSYS FRESH VEGETABLES - CAMERA TRACKING SERVICE'))
 
 
 if __name__ == "__main__":
