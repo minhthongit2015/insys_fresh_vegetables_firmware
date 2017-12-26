@@ -6,6 +6,9 @@ import threading
 try: import configparser as cfg
 except: import ConfigParser as cfg
 
+from collections import namedtuple
+PinStruct = namedtuple('PinStruct', 'pin state index')
+
 class Gardener():
   def __init__(self, insysFirmware, plants=[], lazy=5, nutritive_lazy=30, nutritive_timestep=3):
     self.firmware = insysFirmware
@@ -133,7 +136,7 @@ class Gardener():
         sleep(self.nutritive_timestep)
         self.nutritive_valve.off()
         if not self.adjusting_nutritive:
-          self.nutritive_valve.emitter({'pin':self.nutritive_valve.pin, 'state':True, 'index':self.nutritive_valve.index})
+          self.nutritive_valve.emitter(PinStruct(pin=self.nutritive_valve.pin, state=True, index=self.nutritive_valve.index))
           print("[GARDENER] > open nutritive valve {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
           self.adjusting_nutritive = True
       return True
