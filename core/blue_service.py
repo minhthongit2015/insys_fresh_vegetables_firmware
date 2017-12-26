@@ -35,7 +35,7 @@ class BluetoothService:
         client = self.sock.accept()
         print("[BLUESRV] > Accepted connection from ", client[1], flush=True)
         self.clients.append(client)
-        t = threading.Thread(target=self.onRequest, args=(client, self.clients))
+        t = threading.Thread(target=self.onRequest, kwargs=dict(client_sock=client[0], client_info=client[1], clients=self.clients))
         self.clientThreads.append(t)
         t.start()
       except:
