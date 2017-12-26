@@ -193,12 +193,10 @@ class InsysFirmware(InSysServices):
 
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
     self.sensorThread.start()
-    self.putSensorDataLoop()
     print("[SYS] >> Start 'Sensor' thread")
 
     self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
     self.controlThread.start()
-    self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
 
     self.blueThread = threading.Thread(target=self.blueService.run)
