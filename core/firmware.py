@@ -149,7 +149,6 @@ class InsysFirmware(InSysServices):
       self.logger.record(record)
 
   def onClientConnect(self, client_sock, client_info, clients):
-    print(clients, flush=True)
     try:
       while True:
         data = b''
@@ -160,7 +159,7 @@ class InsysFirmware(InSysServices):
           # client_sock.close()
           # return
         
-        print(data)
+        print("___ recv: {}".format(data))
         if len(data) <= 0: return
         if int(data[0]) == 0: # auth/handshake
           if self._deviceId == data[1:].decode("utf-8"):
@@ -178,12 +177,15 @@ class InsysFirmware(InSysServices):
           print("___ bluetooth send sync state: {}".format(str(self.controllers)), flush=True)
           client_sock.send(str(self.controllers))
         # Close to avoid error
+        print("Close client {}".format(client_info))
         client_sock.close()
+        clients.remove(client_sock)
 
     except Exception as e:
       print("Close client {}".format(client_info))
       print("Reason: {}".format(e))
       client_sock.close()
+      clients.remove(client_sock)
       
     
 
