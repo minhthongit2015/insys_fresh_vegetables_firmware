@@ -4,8 +4,9 @@ import os
 try: import configparser as cfg
 except: import ConfigParser as cfg
 
-def cmd(command):
-  call(command.split(' '))
+from time import sleep
+
+cmd = os.system
 
 class Camera:
   def __init__(self, channel=""):
@@ -33,4 +34,5 @@ class Camera:
 
 if __name__ == "__main__":
   camera = Camera("q1qt-c81f-05b8-5zqk")
+  sleep(5)
   camera.start_streaming()

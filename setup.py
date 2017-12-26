@@ -25,6 +25,8 @@ Alias={}.service
 def cmd(command):
   call(command.split(' '))
 
+cmd = os.system
+
 def install_service(service_name, service_file):
   service_name = service_name.replace(' ', '')
   print('[SETUP] > Install {} service'.format(service_name))
@@ -60,6 +62,11 @@ def setup():
     except:
       from core.blue_service import BluetoothService
       BluetoothService.setupBluetooth()
+
+  # Camera setup
+  cmd('sudo apt-get install libmp3lame-dev; sudo apt-get install autoconf; sudo apt-get install libtool; sudo apt-get install checkinstall; sudo apt-get install libssl-dev')
+  cmd('mkdir /home/pi/src && cd /home/pi/src && git clone git://git.videolan.org/x264 && cd x264 && ./configure --host=arm-unknown-linux-gnueabi --enable-static --disable-opencl && make && sudo make install')
+  cmd('cd && cd /home/pi/src && sudo git clone git://source.ffmpeg.org/ffmpeg.git && cd ffmpeg && sudo ./configure --enable-gpl --enable-nonfree --enable-libx264 --enable-libmp3lame && sudo make -j$(nproc) && sudo make install')
 
   cwd = os.getcwd()
 
