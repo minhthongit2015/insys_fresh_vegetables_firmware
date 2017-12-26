@@ -58,9 +58,8 @@ def setup():
       import bluetooth
       break
     except:
-      cmd('sudo apt-get install bluetooth libbluetooth-dev')
-      cmd('pip3 install pybluez')
-      cmd('sudo systemctl start bluetooth && sleep 1 && echo -e "discoverable on\nquit" | bluetoothctl')
+      from core.blue_service import BluetoothService
+      BluetoothService.setupBluetooth()
       """
       I'm guessing that you don't have the Serial Port Profile loaded? To do that, you'll need to
 Code: Select all

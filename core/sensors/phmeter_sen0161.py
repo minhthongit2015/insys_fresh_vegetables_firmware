@@ -1,5 +1,6 @@
 
-import smbus
+try: import smbus
+except: import dummy.smbus as smbus
 import struct
 import datetime
 

@@ -1,17 +1,18 @@
 # coding=utf-8
 from core.api import InSysServices, BaseAPI
 from core.pins import Pin, ListPin, clean
-from core.hutemp_module_dht22 import DHT22
-from core.pHmeter.phmeter_sen0161 import SEN0161
 from core.logger import Logger
-import http.client as httplib
 from core.blue_service import BluetoothService
-import random
 
+from core.sensors.hutemp_module_dht22 import DHT22
+from core.sensors.phmeter_sen0161 import SEN0161
+
+import http.client as httplib
 import threading
 import select
 from time import sleep, time
 import datetime
+import random
 
 def getLocalDeviceId(fname):
   with open(fname) as f: return f.readline()[:24]
@@ -78,7 +79,7 @@ class InsysFirmware(InSysServices):
       "active": pin.state
     }), headers = {"Content-type": "application/json"})
     self.request(switchAPI)
-    print("> Send sync to server pin {} to {}".format(pin.pin, pin.state))
+    print("[SYS] > Send sync to server pin {} to {}".format(pin.pin, pin.state))
 
   def putSensorData(self):
     while True:
@@ -120,7 +121,6 @@ class InsysFirmware(InSysServices):
       self.logger.record(record)
 
   def onClientConnect(self, client_sock, client_info):
-    print(self, client_sock, client_info)
     try:
       while True:
         data = b''

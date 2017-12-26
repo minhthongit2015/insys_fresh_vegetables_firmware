@@ -162,7 +162,7 @@ original [electron](https://github.com/electron/electron) logo.
 """
 
 try: import RPi.GPIO as GPIO
-except: import core.RPi.GPIO as GPIO
+except: import dummy.RPi.GPIO as GPIO
 import time
 
 GPIO.setmode(GPIO.BCM)

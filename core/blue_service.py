@@ -1,19 +1,16 @@
 
-from bluetooth import *
+try: from bluetooth import *
+except: from dummy.bluetooth import *
 import threading
 import os
 
 from subprocess import call
-def cmd(command):
-  call(command.split(' '))
+cmd = os.system
 
 class BluetoothService:
   def __init__(self, handler):
     self.onRequest = handler
     self.clients = []
-
-  def setupBluetooth(self):
-    os.system('echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\ndefault-agent\n" | bluetoothctl')
   
   def run(self):
     threading.Thread(target=self.setupBluetooth).start()
@@ -28,15 +25,21 @@ class BluetoothService:
                       profiles = [ SERIAL_PORT_PROFILE ], \
 #                     protocols = [ OBEX_UUID ] \
                       )
-    print("Waiting for connection on RFCOMM channel %d" % self.port)
+    print("[BLUESRV] >> Waiting for connection on RFCOMM channel %d" % self.port)
 
     try:
       while True:
         client = self.sock.accept()
-        print("Accepted connection from ", client[1])
+        print("[BLUESRV] > Accepted connection from ", client[1])
         # self.clients.append(client)
         threading.Thread(target=self.onRequest, args=(client)).start()
         # self.clients.remove(client)
     except:
       self.sock.close()
   
+  @staticmethod
+  def setupBluetooth():
+    cmd('sudo apt-get install bluetooth libbluetooth-dev')
+    cmd('pip3 install pybluez')
+    cmd('sudo systemctl start bluetooth && sleep 1')
+    cmd('echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\ndefault-agent\n" | bluetoothctl')

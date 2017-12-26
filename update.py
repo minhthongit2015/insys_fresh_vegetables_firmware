@@ -66,10 +66,12 @@ class Updater:
     cmd('git reset --hard origin/master')
 
     cmd('chmod +x ./startup')
-    cmd('sudo systemctl restart insys')
+    cmd('sudo systemctl restart insys.service')
     cmd('chmod +x ./update')
     cmd('chmod +x ./update.py')
-    cmd('sudo systemctl restart insys_update')
+    cmd('sudo systemctl restart insys_update.service')
+    cmd('chmod +x ./camera')
+    cmd('sudo systemctl restart insys_camera.service')
 
 if __name__ == "__main__":
   insys_updater = Updater("https://raw.githubusercontent.com/minhthongit2015/insys_fresh_vegetables_firmware/master/version.ini", 30)

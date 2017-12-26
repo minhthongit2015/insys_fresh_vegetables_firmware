@@ -1,7 +1,7 @@
 # coding=utf-8
 
 try: import Adafruit_DHT
-except: import core.Adafruit_DHT as Adafruit_DHT
+except: import dummy.Adafruit_DHT as Adafruit_DHT
 
 from time import sleep, time
 from datetime import datetime
