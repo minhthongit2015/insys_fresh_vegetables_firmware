@@ -188,6 +188,9 @@ class InsysFirmware(InSysServices):
     
 
   def run(self):
+    print("[SYS] >> Start checking hardware (for now just sensors)")
+    self.checkSystemState()
+
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
     self.sensorThread.start()
     self.putSensorDataLoop()
@@ -201,8 +204,6 @@ class InsysFirmware(InSysServices):
     self.blueThread = threading.Thread(target=self.blueService.run)
     self.blueThread.start()
     print("[SYS] >> Start 'Bluetooth Control' thread")
-
-    self.checkSystemState()
 
   def join(self):
     try:
