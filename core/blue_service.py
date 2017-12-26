@@ -11,9 +11,10 @@ class BluetoothService:
   def __init__(self, handler):
     self.onRequest = handler
     self.clients = []
+    self.clientThreads = []
   
   def run(self):
-    threading.Thread(target=self.discoverable).start()
+    # threading.Thread(target=self.discoverable).start()
 
     self.sock = BluetoothSocket(RFCOMM)
     self.sock.bind(("", PORT_ANY))
@@ -33,7 +34,9 @@ class BluetoothService:
         client = self.sock.accept()
         print("[BLUESRV] > Accepted connection from ", client[1], flush=True)
         self.clients.append(client)
-        threading.Thread(target=self.onRequest, args=(client, self.clients)).start()
+        t = threading.Thread(target=self.onRequest, args=(client, self.clients))
+        self.clientThreads.append(t)
+        t.start()
       except:
         print("[BLUESRV] > Something went wrong, bluetooth is down")
         self.sock.close()
