@@ -15,7 +15,7 @@ class SEN0161:
     try:
       block = self.bus.read_i2c_block_data(self.address, 0, 4)
     except Exception as e:
-      print("[ERROR] > Unable to detect I2C device on address {}. Please Check your wiring or I2C address".format(self.address))
+      print("[ERROR] > Unable to detect I2C device on address {}. Please Check your wiring or I2C address".format(self.address), flush=True)
       print(e)
       print('-------------- {} --------------'.format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
       return self.errorSignal
