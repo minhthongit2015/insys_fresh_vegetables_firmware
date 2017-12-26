@@ -13,13 +13,14 @@ class BluetoothService:
     self.clients = []
   
   def run(self):
-    threading.Thread(target=self.setupBluetooth).start()
+    threading.Thread(target=self.discoverable).start()
 
     self.sock = BluetoothSocket(RFCOMM)
     self.sock.bind(("", PORT_ANY))
     self.sock.listen(1)
     self.port = self.sock.getsockname()[1]
     self.uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
+    #addr B8:27:EB:73:2A:5D
     advertise_service(self.sock, "SampleServer",\
                       service_id = self.uuid, service_classes = [ self.uuid, SERIAL_PORT_CLASS ],\
                       profiles = [ SERIAL_PORT_PROFILE ], \
@@ -42,9 +43,48 @@ class BluetoothService:
     cmd('sudo apt-get install bluetooth libbluetooth-dev')
     cmd('pip3 install pybluez')
     cmd('sudo systemctl start bluetooth && sleep 1')
-    cmd('echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\ndefault-agent\n" | bluetoothctl')
+
+    # Fix permission issue
+    var_run_sdp_path = """[Unit]
+Descrption=Monitor /var/run/sdp
+
+[Install]
+WantedBy=bluetooth.service
+
+[Path]
+PathExists=/var/run/sdp
+Unit=var-run-sdp.service"""
+
+    var_run_sdp_service = """[Unit]
+Description=Set permission of /var/run/sdp
+
+[Install]
+RequiredBy=var-run-sdp.path
+
+[Service]
+Type=simple
+ExecStart=/bin/chgrp bluetooth /var/run/sdp
+ExecStartPost=/bin/chmod 662 /var/run/sdp"""
+
+    cmd('sudo usermod -G bluetooth -a pi')
+    cmd('sudo chgrp bluetooth /var/run/sdp')
+    cmd('sudo echo "{}" > /etc/systemd/system/var-run-sdp.path'.format(var_run_sdp_path))
+    cmd('sudo echo "{}" > /etc/systemd/system/var-run-sdp.service'.format(var_run_sdp_service))
+
+    cmd('sudo systemctl daemon-reload')
+    cmd('sudo systemctl enable var-run-sdp.path')
+    cmd('sudo systemctl enable var-run-sdp.service')
+    cmd('sudo systemctl start var-run-sdp.path')
+  
+  @staticmethod
+  def discoverable():
+    cmd('echo "power on\ndiscoverable on\npairable on\nagent on\nagent NoInputNoOutput\ndefault-agent\n" | bluetoothctl')
     
-    """I'm guessing that you don't have the Serial Port Profile loaded? To do that, you'll need to
+
+# Lỗi khác
+"""[advertise_service raise BluetoothError]
+
+I'm guessing that you don't have the Serial Port Profile loaded? To do that, you'll need to
 Code: Select all
 
 sudo sdptool add SP

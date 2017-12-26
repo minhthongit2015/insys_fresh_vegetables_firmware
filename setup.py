@@ -64,9 +64,11 @@ def setup():
       BluetoothService.setupBluetooth()
 
   # Camera setup
-  cmd('sudo apt-get install libmp3lame-dev; sudo apt-get install autoconf; sudo apt-get install libtool; sudo apt-get install checkinstall; sudo apt-get install libssl-dev')
-  cmd('mkdir /home/pi/src && cd /home/pi/src && git clone git://git.videolan.org/x264 && cd x264 && ./configure --host=arm-unknown-linux-gnueabi --enable-static --disable-opencl && make && sudo make install')
-  cmd('cd && cd /home/pi/src && sudo git clone git://source.ffmpeg.org/ffmpeg.git && cd ffmpeg && sudo ./configure --enable-gpl --enable-nonfree --enable-libx264 --enable-libmp3lame && sudo make -j$(nproc) && sudo make install')
+  # cmd('sudo apt-get install libmp3lame-dev -y; sudo apt-get install autoconf -y; sudo apt-get install libtool -y; sudo apt-get install checkinstall -y; sudo apt-get install libssl-dev -y')
+  # cmd('mkdir /home/pi/src && cd /home/pi/src && git clone git://git.videolan.org/x264 && cd x264 && ./configure --host=arm-unknown-linux-gnueabi --enable-static --disable-opencl && sudo make && sudo make install')
+  # cmd('cd && cd /home/pi/src && sudo git clone git://source.ffmpeg.org/ffmpeg.git && cd ffmpeg && sudo ./configure --enable-gpl --enable-nonfree --enable-libx264 --enable-libmp3lame && sudo make -j$(nproc) && sudo make install')
+  # cmd('sudo apt-get install -y libx264-dev')
+  # cmd('sudo apt-get install -y ffmpeg')
 
   cwd = os.getcwd()
 

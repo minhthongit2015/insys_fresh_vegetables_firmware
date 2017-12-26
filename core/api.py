@@ -48,13 +48,13 @@ class InSysServices:
       res = conn.getresponse()
     except Exception as err:
       if self.lastNetwork:
-        print(">> Network error at: {}\r\n{}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), str(err)))
         self.lastNetwork = False
+        self.onNetworkError(err)
       return err
 
     if not self.lastNetwork:
-      print(">> Network is online at: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
       self.lastNetwork = True
+      self.onNetworkOnline()
     
     if callback != None: callback(res, api)
     # else: self._defaultHandler(res)
@@ -62,6 +62,16 @@ class InSysServices:
     if not keepalive: conn.close()
       
     return conn
+
+  @staticmethod
+  def isError(connect):
+    return not isinstance(connect, httplib.HTTPSConnection)
+
+  def onNetworkError(self, err):
+    pass
+
+  def onNetworkOnline(self):
+    pass
 
   ###############
   # Some Helper #

@@ -172,15 +172,17 @@ def clean():
   GPIO.cleanup()
 
 class Pin():
-  def __init__(self, pin, isOutput=True, default=True, reverse=False, eventDetect=False, emitter=False): # Setup GPIO Pin for output by default
+  def __init__(self, pin, isOutput=True, default=True, reverse=False, eventDetect=[], emitter=None, index=0): # Setup GPIO Pin for output by default
     self.pin = int(pin)
     self.default = self._verifyState(default)
     self.isOutput = self._verifyState(isOutput)
     self.oldState = self.state = self._verifyState(default)
     self.reverse = reverse
     self.setup(pin, isOutput, default)
+    if eventDetect == None: eventDetect = []
     self.eventDetect = eventDetect
     self.emitter = emitter
+    self.index = index
 
   def setup(self, pin=-1, isOutput=False, default=True):
     if pin < 0:
@@ -199,7 +201,7 @@ class Pin():
   def onchange(self, eventDetect, phase=0):
     print("Setup onchange event on pin {} (phase: {})".format(self.pin, phase))
     if self.isOutput:
-      self.eventDetect = eventDetect
+      self.eventDetect.append(eventDetect)
     else:
       if phase == 1: event = GPIO.RISING
       elif phase == -1: event = GPIO.FALLING
@@ -222,7 +224,8 @@ class Pin():
     self.state = newState
     if self.oldState^newState:
       GPIO.output(self.pin, GPIO.HIGH if self.state^self.reverse else GPIO.LOW)
-      if self.eventDetect: self.eventDetect(self)
+      for eventDetect in self.eventDetect:
+        if eventDetect: eventDetect(self)
       return True
     return False
   def turn(self, state):
@@ -231,8 +234,8 @@ class Pin():
   def toggle(self):
     self.oldState = self.state
     self.state = not self.state
-    GPIO.output(self.pin, GPIO.HIGH if self.state^self.reverse else GPIO.LOW)
-    if self.eventDetect: self.eventDetect(self)
+    self.set(self.state)
+    return self.state
 
   @property
   def value(self):
@@ -246,7 +249,7 @@ class Pin():
     return bool(state)
 
 class ListPin():
-  def __init__(self, pinList, isOut=[True], default=[True], reverse=[False], eventDetect=[False], emitter=[False]):
+  def __init__(self, pinList, isOut=[True], default=[True], reverse=[False], eventDetect=[None], emitter=[False]):
     self.size = len(pinList)
     self.pinList = pinList
     self.isOut = (isOut*self.size)[:self.size]
@@ -255,13 +258,15 @@ class ListPin():
     self.eventDetect = (eventDetect*self.size)[:self.size]
     self.emitter = (emitter*self.size)[:self.size]
     self.pins = []    # Array contains Pin objects
+    index = 1
     for (pin, out, deft, rev, event, emit) in zip(self.pinList, self.isOut, self.default, self.reverse, self.eventDetect, self.emitter):
-      self.pins.append(Pin(pin, out, deft, rev, event, emit))
+      self.pins.append(Pin(pin, out, deft, rev, event, emit, index))
+      index += 1
 
-  def setEventDetect(self, eventDetect=[False]):
+  def setEventDetect(self, eventDetect=[]):
     self.eventDetect = (eventDetect*self.size)[:self.size]
     for (pin, event) in zip(self.pins, self.eventDetect):
-      pin.eventDetect = event
+      pin.eventDetect.append(event)
 
   def __str__(self):
     lst = []

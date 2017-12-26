@@ -25,7 +25,7 @@ class DHT22(Pin):
     humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
     retry = 1
     while humidity is None or temperature is None or humidity > 100 or humidity < 0:
-      print("[WARNING] > Hutemp module is failed to read. Retry %d" % retry)
+      print("[DHT22] > Hutemp module is failed to read. Retry %d" % retry)
       retry += 1
       humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
       sleep(2)
@@ -37,3 +37,11 @@ class DHT22(Pin):
 
   def read(self):
     return self.value
+
+  def check(self):
+    if self.value == self.default:
+      print("[DHT22] >> Hutemp module is failed to read.")
+      return False
+    else:
+      print("[DHT22] >> Hutemp module is working normally.")
+      return True

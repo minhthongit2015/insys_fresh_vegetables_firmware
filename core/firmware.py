@@ -27,18 +27,45 @@ def getFirmwareVersion():
     pass
 
 class InsysFirmware(InSysServices):
-  def __init__(self, deviceId, switchPins=[], sensors=[4, 0x04], refreshTimeControl=4, refreshTimeSensor=10):
+  def __init__(self, deviceId, switchPins=[], sensors=[4, 0x04], signalLights=[],\
+    refreshTimeControl=4, refreshTimeSensor=10):
     InSysServices.__init__(self, 'insysdemo.azurewebsites.net')
     self._deviceId = deviceId
     self.controllers = ListPin(switchPins, reverse=[True], default=[False], emitter=[self.sync_switch_state])
     self.sensors = {"hutemp": DHT22(sensors[0]), "pH": SEN0161(sensors[1])}
     self.refreshTimeControl = refreshTimeControl
     self.refreshTimeSensor = refreshTimeSensor
+
+    self.signalLights = ListPin(signalLights, default=[False])
+    self.hardwareSignalLight = self.signalLights.pins[0]
+    self.automodeSignalLight = self.signalLights.pins[1]
+    self.controllers.pins[0].eventDetect.append(self.onAutoModeChange)
+    self.enviromentSignalLight = self.signalLights.pins[2]
+    self.networkSignalLight = self.signalLights.pins[3]
+    self.checkSystemState()
+
     self.logger = Logger('./log', 'humi_temp_pH')
-    self.blue = BluetoothService(self.onClientConnect)
+    self.blueService = BluetoothService(self.onClientConnect)
     print("[SYS] >>> System Started Up!")
     print("[SYS] >>> Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
     print("[SYS] >>> Firmware Version: {}".format(getFirmwareVersion()))
+
+  def checkSystemState(self):
+    if self.sensors['hutemp'].check() and self.sensors['pH'].check():
+      self.hardwareSignalLight.on()
+      print("[SYS] >> Hardware running normally.")
+
+  def onAutoModeChange(self, pin):
+    self.automodeSignalLight.turn(pin.state)
+
+  def onNetworkError(self, err):
+    self.networkSignalLight.off()
+    print("[SYS] >> Network error at: {}\r\n{}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), str(err)))
+
+  def onNetworkOnline(self):
+    self.networkSignalLight.on()
+    print("[SYS] >> Network is online at: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+
 
   def getSwitchStates(self):
     getStatusAPI = BaseAPI('post', '/api/device/getstatus', {}, self.paramsToJSON({'deviceId': self._deviceId}),
@@ -75,8 +102,8 @@ class InsysFirmware(InSysServices):
   def sync_switch_state(self, pin):
     switchAPI = BaseAPI('put', '/api/device/Buttons/Active', {}, self.paramsToJSON({
       "localdeviceId": self._deviceId,
-      "buttonId": 4,
-      "active": pin.state
+      "buttonId": pin.index,
+      "active": pinstate
     }), headers = {"Content-type": "application/json"})
     self.request(switchAPI)
     print("[SYS] > Send sync to server pin {} to {}".format(pin.pin, pin.state))
@@ -104,7 +131,7 @@ class InsysFirmware(InSysServices):
     }), headers = {"Content-type": "application/json"})
     record = "{} {} {}".format(hutemp[0], hutemp[1], pHValue)
     test = self.request(putSensorDataAPI, callback=lambda res,api: self.checkSensorPutResponse(record,res,api))
-    if not isinstance(test, httplib.HTTPSConnection):
+    if self.isError(test):
       self.checkSensorPutResponse(record)
   
   def putSensorDataLoop(self):
@@ -148,6 +175,9 @@ class InsysFirmware(InSysServices):
         elif int(data[0]) == 2: # get device state
           print("___ bluetooth send sync state: {}".format(str(self.controllers)))
           client_sock.send(str(self.controllers))
+        # Close to avoid error
+        client_sock.close()
+
     except Exception as e:
       print("Close client {}".format(client_info))
       print("Reason: {}".format(e))
@@ -166,7 +196,7 @@ class InsysFirmware(InSysServices):
     # self.getSwitchStatesLoop()
     print("[SYS] >> Start 'Control' thread")
 
-    self.blueThread = threading.Thread(target=self.blue.run)
+    self.blueThread = threading.Thread(target=self.blueService.run)
     self.blueThread.start()
     print("[SYS] >> Start 'Bluetooth Control' thread")
 

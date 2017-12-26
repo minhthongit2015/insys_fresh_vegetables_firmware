@@ -11,6 +11,7 @@ class Gardener():
     self.firmware = insysFirmware
     self.sensors = insysFirmware.sensors
     self.controllers = insysFirmware.controllers
+    self.signalLights = insysFirmware.signalLights
     self.plants = plants
     self.lazy = lazy
     self.pump = self.controllers.pins[3]
@@ -27,7 +28,7 @@ class Gardener():
       self.auto = True
 
     self.autopin.turn(self.auto)
-    self.controllers.pins[0].eventDetect = self.onSetAutoState
+    self.controllers.pins[0].eventDetect.append(self.onSetAutoState)
 
     self.temperature = self.sensors['hutemp']
     self.pH = self.sensors['pH']
@@ -48,7 +49,9 @@ class Gardener():
     self.save()
 
   def onSetAutoState(self, pin):
-    self.auto = pin.state
+    print("[GARDENER] > Auto mode is {}".format('on' if pin.state else 'off'))
+    self.cfg['Gardener']['auto'] = str(bool(pin.state)) # option value must be string!
+    self.save()
 
   def appendPlant(self, plant):
     self.plants.append(plant)
@@ -99,7 +102,9 @@ class Gardener():
       if self.pump.on():
         self.pump.emitter(self.pump)
         print("[GARDENER] > start watering by temp {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+        self.signalLights.pins[2].on()
       return True
+    self.signalLights.pins[2].off()
     return False
 
   def _manure(self):
@@ -128,7 +133,7 @@ class Gardener():
         sleep(self.nutritive_timestep)
         self.nutritive_valve.off()
         if not self.adjusting_nutritive:
-          self.nutritive_valve.emitter(self.nutritive_valve)
+          self.nutritive_valve.emitter({'pin':self.nutritive_valve.pin, 'state':True, 'index':self.nutritive_valve.index})
           print("[GARDENER] > open nutritive valve {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
           self.adjusting_nutritive = True
       return True
