@@ -154,12 +154,13 @@ class InsysFirmware(InSysServices):
     try:
       while True:
         data = b''
-        ready = select.select([client_sock], [], [], 15)
-        if ready[0]:
-          data = client_sock.recv(1024)
+        # ready = select.select([client_sock], [], [], 15)
+        # if ready[0]:
+        #   data = client_sock.recv(1024)
         # else:
           # client_sock.close()
           # return
+        data = client_sock.recv(1024)
         
         print("[BLUESRV] > recv: {}".format(data))
         if len(data) <= 0: return
