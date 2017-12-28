@@ -41,6 +41,9 @@ class BluetoothService:
         print("[BLUESRV] > Something went wrong with client: {}", client[1])
         # self.sock.close()
   
+  def send(self, sock, data="", cmd=False):
+    sock.send((chr(cmd) if cmd else "") + data + "\x00")
+  
   @staticmethod
   def setupBluetooth():
     cmd('sudo apt-get install bluetooth libbluetooth-dev')
