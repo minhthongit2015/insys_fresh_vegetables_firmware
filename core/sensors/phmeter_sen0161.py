@@ -34,6 +34,11 @@ class SEN0161:
   def read(self):
     return self.value
 
+  @property
+  def value_or_default(self):
+    return self.last_result
+
+
   def check(self):
     if self.value == self.errorSignal:
       print("[pHMeter] >> pHMeter module is failed to read.")

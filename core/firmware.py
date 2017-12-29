@@ -179,8 +179,8 @@ class InsysFirmware(InSysServices):
           self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
           self.blueService.send(client_sock, "OK")
         elif int(data[0]) == 2: # get device state
-          hutemp = self.sensors['hutemp'].value
-          pH = self.sensors['pH'].value
+          hutemp = self.sensors['hutemp'].value_or_default
+          pH = self.sensors['pH'].value_or_default
           device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
           print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
           self.blueService.send(client_sock, device_state)

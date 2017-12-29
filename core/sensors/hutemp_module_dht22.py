@@ -15,7 +15,7 @@ class DHT22(Pin):
     self.default = (80, 20)
     self.last_result = self.default
     self.last_result_time = 0
-    self.min_result_freq_time = 30
+    self.min_result_freq_time = 5
     self.retry = retry
 
   @property
@@ -37,6 +37,10 @@ class DHT22(Pin):
 
   def read(self):
     return self.value
+  
+  @property
+  def value_or_default(self):
+    return self.last_result
 
   def check(self):
     if self.value == self.default:
