@@ -154,17 +154,20 @@ class InsysFirmware(InSysServices):
     client_sock = client[0]
     client_info = client[1]
     try:
+      data = b''
       while True:
-        data = b''
         # ready = select.select([client_sock], [], [], 15)
         # if ready[0]:
         #   data = client_sock.recv(1024)
         # else:
           # client_sock.close()
           # return
-        data = client_sock.recv(1024)
-        
-        print("[BLUESRV] > recv: {}".format(data))
+        if len(data) <= 0:
+          data = client_sock.recv(1024)
+          print("[BLUESRV] > recv: {}".format(data))
+        else:
+          print("[BLUESRV] > cont: {}".format(data))
+
         if len(data) <= 0: return
         if int(data[0]) == 0: # auth/handshake
           if self._deviceId == data[1:].decode("utf-8"):
@@ -178,12 +181,14 @@ class InsysFirmware(InSysServices):
           self.controllers.pins[pinIndex].turn(state)
           self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
           self.blueService.send(client_sock, "OK")
+          data = data[3:]
         elif int(data[0]) == 2: # get device state
           hutemp = self.sensors['hutemp'].value_or_default
           pH = self.sensors['pH'].value_or_default
           device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
           print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
           self.blueService.send(client_sock, device_state)
+          data = data[1:]
         # Close to avoid error
         # print("Close client {}".format(client_info))
         # client_sock.close()
