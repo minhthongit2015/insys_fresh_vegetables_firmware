@@ -14,7 +14,8 @@ class BluetoothService:
     self.clientThreads = []
   
   def run(self):
-    # threading.Thread(target=self.discoverable).start()
+    self.discoverableThread = threading.Thread(target=self.discoverable)
+    self.discoverableThread.start()
 
     self.sock = BluetoothSocket(RFCOMM)
     self.sock.bind(("", PORT_ANY))
@@ -85,8 +86,14 @@ ExecStartPost=/bin/chmod 662 /var/run/sdp"""
   
   @staticmethod
   def discoverable():
-    cmd('echo "power on\ndiscoverable on\npairable on\nagent on\nagent NoInputNoOutput\ndefault-agent\n" | bluetoothctl')
+    cmd('sudo echo "power off\npower on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n" | bluetoothctl')
     
+  def join():
+    try: self.discoverableThread.join()
+    except: pass
+    for client_thread in self.clientThreads:
+      try: client_thread.join()
+      except: pass
 
 # Lỗi khác
 """[advertise_service raise BluetoothError]

@@ -235,6 +235,7 @@ class InsysFirmware(InSysServices):
     except:
       pass
     self.blueThread.join()
+    self.blueService.join()
 
   def clean(self):
     clean()
