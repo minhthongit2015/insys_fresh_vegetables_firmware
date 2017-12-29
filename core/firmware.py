@@ -166,6 +166,9 @@ class InsysFirmware(InSysServices):
           data = client_sock.recv(1024)
           print("[BLUESRV] > recv: {}".format(data))
         else:
+          while data[0] == 3:
+            data[1:]
+          if len(data) <= 0: return
           print("[BLUESRV] > cont: {}".format(data))
 
         if len(data) <= 0: return
@@ -187,6 +190,13 @@ class InsysFirmware(InSysServices):
           pH = self.sensors['pH'].value_or_default
           device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
           print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
+          self.blueService.send(client_sock, device_state)
+          data = data[1:]
+        elif int(data[0]) == 3: # get sensors value
+          hutemp = self.sensors['hutemp'].value_or_default
+          pH = self.sensors['pH'].value_or_default
+          device_state = "{}|{}|{}".format(hutemp[0], hutemp[1], pH)
+          print("[BLUESRV] > transfer sensors value: {}".format(device_state), flush=True)
           self.blueService.send(client_sock, device_state)
           data = data[1:]
         # Close to avoid error

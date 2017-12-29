@@ -23,7 +23,8 @@ class BluetoothService:
     self.uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
     #addr B8:27:EB:73:2A:5D
     advertise_service(self.sock, "SampleServer",\
-                      service_id = self.uuid, service_classes = [ self.uuid, SERIAL_PORT_CLASS ],\
+                      service_id = self.uuid,\
+                      service_classes = [ self.uuid, SERIAL_PORT_CLASS ],\
                       profiles = [ SERIAL_PORT_PROFILE ], \
 #                     protocols = [ OBEX_UUID ] \
                       )
