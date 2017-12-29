@@ -86,7 +86,7 @@ ExecStartPost=/bin/chmod 662 /var/run/sdp"""
   
   @staticmethod
   def discoverable():
-    cmd('sudo echo "power off\npower on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n" | bluetoothctl')
+    cmd('sudo echo "power off\npower on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n"; tee | bluetoothctl')
     
   def join():
     try: self.discoverableThread.join()
