@@ -166,8 +166,8 @@ class InsysFirmware(InSysServices):
           data = client_sock.recv(1024)
           print("[BLUESRV] > recv: {}".format(data))
         else:
-          while data[0] == 3:
-            data[1:]
+          while int(data[0]) == 3:
+            data = data[1:]
           if len(data) <= 0: return
           print("[BLUESRV] > cont: {}".format(data))
 
