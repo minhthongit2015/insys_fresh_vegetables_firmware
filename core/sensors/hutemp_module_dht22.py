@@ -15,7 +15,7 @@ class DHT22(Pin):
     self.default = (80, 20)
     self.last_result = self.default
     self.last_result_time = 0
-    self.min_result_freq_time = 4
+    self.min_result_freq_time = 30
     self.retry = retry
 
   @property

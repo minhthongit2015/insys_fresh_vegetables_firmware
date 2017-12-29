@@ -9,6 +9,9 @@ class Logger:
     self.log_name_time_format = time_format
     self.flog = None
     if not os.path.exists(log_dir): os.makedirs(log_dir)
+
+  def createLogType(self, log_type, log_dir='', log_name=''):
+    pass
   
   def record(self, line, keep_open=False, log_name='', dump_time=True):
     """
@@ -27,6 +30,12 @@ class Logger:
 
     if not keep_open: self.flog.close()
     return self.flog
+
+  def sensors_record(self, record_type, data):
+    if record_type == 1: # hutemp record
+      pass
+    else:
+      pass
 
 def main():
   logger = Logger("./log", "hutemp")

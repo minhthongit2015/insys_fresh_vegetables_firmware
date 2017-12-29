@@ -119,6 +119,8 @@ class InsysFirmware(InSysServices):
       
     pHValue = self.sensors['pH'].value
     print("pH: {}, hu: {}, temp: {}".format(pHValue, hutemp[0], hutemp[1]))
+    
+    self.logger.sensors_record(1, hutemp)
 
     putSensorDataAPI = BaseAPI('put', '/api/device/updates', {}, self.paramsToJSON({
       "gateWayId": "59336609883fa03a18cd48d7",
@@ -177,6 +179,9 @@ class InsysFirmware(InSysServices):
           self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
           self.blueService.send(client_sock, "OK")
         elif int(data[0]) == 2: # get device state
+          hutemp = self.sensors['hutemp'].value
+          pH = self.sensors['pH'].value
+          device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
           print("[BLUESRV] > via bluetooth get device state: {}".format(str(self.controllers)), flush=True)
           self.blueService.send(client_sock, str(self.controllers))
         # Close to avoid error
