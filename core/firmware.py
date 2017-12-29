@@ -182,8 +182,8 @@ class InsysFirmware(InSysServices):
           hutemp = self.sensors['hutemp'].value
           pH = self.sensors['pH'].value
           device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
-          print("[BLUESRV] > via bluetooth get device state: {}".format(str(self.controllers)), flush=True)
-          self.blueService.send(client_sock, str(self.controllers))
+          print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
+          self.blueService.send(client_sock, device_state)
         # Close to avoid error
         # print("Close client {}".format(client_info))
         # client_sock.close()
