@@ -36,6 +36,7 @@ class BluetoothService:
         client = self.sock.accept()
         print("[BLUESRV] > Accepted connection from ", client[1], flush=True)
         self.clients.append(client)
+        self.trustClient(client)
         t = threading.Thread(target=self.onRequest, kwargs=dict(client=client, clients=self.clients))
         self.clientThreads.append(t)
         t.start()
@@ -87,6 +88,9 @@ ExecStartPost=/bin/chmod 662 /var/run/sdp"""
   @staticmethod
   def discoverable():
     cmd('sudo echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n"; tee > /dev/null | bluetoothctl')
+
+  def trustClient(self, client):
+    cmd('sudo sudo echo "trust {}" | bluetoothctl'.format(client[1][0]))
     
   def join():
     try: self.discoverableThread.join()
