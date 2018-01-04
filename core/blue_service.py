@@ -90,7 +90,7 @@ ExecStartPost=/bin/chmod 662 /var/run/sdp"""
     cmd('sudo echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n"; tee > /dev/null | bluetoothctl')
 
   def trustClient(self, client):
-    cmd('sudo sudo echo "trust {}" | bluetoothctl'.format(client[1][0]))
+    cmd('sudo sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]))
     
   def join():
     try: self.discoverableThread.join()
