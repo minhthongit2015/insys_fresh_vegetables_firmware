@@ -195,7 +195,7 @@ class InsysFirmware(InSysServices):
         elif int(data[0]) == 3: # get sensors value
           hutemp = self.sensors['hutemp'].value_or_default
           pH = self.sensors['pH'].value_or_default
-          device_state = "{}|{}|{}".format(hutemp[0], hutemp[1], pH)
+          device_state = "{}|{}|{}|{}".format(time(), hutemp[0], hutemp[1], pH)
           print("[BLUESRV] > transfer sensors value: {}".format(device_state), flush=True)
           self.blueService.send(client_sock, device_state)
           data = data[1:]
