@@ -203,6 +203,13 @@ class InsysFirmware(InSysServices):
         # print("Close client {}".format(client_info))
         # client_sock.close()
         # clients.remove(client)
+        elif int(data[0]) == 4: # Create and modify Plant
+          if int(data[1]) == 0:
+            name,planting_date = data[2:].split("|")
+            new_plant = Plant()
+        elif int(data[0]) == 5: # Bluetooth control
+          if int(data[1]) == 0: # lock bluetooth
+            self.blueService.lock()
 
     except Exception as e:
       print("Close client {}".format(client_info))

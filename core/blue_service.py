@@ -14,7 +14,7 @@ class BluetoothService:
     self.clientThreads = []
   
   def run(self):
-    self.discoverableThread = threading.Thread(target=self.discoverable)
+    self.discoverableThread = threading.Thread(target=self.discoverable, args=(False))
     self.discoverableThread.start()
 
     self.sock = BluetoothSocket(RFCOMM)
@@ -86,11 +86,17 @@ ExecStartPost=/bin/chmod 662 /var/run/sdp"""
     cmd('sudo systemctl start var-run-sdp.path')
   
   @staticmethod
-  def discoverable():
-    cmd('sudo echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n"; tee > /dev/null | bluetoothctl')
+  def discoverable(on=True):
+    if on:
+      cmd('sudo echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n"; tee > /dev/null | bluetoothctl')
+    else:
+      cmd('sudo echo "power off\npower on\ndiscoverable off\npairable on\nagent on\ndefault-agent"; tee > /dev/null | bluetoothctl')
 
   def trustClient(self, client):
-    cmd('sudo sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]))
+    cmd('sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]))
+
+  def lock(self):
+    self.discoverable(False)
     
   def join():
     try: self.discoverableThread.join()

@@ -30,6 +30,7 @@ ____________________________________
 
 from datetime import timedelta
 import datetime
+import json
 
 class c(timedelta):
   def print(self):
@@ -133,3 +134,10 @@ class Plant:
     for stage in self.growth_stages:
       if stage.start <= daypass.days + 1 < stage.end + 1:
         return stage
+
+  def __str__(self):
+    plant = {
+      "name": self.name,
+      "planting_date": self.planting_date
+    }
+    return json.dumps(plant)
