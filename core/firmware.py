@@ -61,16 +61,16 @@ class InsysFirmware(InSysServices):
   def on_hutemp_working(self):
     if self.sensors['pH'].is_normally:
       self.hardwareSignalLight.on()
-      print("[SYS] > All sensors are working normally.")
+      print("[SYS] > [Hardware Checking]: All sensors are working normally.")
   def on_pH_working(self):
     if self.sensors['hutemp'].is_normally:
       self.hardwareSignalLight.on()
-      print("[SYS] > All sensors are working normally.")
+      print("[SYS] > [Hardware Checking]: All sensors are working normally.")
   def on_hutemp_broken(self):
-    print("[SYS] > hutemp sensor is not working normally.")
+    print("[SYS] > [Hardware Checking]: hutemp sensor is not working normally.")
     self.hardwareSignalLight.off()
   def on_pH_broken(self):
-    print("[SYS] > pH sensor is not working normally.")
+    print("[SYS] > [Hardware Checking]: pH sensor is not working normally.")
     self.hardwareSignalLight.off()
 
   def onAutoModeChange(self, pin):

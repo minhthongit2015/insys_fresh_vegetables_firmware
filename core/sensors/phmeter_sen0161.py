@@ -13,7 +13,7 @@ class SEN0161:
     self.precision = precision
     self.error_signal = -1
     self.last_result = self.error_signal
-    self.is_normally = False
+    self.is_normally = None
     self.min_result_freq_time = 4
   
   @property
@@ -24,7 +24,7 @@ class SEN0161:
     try:
       block = self.bus.read_i2c_block_data(self.address, 0, 4)
     except Exception as e:
-      if self.is_normally:
+      if self.is_normally or self.is_normally is None:
         print("[ERROR] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
       return self.error_signal
     pH = round(struct.unpack('f', bytearray(block))[0], self.precision)
@@ -53,13 +53,13 @@ class SEN0161:
   def check(self):
     while True:
       if self.value == self.error_signal:
-        if self.is_normally:
-          print("[pHMeter] >> pHMeter module is failed to read.")
+        if self.is_normally or self.is_normally is None:
+          print("[pHMeter] > pHMeter module is failed to read.")
           self.is_normally = False
           self.on_broken()
       else:
-        if not self.is_normally:
-          print("[pHMeter] >> pHMeter module is working normally.")
+        if not self.is_normally or self.is_normally is None:
+          print("[pHMeter] > pHMeter module is working normally.")
           self.on_working()
           self.is_normally = True
       sleep(self.min_result_freq_time)

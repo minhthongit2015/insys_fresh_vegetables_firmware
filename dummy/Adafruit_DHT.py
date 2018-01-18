@@ -11,4 +11,5 @@ def read_retry(*args):
   return read()
 
 def read(*args):
-  return (round(random.uniform(45,100), 2), round(random.uniform(20,35), 2))
+  return (80, 20)
+  # return (round(random.uniform(45,100), 2), round(random.uniform(20,35), 2))
