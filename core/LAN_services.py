@@ -35,7 +35,7 @@ class LANServices:
     LANHandler.request_handle = request_handle
 
   def run(self):
-    print("[LAN] > LAN Server is listening on {}:{}".format(socket.gethostbyname(socket.gethostname()), self.port))
+    print("[LAN] > LAN Server is listening on {}:{}".format(socket.gethostbyname(socket.getfqdn()), self.port))
     self.server = socketserver.TCPServer((self.host, self.port), LANHandler)
     self.server.serve_forever()
     pass
