@@ -27,7 +27,7 @@ if __name__ == "__main__":
     plant_lib = PlantLibrary('./plants/vegetables.json')
     butterhead_lettuce = plant_lib.plant_parse(plant_lib.library[0])
 
-    device = InsysFirmware(getLocalDeviceId('ID.txt'), [26,19,13,6], [4, 0x04], [17,27,22,10,9], 5, 300)
+    device = InsysFirmware(getLocalDeviceId('ID.txt'), [26,19,13,6], [4, 0x04], [17,27,22,10,9], 5, 30)
     device.run()
 
     gardener = Gardener(device, water_freq_time=2)

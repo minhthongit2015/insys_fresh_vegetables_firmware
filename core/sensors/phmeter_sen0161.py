@@ -24,11 +24,21 @@ class SEN0161:
     try:
       block = self.bus.read_i2c_block_data(self.address, 0, 4)
     except Exception as e:
-      print("[ERROR] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
+      if self.is_normally:
+        print("[ERROR] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
       return self.error_signal
     pH = round(struct.unpack('f', bytearray(block))[0], self.precision)
     self.last_result = pH
     return pH
+
+  def _run(self):
+    last_result_time = 0
+    while True:
+      delta = time() - last_result_time
+      if delta < self.min_result_freq_time:
+        sleep(self.min_result_freq_time - delta)
+      last_result_time = time()
+      self.read()
 
   def run(self):
     self.running_thread = threading.Thread(target=self._run)
@@ -39,15 +49,6 @@ class SEN0161:
   def join(self):
     self.running_thread.join()
     self.checking_thread.join()
-
-  def _run(self):
-    last_result_time = 0
-    while True:
-      delta = time() - last_result_time
-      if delta < self.min_result_freq_time:
-        sleep(self.min_result_freq_time - delta)
-      last_result_time = time()
-      self.read()
 
   def check(self):
     while True:
