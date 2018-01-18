@@ -30,7 +30,7 @@ if __name__ == "__main__":
     device = InsysFirmware(getLocalDeviceId('ID.txt'), [26,19,13,6], [4, 0x04], [17,27,22,10,9], 5, 300)
     device.run()
 
-    gardener = Gardener(device, lazy=2)
+    gardener = Gardener(device, water_freq_time=2)
     gardener.appendPlant(butterhead_lettuce)
     gardener.work()
 

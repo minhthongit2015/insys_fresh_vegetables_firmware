@@ -2,7 +2,7 @@
 from core.api import InSysServices, BaseAPI
 from core.pins import Pin, ListPin, clean
 from core.logger import Logger
-from core.blue_service import BluetoothService
+from core.connection import Connection
 
 from core.sensors.hutemp_module_dht22 import DHT22
 from core.sensors.phmeter_sen0161 import SEN0161
@@ -13,6 +13,7 @@ import select
 from time import sleep, time
 import datetime
 import random
+import json
 
 def getLocalDeviceId(fname):
   with open(fname) as f: return f.readline()[:24]
@@ -36,6 +37,7 @@ class InsysFirmware(InSysServices):
     self.refreshTimeControl = refreshTimeControl
     self.refreshTimeSensor = refreshTimeSensor
 
+    # Setup signal lights to determine whenever sensors are working normally or broken down
     self.signalLights = ListPin(signalLights, default=[False])
     self.hardwareSignalLight = self.signalLights.pins[0]
     self.automodeSignalLight = self.signalLights.pins[1]
@@ -43,18 +45,27 @@ class InsysFirmware(InSysServices):
     self.enviromentSignalLight = self.signalLights.pins[2]
     self.networkSignalLight = self.signalLights.pins[3]
 
+    # Adding event listener to determine whenever sensors are working normally or broken down
+    self.sensors['hutemp'].on_broken = lambda : self.hardwareSignalLight.off()
+    self.sensors['pH'].on_broken = lambda : self.hardwareSignalLight.off()
+    self.sensors['hutemp'].on_working = self.on_hutemp_working
+    self.sensors['pH'].on_working = self.on_pH_working
+
     self.logger = Logger('./log', 'humi_temp_pH')
-    self.blueService = BluetoothService(self.onClientConnect)
+    self.envs_log = self.logger.create_log_type("envs", "./log")
+    self.connection = Connection(request_handle=self.onClientConnect)
     print("[SYS] >>> System Started Up!")
     print("[SYS] >>> Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
     print("[SYS] >>> Firmware Version: {}".format(getFirmwareVersion()))
 
-  def checkSystemState(self):
-    if self.sensors['hutemp'].check() and self.sensors['pH'].check():
+  def on_hutemp_working(self):
+    if self.sensors['pH'].is_normally:
       self.hardwareSignalLight.on()
-      print("[SYS] >> Hardware running normally.")
-    else:
-      print("[SYS] >> Some sensors had broken. Check device log for more detail.")
+      print("[SYS] > Sensors are working normally.")
+  def on_pH_working(self):
+    if self.sensors['hutemp'].is_normally:
+      self.hardwareSignalLight.on()
+      print("[SYS] > Sensors are working normally.")
 
   def onAutoModeChange(self, pin):
     self.automodeSignalLight.turn(pin.state)
@@ -66,7 +77,6 @@ class InsysFirmware(InSysServices):
   def onNetworkOnline(self):
     self.networkSignalLight.on()
     print("[SYS] >> Network is online at: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
-
 
   def getSwitchStates(self):
     getStatusAPI = BaseAPI('post', '/api/device/getstatus', {}, self.paramsToJSON({'deviceId': self._deviceId}),
@@ -85,11 +95,8 @@ class InsysFirmware(InSysServices):
           # print("Pin {} to {}".format(pin, state))
           pin.turn(state)
     except Exception as e:
-      print("[SYS] > Failed to resolve device status result. Detail as below:")
-      if "Error 403 - This web app is stopped" in str(result):
-        print(' + [DEEP_DEBUGGING] > Error 403 - This web app is stopped')
-      print(e)
-      print('-------------- {} --------------'.format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+      err = '403 - Web app is stopped' if "Error 403 - This web app is stopped" in str(result) else e
+      print("[SYS] > Failed to sync with server: {} ({})".format(err, datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
 
   def getSwitchStatesLoop(self):
     last = time()
@@ -110,17 +117,10 @@ class InsysFirmware(InSysServices):
     print("[SYS] > Send sync to server pin {} to {}".format(pin.pin, pin.state))
 
   def putSensorData(self):
-    while True:
-      hutemp = self.sensors['hutemp'].value
-      if hutemp == (0, 0): hutemp = self.sensors['hutemp'].default
-      # if hutemp != self.sensors['hutemp'].default:
-      #   break
-      break
-      
-    pHValue = self.sensors['pH'].value
-    print("pH: {}, hu: {}, temp: {}".format(pHValue, hutemp[0], hutemp[1]))
-    
-    self.logger.sensors_record(1, hutemp)
+    hutemp = self.sensors['hutemp'].value
+    pH = self.sensors['pH'].value
+    self.logger.dump_record(self.envs_log, '{} {} {}'.format(pH, hutemp[1], hutemp[0]))
+    print("[DUMP] > pH: {}, hu: {}, temp: {}".format(pH, hutemp[0], hutemp[1]), flush=True)
 
     putSensorDataAPI = BaseAPI('put', '/api/device/updates', {}, self.paramsToJSON({
       "gateWayId": "59336609883fa03a18cd48d7",
@@ -129,111 +129,92 @@ class InsysFirmware(InSysServices):
         "deviceId": self._deviceId,
         "humidity": hutemp[0],
         "temperature": hutemp[1],
-        "pH": pHValue
+        "pH": pH
       }]
     }), headers = {"Content-type": "application/json"})
-    record = "{} {} {}".format(hutemp[0], hutemp[1], pHValue)
-    test = self.request(putSensorDataAPI, callback=lambda res,api: self.checkSensorPutResponse(record,res,api))
-    if self.isError(test):
-      self.checkSensorPutResponse(record)
+    self.request(putSensorDataAPI)
   
   def putSensorDataLoop(self):
-    last = time()
+    last = 0
     while True:
-      self.putSensorData()
       delta = time() - last
       if delta < self.refreshTimeSensor:
         sleep(self.refreshTimeSensor - delta)
       last = time()
+      self.putSensorData()
 
-  def checkSensorPutResponse(self, record, response=None, api=None):
-    if (response != None and response.code != 200) or response == None:
-      self.logger.record(record)
-
-  def onClientConnect(self, client, clients):
-    client_sock = client[0]
-    client_info = client[1]
-    try:
-      data = b''
-      while True:
-        # ready = select.select([client_sock], [], [], 15)
-        # if ready[0]:
-        #   data = client_sock.recv(1024)
-        # else:
-          # client_sock.close()
-          # return
-        if len(data) <= 0:
-          data = client_sock.recv(1024)
-          print("[BLUESRV] > recv: {}".format(data))
-        else:
-          while int(data[0]) == 3:
-            data = data[1:]
-          if len(data) <= 0: return
-          print("[BLUESRV] > cont: {}".format(data))
-
-        if len(data) <= 0: return
-        if int(data[0]) == 0: # auth/handshake
-          if self._deviceId == data[1:].decode("utf-8"):
-            self.token = random.randint(0, 255)
-            self.blueService.send(client_sock, str(self.token))
-            print("[BLUESRV] > bluetooth handshake: {} => {}".format(data[1:], self.token), flush=True)
-        elif int(data[0]) == 1: # command
-          pinIndex = int(data[1])
-          state = bool(data[2])
-          print("[BLUESRV] > via bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state), flush=True)
-          self.controllers.pins[pinIndex].turn(state)
-          self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
-          self.blueService.send(client_sock, "OK")
-          data = data[3:]
-        elif int(data[0]) == 2: # get device state
-          hutemp = self.sensors['hutemp'].value_or_default
-          pH = self.sensors['pH'].value_or_default
-          device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
-          print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
-          self.blueService.send(client_sock, device_state)
-          data = data[1:]
-        elif int(data[0]) == 3: # get sensors value
-          hutemp = self.sensors['hutemp'].value_or_default
-          pH = self.sensors['pH'].value_or_default
+  def onClientConnect(self, data, cmd, sub1, sub2, client):
+      if cmd is 1: # Connection/handshake + Authentication
+        if self._deviceId == data.decode("utf-8"):
+          self.token = random.randint(0, 255)
+          self.connection.send(client, self.deviceId)
+          print("[BLUESRV] > bluetooth handshake: {} => {}".format(req[1:], self.token), flush=True)
+        if sub1 is 1: # connect via Bluetooth
+          # Recv Wifi UUID and Password
+          # If have than connect to wifi and return [IP address]
+          pass
+        elif sub1 is 2: # connect via LAN return [1]
+          pass
+        elif sub1 is 2: # Authentication/Account Manager: recv username/password, check and return [Token]
+          if sub2 is 1: # Register: [username, password]
+            pass
+          elif sub2 is 2: # Login: [username, password]
+            pass
+          elif sub2 is 3: # Delete
+            pass
+          elif sub2 is 4: # Change password: [pass_lenght:oldpass|pass_length:newpass]
+            pass
+          pass
+      elif cmd is 2: # Control device
+        pinIndex = int(data[1])
+        state = bool(data[2])
+        print("[BLUESRV] > via bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state), flush=True)
+        self.controllers.pins[pinIndex].turn(state)
+        self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
+        self.connection.send(client, "OK")
+      elif cmd is 3: # get device state
+        hutemp = self.sensors['hutemp'].value
+        pH = self.sensors['pH'].value
+        device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
+        print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
+        self.connection.send(client, device_state)
+      elif cmd is 4: # get sensors value
+        if sub1 is 1: # get realtime sensors value
+          print("[BLUESRV] > transfer realtime sensors value: {}".format(device_state), flush=True)
+          hutemp = self.sensors['hutemp'].value
+          pH = self.sensors['pH'].value
           device_state = "{}|{}|{}|{}".format(time(), hutemp[0], hutemp[1], pH)
-          print("[BLUESRV] > transfer sensors value: {}".format(device_state), flush=True)
-          self.blueService.send(client_sock, device_state)
-          data = data[1:]
-        # Close to avoid error
-        # print("Close client {}".format(client_info))
-        # client_sock.close()
-        # clients.remove(client)
-        elif int(data[0]) == 4: # Create and modify Plant
-          if int(data[1]) == 0:
-            name,planting_date = data[2:].split("|")
-            new_plant = Plant()
-        elif int(data[0]) == 5: # Bluetooth control
-          if int(data[1]) == 0: # lock bluetooth
-            self.blueService.lock()
-
-    except Exception as e:
-      print("Close client {}".format(client_info))
-      print("Reason: {}".format(e))
-      client_sock.close()
-      clients.remove(client)
+          self.connection.send(client, device_state)
+        elif sub1 is 1: # get records for last 6 hours
+          print("[BLUESRV] > transfer records for last 6 hours ({} records).".format(len(records)))
+          records = self.logger.get_records_last_6h()
+          sz_records = json.dumps(records)
+          self.connection.send(client, sz_records)
+        elif sub1 is 2: # get records since a exactly time
+          pass
+      elif cmd is 5: # Create and modify Plant
+        if sub1 is 1:
+          name,planting_date = data.split("|")
+          new_plant = Plant()
       
     
 
   def run(self):
-    print("[SYS] >> Start checking hardware (for now just sensors)")
-    # self.checkSystemState()
+    print("[SYS] >> Starts checking hardware (just sensors)")
+    self.sensors['hutemp'].run()
+    self.sensors['pH'].run()
 
+    print("[SYS] >> Start 'Sensor' thread")
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
     self.sensorThread.start()
-    print("[SYS] >> Start 'Sensor' thread")
 
-    self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
-    self.controlThread.start()
     print("[SYS] >> Start 'Control' thread")
+    # self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
+    # self.controlThread.start()
 
-    self.blueThread = threading.Thread(target=self.blueService.run)
-    self.blueThread.start()
     print("[SYS] >> Start 'Bluetooth Control' thread")
+    self.connection_thread = threading.Thread(target=self.connection.run)
+    self.connection_thread.start()
 
   def join(self):
     try:

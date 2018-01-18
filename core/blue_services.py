@@ -3,19 +3,20 @@ try: from bluetooth import *
 except: from dummy.bluetooth import *
 import threading
 import os
+import struct
 
 from subprocess import call
 cmd = os.system
 
 class BluetoothService:
-  def __init__(self, handler):
-    self.onRequest = handler
+  def __init__(self, handle=None):
+    self.request_handle = handle
     self.clients = []
-    self.clientThreads = []
+    self.client_threads = []
   
-  def run(self):
-    self.discoverableThread = threading.Thread(target=self.discoverable, args=(False))
-    self.discoverableThread.start()
+  def _run(self):
+    # self.discoverableThread = threading.Thread(target=self.discoverable, args=(False))
+    # self.discoverableThread.start()
 
     self.sock = BluetoothSocket(RFCOMM)
     self.sock.bind(("", PORT_ANY))
@@ -23,29 +24,71 @@ class BluetoothService:
     self.port = self.sock.getsockname()[1]
     self.uuid = "94f39d29-7d6d-437d-973b-fba39e49d4ee"
     #addr B8:27:EB:73:2A:5D
-    advertise_service(self.sock, "SampleServer",\
+    try:
+      advertise_service(self.sock, "SampleServer",\
                       service_id = self.uuid,\
                       service_classes = [ self.uuid, SERIAL_PORT_CLASS ],\
                       profiles = [ SERIAL_PORT_PROFILE ], \
 #                     protocols = [ OBEX_UUID ] \
                       )
-    print("[BLUESRV] >> Waiting for connection on RFCOMM channel %d" % self.port)
+      print("[BLUETOOTH] >> Waiting for connection on RFCOMM channel %d" % self.port)
+    except:
+      pass
 
     while True:
       try:
         client = self.sock.accept()
-        print("[BLUESRV] > Accepted connection from ", client[1], flush=True)
+        if not client: break
+        print("[BLUETOOTH] > Accepted connection from ", client[1], flush=True)
         self.clients.append(client)
-        self.trustClient(client)
-        t = threading.Thread(target=self.onRequest, kwargs=dict(client=client, clients=self.clients))
-        self.clientThreads.append(t)
+        self.trust_client(client)
+        t = threading.Thread(target=self.serve, kwargs=dict(client=client))
         t.start()
+        self.client_threads.append(t)
       except:
-        print("[BLUESRV] > Something went wrong with client: {}", client[1])
+        print("[BLUETOOTH] > Something went wrong with client: {}", client[1])
         # self.sock.close()
-  
-  def send(self, sock, data="", cmd=False):
-    sock.send((chr(cmd) if cmd else "") + data + "\x00")
+
+  def run(self):
+    self.running_thread = threading.Thread(target=self._run)
+    self.running_thread.start()
+    
+  def join():
+    try: self.discoverableThread.join()
+    except: pass
+    for client_thread in self.clientThreads:
+      try: client_thread.join()
+      except: pass
+
+  def serve(self, client):
+    client_sock = client[0]
+    client_info = client[1]
+    try:
+      data = b''
+      while True:
+        # ready = select.select([client_sock], [], [], 15)
+        # if ready[0]:
+        #   data = client_sock.recv(1024)
+        # else:
+          # client_sock.close()
+          # return
+        if len(data) <= 0:
+          data += client_sock.recv(1024)
+          print("[BLUETOOTH] > recv: {}".format(data))
+        
+        header, cmd, sub_cmd1, sub_cmd2, data = Connection.resolve_frame(data)
+        if not header: continue
+        self.request_handle(data, cmd, sub_cmd1, sub_cmd2, client_sock)
+    except Exception as e:
+      print("[BLUETOOTH] > Client disconnected ({}): ".format(client_info, e))
+      client_sock.close()
+      self.clients.remove(client)
+
+  def trust_client(self, client):
+    cmd('sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]))
+
+  def lock(self):
+    self.discoverable(False)
   
   @staticmethod
   def setupBluetooth():
@@ -91,19 +134,6 @@ ExecStartPost=/bin/chmod 662 /var/run/sdp"""
       cmd('sudo echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n"; tee > /dev/null | bluetoothctl')
     else:
       cmd('sudo echo "power off\npower on\ndiscoverable off\npairable on\nagent on\ndefault-agent"; tee > /dev/null | bluetoothctl')
-
-  def trustClient(self, client):
-    cmd('sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]))
-
-  def lock(self):
-    self.discoverable(False)
-    
-  def join():
-    try: self.discoverableThread.join()
-    except: pass
-    for client_thread in self.clientThreads:
-      try: client_thread.join()
-      except: pass
 
 # Lỗi khác
 """[advertise_service raise BluetoothError]

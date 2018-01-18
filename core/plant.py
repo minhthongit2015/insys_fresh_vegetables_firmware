@@ -32,10 +32,6 @@ from datetime import timedelta
 import datetime
 import json
 
-class c(timedelta):
-  def print(self):
-    print(self)
-
 class WaterTime:
   """
   Lưu trữ thời gian tưới. Thời gian tưới có thể là mốc thời gian xác định hoặc là khoảng cách giữa các lần tưới

@@ -10,18 +10,23 @@ from collections import namedtuple
 PinStruct = namedtuple('PinStruct', 'pin state index')
 
 class Gardener():
-  def __init__(self, insysFirmware, plants=[], lazy=5, nutritive_lazy=30, nutritive_timestep=3):
+  def __init__(self, insysFirmware, plants=[], water_freq_time=5, nutritive_lazy=30, nutritive_timestep=3):
     self.firmware = insysFirmware
     self.sensors = insysFirmware.sensors
     self.controllers = insysFirmware.controllers
     self.signalLights = insysFirmware.signalLights
     self.plants = plants
-    self.lazy = lazy
+
+    self.autopin = self.controllers.pins[0]
+    self.water_freq_time = water_freq_time
+
     self.pump = self.controllers.pins[3]
-    self.nutritive_lazy = nutritive_lazy
     self.nutritive_valve = self.controllers.pins[1]
     self.nutritive_timestep = nutritive_timestep
-    self.autopin = self.controllers.pins[0]
+    self.nutritive_lazy = nutritive_lazy
+    
+    self.is_watering_by_time = False
+    self.is_watering_by_temp = False
     
     self.config_path = 'config.cfg'
     self.cfg = cfg.ConfigParser()
@@ -60,56 +65,72 @@ class Gardener():
     self.plants.append(plant)
 
   def work(self):
-    self.worker1 = threading.Thread(target=self._water)
-    self.worker1.start()
-    self.worker2 = threading.Thread(target=self._manure)
-    self.worker2.start()
+    self.water_by_time_thread = threading.Thread(target=self.water_by_time)
+    self.water_by_time_thread.start()
+    self.water_by_temp_thread = threading.Thread(target=self.water_by_temperature)
+    self.water_by_temp_thread.start()
+    self.manure_by_pH_thread = threading.Thread(target=self._manure)
+    self.manure_by_pH_thread.start()
     print("[GARDENER] >> Gardener start working")
 
   def join(self):
-    try: self.worker1.join()
+    try: self.water_by_time_thread.join()
     except: pass
-    try: self.worker2.join()
+    try: self.water_by_temp_thread.join()
+    except: pass
+    try: self.manure_by_pH_thread.join()
     except: pass
 
-  def _water(self):
-    last = time()
+  def water_by_time(self):
+    last = 0
     while True:
-      if self.auto: self.water()
       delta = time() - last
-      if delta < self.lazy:
-        sleep(self.lazy - delta)
+      if delta < self.water_freq_time: sleep(self.water_freq_time - delta)
       last = time()
+      if self.auto and not self.is_watering_by_temp:
+        water = False
+        for plant in self.plants:
+          cur_stage = plant.get_current_growth_stage()
+          if cur_stage.is_water_time(plant):
+            water = True
+            self.is_watering_by_time = True
+            if self.pump.on():
+              print("[GARDENER] > start watering by time: ({})".format(datetime.datetime.now().strftime('%H:%M:%S')))
+              self.pump.emitter(self.pump)
+        if not water and self.pump.off():
+          self.is_watering_by_time = False
+          print("[GARDENER] > stop watering by time {}".format(datetime.datetime.now().strftime('%H:%M:%S')))
+          self.pump.emitter(self.pump)
+      elif self.is_watering_by_time:          # Swap water decision channel to water by temp
+        self.is_watering_by_time = False
+        print("[GARDENER] > Swap from water by time to water by temp.")
 
-  def water(self):
-    for plant in self.plants:                       # Duyệt qua tất cả cây trồng
-      cur_stage = plant.get_current_growth_stage()
-      if self.water_by_temperature(cur_stage):
-        return True
-      if self.water_by_time(cur_stage, plant):
-        return True
-    if self.pump.off():
-      self.pump.emitter(self.pump)
-      print("[GARDENER] > stop watering {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
-
-  def water_by_time(self, stage, plant):
-    if stage.is_water_time(plant):
-      if self.pump.on():
-        self.pump.emitter(self.pump)
-        print("[GARDENER] > start watering by time {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
-      return True
-    return False
-  
-  def water_by_temperature(self, stage):
-    temperature = self.temperature.value[1]
-    if temperature > stage.temperature[1] + stage.temperature[2]:
-      if self.pump.on():
-        self.pump.emitter(self.pump)
-        print("[GARDENER] > start watering by temp {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
-        self.signalLights.pins[2].on()
-      return True
-    self.signalLights.pins[2].off()
-    return False
+  def water_by_temperature(self):
+    last = 0
+    while True:
+      delta = time() - last
+      if delta < self.water_freq_time: sleep(self.water_freq_time - delta)
+      last = time()
+      if self.auto:
+        water = False
+        for plant in self.plants:
+          cur_stage = plant.get_current_growth_stage()
+          min_temp = cur_stage.temperature[0]
+          max_temp = cur_stage.temperature[1]
+          deviation = cur_stage.temperature[2]
+          env_temp = self.temperature.value[1]
+          if env_temp > max_temp + deviation:
+            water = True
+            self.is_watering_by_temp = True
+            if self.pump.on():
+              print("[GARDENER] > start watering by temp: {}°C [{}, {}]±{}  ({})".format(env_temp, min_temp, max_temp, deviation, datetime.datetime.now().strftime('%H:%M:%S')))
+              self.pump.emitter(self.pump)
+              self.signalLights.pins[2].on()
+        if self.is_watering_by_temp and not water and self.pump.off():
+          self.is_watering_by_temp = False
+          self.signalLights.pins[2].off()
+          print("[GARDENER] > stop watering by temp: {}°C [{}, {}]±{}  ({})".format(env_temp, min_temp, max_temp, deviation, datetime.datetime.now().strftime('%H:%M:%S')))
+          self.pump.emitter(self.pump)
 
   def _manure(self):
     last = time()
