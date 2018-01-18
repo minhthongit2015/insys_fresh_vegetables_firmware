@@ -149,7 +149,7 @@ class Gardener():
         return True
     if self.nutritive_valve.off():
       self.nutritive_valve.emitter(self.nutritive_valve)
-      print("[GARDENER] > close nutritive valve {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+      print("[GARDENER] > close nutritive valve {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')), flush=True)
       self.adjusting_nutritive = False
 
   def manure_by_pH(self, stage):
@@ -159,7 +159,7 @@ class Gardener():
         self.nutritive_valve.off()
         if not self.adjusting_nutritive:
           self.nutritive_valve.emitter(PinStruct(pin=self.nutritive_valve.pin, state=True, index=self.nutritive_valve.index))
-          print("[GARDENER] > open nutritive valve {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+          print("[GARDENER] > open nutritive valve {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')), flush=True)
           self.adjusting_nutritive = True
       return True
     return False
