@@ -46,8 +46,8 @@ class InsysFirmware(InSysServices):
     self.networkSignalLight = self.signalLights.pins[3]
 
     # Adding event listener to determine whenever sensors are working normally or broken down
-    self.sensors['hutemp'].on_broken = lambda : self.hardwareSignalLight.off()
-    self.sensors['pH'].on_broken = lambda : self.hardwareSignalLight.off()
+    self.sensors['hutemp'].on_broken = self.on_hutemp_broken
+    self.sensors['pH'].on_broken = self.on_pH_broken
     self.sensors['hutemp'].on_working = self.on_hutemp_working
     self.sensors['pH'].on_working = self.on_pH_working
 
@@ -61,11 +61,17 @@ class InsysFirmware(InSysServices):
   def on_hutemp_working(self):
     if self.sensors['pH'].is_normally:
       self.hardwareSignalLight.on()
-      print("[SYS] > Sensors are working normally.")
+      print("[SYS] > All sensors are working normally.")
   def on_pH_working(self):
     if self.sensors['hutemp'].is_normally:
       self.hardwareSignalLight.on()
-      print("[SYS] > Sensors are working normally.")
+      print("[SYS] > All sensors are working normally.")
+  def on_hutemp_broken(self):
+    print("[SYS] > hutemp sensor is not working normally.")
+    self.hardwareSignalLight.off()
+  def on_pH_broken(self):
+    print("[SYS] > pH sensor is not working normally.")
+    self.hardwareSignalLight.off()
 
   def onAutoModeChange(self, pin):
     self.automodeSignalLight.turn(pin.state)
