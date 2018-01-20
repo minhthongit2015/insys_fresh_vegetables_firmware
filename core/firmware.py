@@ -198,8 +198,8 @@ class InsysFirmware(InSysServices):
           self.connection.send(client, sz_records)
         elif sub1 is 2: # get records since a exactly time
           pass
-      elif cmd is 5: # Create and modify Plant
-        if sub1 is 1:
+      elif cmd is 5: # Manage Plant
+        if sub1 is 1: # Get Plants List
           name,planting_date = data.split("|")
           new_plant = Plant()
       
@@ -215,8 +215,8 @@ class InsysFirmware(InSysServices):
     self.sensorThread.start()
 
     print("[SYS] >> Start 'Control' thread")
-    # self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
-    # self.controlThread.start()
+    self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
+    self.controlThread.start()
 
     print("[SYS] >> Start 'Bluetooth Control' thread")
     self.connection_thread = threading.Thread(target=self.connection.run)

@@ -25,7 +25,7 @@ class SEN0161:
       block = self.bus.read_i2c_block_data(self.address, 0, 4)
     except Exception as e:
       if self.is_normally or self.is_normally is None:
-        print("[ERROR] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
+        print("[pHMeter] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
       return self.error_signal
     pH = round(struct.unpack('f', bytearray(block))[0], self.precision)
     self.last_result = pH

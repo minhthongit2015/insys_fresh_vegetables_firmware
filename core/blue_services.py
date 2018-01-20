@@ -38,7 +38,9 @@ class BluetoothService:
     while True:
       try:
         client = self.sock.accept()
-        if not client: break
+        if not client:
+          print("[BLUETOOTH] > Client is null???")
+          continue
         print("[BLUETOOTH] > Accepted connection from ", client[1], flush=True)
         self.clients.append(client)
         self.trust_client(client)
