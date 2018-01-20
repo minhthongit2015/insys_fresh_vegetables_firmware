@@ -63,6 +63,13 @@ def setup():
       from core.blue_service import BluetoothService
       BluetoothService.setupBluetooth()
 
+  while True:
+    try:
+      import websockets
+      break
+    except:
+      cmd('sudo pip3 install websockets')
+
   # Camera setup
   # cmd('sudo apt-get install libmp3lame-dev -y; sudo apt-get install autoconf -y; sudo apt-get install libtool -y; sudo apt-get install checkinstall -y; sudo apt-get install libssl-dev -y')
   # cmd('mkdir /home/pi/src && cd /home/pi/src && git clone git://git.videolan.org/x264 && cd x264 && ./configure --host=arm-unknown-linux-gnueabi --enable-static --disable-opencl && sudo make && sudo make install')
