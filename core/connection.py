@@ -23,6 +23,10 @@ class Connection:
     self.LAN_handle.run()
     self.bluetooth_handle.run()
 
+  def join(self):
+    self.LAN_handle.join()
+    self.bluetooth_handle.join()
+
   def send(self, client, data, cmd=-1, sub1=-1, sub2=-1):
     frame = str(cmd) + str(sub1) + str(sub2) + struct.pack("i", len(data) + Connection.header_length) + data
     client.send(frame)

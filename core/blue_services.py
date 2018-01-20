@@ -15,8 +15,8 @@ class BluetoothService:
     self.client_threads = []
   
   def _run(self):
-    # self.discoverableThread = threading.Thread(target=self.discoverable, args=(False))
-    # self.discoverableThread.start()
+    self.discoverableThread = threading.Thread(target=self.discoverable, args=[False])
+    self.discoverableThread.start()
 
     self.sock = BluetoothSocket(RFCOMM)
     self.sock.bind(("", PORT_ANY))
@@ -40,7 +40,7 @@ class BluetoothService:
         client = self.sock.accept()
         if not client:
           print("[BLUETOOTH] > Client is null???", flush=True)
-          continue
+          break
         print("[BLUETOOTH] > Accepted connection from ", client[1], flush=True)
         self.clients.append(client)
         self.trust_client(client)
@@ -61,6 +61,8 @@ class BluetoothService:
     for client_thread in self.clientThreads:
       try: client_thread.join()
       except: pass
+    try: self.running_thread.join()
+    except: pass
 
   def serve(self, client):
     client_sock = client[0]
