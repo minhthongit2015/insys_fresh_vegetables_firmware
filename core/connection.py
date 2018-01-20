@@ -16,8 +16,8 @@ class Connection:
   header_length = 7
 
   def __init__(self, host="localhost", port=4444, request_handle=None):
-    self.bluetooth_handle = blue.BluetoothService(request_handle)
     self.LAN_handle = LAN.LANServices(host, port, request_handle)
+    self.bluetooth_handle = blue.BluetoothService(request_handle)
 
   def run(self):
     self.LAN_handle.run()

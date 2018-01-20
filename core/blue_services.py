@@ -31,7 +31,7 @@ class BluetoothService:
                       profiles = [ SERIAL_PORT_PROFILE ], \
 #                     protocols = [ OBEX_UUID ] \
                       )
-      print("[BLUETOOTH] >> Waiting for connection on RFCOMM channel %d" % self.port)
+      print("[BLUETOOTH] >> Waiting for connection on RFCOMM channel %d" % self.port, flush=True)
     except:
       pass
 
@@ -39,7 +39,7 @@ class BluetoothService:
       try:
         client = self.sock.accept()
         if not client:
-          print("[BLUETOOTH] > Client is null???")
+          print("[BLUETOOTH] > Client is null???", flush=True)
           continue
         print("[BLUETOOTH] > Accepted connection from ", client[1], flush=True)
         self.clients.append(client)
@@ -48,7 +48,7 @@ class BluetoothService:
         t.start()
         self.client_threads.append(t)
       except:
-        print("[BLUETOOTH] > Something went wrong with client: {}", client[1])
+        print("[BLUETOOTH] > Something went wrong with client: {}", client[1], flush=True)
         # self.sock.close()
 
   def run(self):
@@ -76,18 +76,18 @@ class BluetoothService:
           # return
         if len(data) <= 0:
           data += client_sock.recv(1024)
-          print("[BLUETOOTH] > recv: {}".format(data))
+          print("[BLUETOOTH] > recv: {}".format(data), flush=True)
         
         header, cmd, sub_cmd1, sub_cmd2, data = Connection.resolve_frame(data)
         if not header: continue
         self.request_handle(data, cmd, sub_cmd1, sub_cmd2, client_sock)
     except Exception as e:
-      print("[BLUETOOTH] > Client disconnected ({}): ".format(client_info, e))
+      print("[BLUETOOTH] > Client disconnected ({}): ".format(client_info, e), flush=True)
       client_sock.close()
       self.clients.remove(client)
 
   def trust_client(self, client):
-    cmd('sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]))
+    cmd('sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]), flush=True)
 
   def lock(self):
     self.discoverable(False)
