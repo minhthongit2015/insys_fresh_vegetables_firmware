@@ -192,10 +192,11 @@ class InsysFirmware(InSysServices):
           print("[BLUESRV] > realtime sensors value: {}".format(device_state), flush=True)
           self.connection.send(client, device_state, cmd, sub1, sub2)
         elif sub1 is 2: # get records for last 6 hours
-          print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)))
           records = self.logger.get_records_last_6h()
           sz_records = json.dumps(records)
-          self.connection.send(client, sz_records)
+          print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)))
+          print(sz_records)
+          self.connection.send(client, sz_records, cmd, sub1, sub2)
         elif sub1 is 3: # get records since a exactly time
           pass
       elif cmd is 5: # Manage Plant
