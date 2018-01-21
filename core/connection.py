@@ -1,5 +1,5 @@
 
-"""#### Frame structure
+"""#### Package structure
  ______________________________________________________
 |             Header          | DELM | Data | END_SIGN |
 +:---------------------------:+:----:+:----:+:--------:+
@@ -28,8 +28,8 @@ class Connection:
     self.bluetooth_handle.join()
 
   def send(self, client, data, cmd=-1, sub1=-1, sub2=-1):
-    frame = str(cmd) + str(sub1) + str(sub2) + struct.pack("i", len(data) + Connection.header_length) + data
-    client.send(frame)
+    package = chr(cmd) + chr(sub1) + chr(sub2) + '\x00' + data + '\x00\x00'
+    client.send(package)
 
   @staticmethod
   def resolve_frame(data):
