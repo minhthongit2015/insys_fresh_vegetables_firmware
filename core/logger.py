@@ -60,7 +60,8 @@ class Logger:
     last_6_hours = time() - 6*3600
     records = []
     for line in flog.readlines():
-      record = line.split(" ")
+      if len(line) <= 1: continue
+      record = line[:-1].split(" ")
       if int(record[0]) >= last_6_hours:
         records.append(record)
     flog.close()

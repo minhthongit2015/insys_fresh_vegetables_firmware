@@ -196,7 +196,7 @@ class InsysFirmware(InSysServices):
           sz_records = json.dumps(records)
           print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)))
           print(sz_records)
-          self.connection.send(client, sz_records, cmd, sub1, sub2)
+          self.connection.send(client, json.dumps([["1516539045", "-1", "20", "80"]]), cmd, sub1, sub2)
         elif sub1 is 3: # get records since a exactly time
           pass
       elif cmd is 5: # Manage Plant
