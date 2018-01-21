@@ -86,7 +86,7 @@ class BluetoothService:
         if not header: continue
         self.request_handle(data, cmd, sub_cmd1, sub_cmd2, client_sock)
     except Exception as e:
-      print("[BLUETOOTH] > Client disconnected ({}): ".format(client_info, e), flush=True)
+      print("[BLUETOOTH] > Client disconnected ({}): {}".format(client_info, e), flush=True)
       client_sock.close()
       self.clients.remove(client)
 
