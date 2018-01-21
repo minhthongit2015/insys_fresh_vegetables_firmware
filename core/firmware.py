@@ -54,23 +54,23 @@ class InsysFirmware(InSysServices):
     self.logger = Logger('./log', 'humi_temp_pH')
     self.envs_log = self.logger.create_log_type("envs", "./log")
     self.connection = Connection(request_handle=self.onClientConnect)
-    print("[SYS] >>> System Started Up!")
-    print("[SYS] >>> Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
-    print("[SYS] >>> Firmware Version: {}".format(getFirmwareVersion()))
+    print("[SYS] >>> System Started Up!", flush=True)
+    print("[SYS] >>> Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')), flush=True)
+    print("[SYS] >>> Firmware Version: {}".format(getFirmwareVersion()), flush=True)
 
   def on_hutemp_working(self):
     if self.sensors['pH'].is_normally:
       self.hardwareSignalLight.on()
-      print("[SYS] > [Hardware Checking]: All sensors are working normally.")
+      print("[SYS] > [Hardware Checking]: All sensors are working normally.", flush=True)
   def on_pH_working(self):
     if self.sensors['hutemp'].is_normally:
       self.hardwareSignalLight.on()
-      print("[SYS] > [Hardware Checking]: All sensors are working normally.")
+      print("[SYS] > [Hardware Checking]: All sensors are working normally.", flush=True)
   def on_hutemp_broken(self):
-    print("[SYS] > [Hardware Checking]: hutemp sensor is not working normally.")
+    print("[SYS] > [Hardware Checking]: hutemp sensor is not working normally.", flush=True)
     self.hardwareSignalLight.off()
   def on_pH_broken(self):
-    print("[SYS] > [Hardware Checking]: pH sensor is not working normally.")
+    print("[SYS] > [Hardware Checking]: pH sensor is not working normally.", flush=True)
     self.hardwareSignalLight.off()
 
   def onAutoModeChange(self, pin):
@@ -78,11 +78,11 @@ class InsysFirmware(InSysServices):
 
   def onNetworkError(self, err):
     self.networkSignalLight.off()
-    print("[SYS] >> Network error at: {}\r\n{}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), str(err)))
+    print("[SYS] >> Network error at: {}\r\n{}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S'), str(err)), flush=True)
 
   def onNetworkOnline(self):
     self.networkSignalLight.on()
-    print("[SYS] >> Network is online at: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+    print("[SYS] >> Network is online at: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')), flush=True)
 
   def getSwitchStates(self):
     getStatusAPI = BaseAPI('post', '/api/device/getstatus', {}, self.paramsToJSON({'deviceId': self._deviceId}),
@@ -120,7 +120,7 @@ class InsysFirmware(InSysServices):
       "active": pin.state
     }), headers = {"Content-type": "application/json"})
     self.request(switchAPI)
-    print("[SYS] > Send sync to server pin {} to {}".format(pin.pin, pin.state))
+    print("[SYS] > Send sync to server pin {} to {}".format(pin.pin, pin.state), flush=True)
 
   def putSensorData(self):
     hutemp = self.sensors['hutemp'].value
@@ -194,8 +194,8 @@ class InsysFirmware(InSysServices):
         elif sub1 is 2: # get records for last 6 hours
           records = self.logger.get_records_last_6h()
           sz_records = json.dumps(records)
-          print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)))
-          print(sz_records)
+          print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)), flush=True)
+          print(sz_records, flush=True)
           self.connection.send(client, sz_records.replace(' ',''), cmd, sub1, sub2)
         elif sub1 is 3: # get records since a exactly time
           pass
@@ -207,19 +207,19 @@ class InsysFirmware(InSysServices):
     
 
   def run(self):
-    print("[SYS] >> Starts checking hardware (just sensors)")
+    print("[SYS] >> Starts checking hardware (just sensors)", flush=True)
     self.sensors['hutemp'].run()
     self.sensors['pH'].run()
 
-    print("[SYS] >> Start 'Sensor' thread")
+    print("[SYS] >> Start 'Sensor' thread", flush=True)
     self.sensorThread = threading.Thread(target=self.putSensorDataLoop)
     self.sensorThread.start()
 
-    print("[SYS] >> Start 'Control' thread")
+    print("[SYS] >> Start 'Control' thread", flush=True)
     self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
     self.controlThread.start()
 
-    print("[SYS] >> Start 'Bluetooth Control' thread")
+    print("[SYS] >> Start 'Bluetooth Control' thread", flush=True)
     self.connection_thread = threading.Thread(target=self.connection.run)
     self.connection_thread.start()
 
