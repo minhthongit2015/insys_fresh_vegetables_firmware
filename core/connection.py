@@ -40,4 +40,5 @@ class Connection:
     cmd = header[0]
     sub_cmd1 = header[1]
     sub_cmd2 = header[2]
+    print("[CONNECTION] > package resolved: {}".format((cmd, sub_cmd1, sub_cmd2, data, rest)))
     return (cmd, sub_cmd1, sub_cmd2, data, rest)
