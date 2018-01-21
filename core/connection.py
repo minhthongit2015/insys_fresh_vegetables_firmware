@@ -12,7 +12,7 @@ import core.LAN_services as LAN
 import struct
 
 class Connection:
-  header_length = 7
+  header_length = 3
 
   def __init__(self, host="localhost", port=4444, request_handle=None):
     self.LAN_handle = LAN.LANServices(host, port, request_handle)
@@ -35,6 +35,7 @@ class Connection:
     package = data.split(b'\x00\x00')[0]
     rest = data[len(package)+2:]
     if len(data) < Connection.header_length: return [None]*5
+    print("[CONNECTION] > recv package: {}".format(package))
     header, data = package.split(b'\x00')
     cmd = header[0]
     sub_cmd1 = header[1]
