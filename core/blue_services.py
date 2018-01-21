@@ -1,17 +1,18 @@
 
-from core.connection import *
 try: from bluetooth import *
 except: from dummy.bluetooth import *
 import threading
 import os
 import struct
+from core.connection import *
 
 from subprocess import call
 cmd = os.system
 
 class BluetoothService:
-  def __init__(self, handle=None):
+  def __init__(self, handle=None, resolve_package=None):
     self.request_handle = handle
+    self.resolve_package = resolve_package
     self.clients = []
     self.client_threads = []
   
@@ -83,7 +84,7 @@ class BluetoothService:
         else:
           data = rest
         
-        cmd, sub_cmd1, sub_cmd2, data, rest = Connection.resolve_frame(data)
+        cmd, sub_cmd1, sub_cmd2, data, rest = self.resolve_package(data)
         if not header: continue
         self.request_handle(data, cmd, sub_cmd1, sub_cmd2, client_sock)
     except Exception as e:

@@ -9,7 +9,6 @@
 """
 import core.blue_services as blue
 import core.LAN_services as LAN
-import core.connection
 import struct
 
 class Connection:
@@ -17,7 +16,7 @@ class Connection:
 
   def __init__(self, host="localhost", port=4444, request_handle=None):
     self.LAN_handle = LAN.LANServices(host, port, request_handle)
-    self.bluetooth_handle = blue.BluetoothService(request_handle)
+    self.bluetooth_handle = blue.BluetoothService(request_handle, Connection.resolve_package)
 
   def run(self):
     self.LAN_handle.run()
@@ -32,7 +31,7 @@ class Connection:
     client.send(package)
 
   @staticmethod
-  def resolve_frame(data):
+  def resolve_package(data):
     package = data.split(b'\x00\x00')[0]
     rest = data[len(package)+2:]
     if len(data) < Connection.header_length: return [None]*5
