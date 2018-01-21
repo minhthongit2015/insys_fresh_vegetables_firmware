@@ -27,7 +27,7 @@ class Connection:
     self.bluetooth_handle.join()
 
   def send(self, client, data, cmd=-1, sub1=-1, sub2=-1):
-    package = chr(cmd) + chr(sub1) + chr(sub2) + '\xff' + data + '\x00\x00'
+    package = chr(cmd) + chr(sub1) + chr(sub2) + '\xfe' + data + '\x00\x00'
     client.send(package)
 
   @staticmethod
@@ -36,7 +36,7 @@ class Connection:
     rest = data[len(package)+2:]
     if len(data) < Connection.header_length: return [None]*5
     print("[CONNECTION] > recv package: {}".format(package))
-    header, data = package.split(b'\xff')
+    header, data = package.split(b'\xfe')
     cmd = header[0]
     sub_cmd1 = header[1]
     sub_cmd2 = header[2]
