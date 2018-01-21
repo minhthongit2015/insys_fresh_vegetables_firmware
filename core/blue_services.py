@@ -1,4 +1,5 @@
 
+from core.connection import Connection
 try: from bluetooth import *
 except: from dummy.bluetooth import *
 import threading
