@@ -27,7 +27,10 @@ class Connection:
     self.bluetooth_handle.join()
 
   def send(self, client, data, cmd=-1, sub1=-1, sub2=-1):
-    package = chr(cmd) + chr(sub1) + chr(sub2) + '\xfe' + data + '\x00\x00'
+    cmd = chr(struct.unpack('b', struct.pack('B', cmd))[0])
+    sub1 = chr(struct.unpack('b', struct.pack('B', sub1))[0])
+    sub2 = chr(struct.unpack('b', struct.pack('B', sub2))[0])
+    package = "{}{}{}\xfe{}\x00\x00".format(cmd, sub1, sub2, data)
     client.send(package)
 
   @staticmethod

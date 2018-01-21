@@ -190,7 +190,7 @@ class InsysFirmware(InSysServices):
           pH = self.sensors['pH'].value
           device_state = "{}|{}|{}|{}".format(time(), hutemp[0], hutemp[1], pH)
           print("[BLUESRV] > realtime sensors value: {}".format(device_state), flush=True)
-          self.connection.send(client, device_state)
+          self.connection.send(client, device_state, cmd, sub1, sub2)
         elif sub1 is 2: # get records for last 6 hours
           print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)))
           records = self.logger.get_records_last_6h()
