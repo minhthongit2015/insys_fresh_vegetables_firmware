@@ -91,7 +91,7 @@ class BluetoothService:
       self.clients.remove(client)
 
   def trust_client(self, client):
-    cmd('sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]), flush=True)
+    cmd('sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]))
 
   def lock(self):
     self.discoverable(False)
