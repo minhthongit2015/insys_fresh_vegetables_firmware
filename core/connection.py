@@ -1,11 +1,11 @@
 
 """#### Frame structure
- ___________________________________________________
-|             Header                         | Data |
-+:---------------------------:+:------------:+:----:+
-| cmd | sub cmd 1 | sub cmd 2 | Frame length | Data |
-| 1b  |    1b     |    1b     |      4b      |  nb  |
-+-----+-----------+-----------+--------------+------+
+ ______________________________________________________
+|             Header          | DELM | Data | END_SIGN |
++:---------------------------:+:----:+:----:+:--------:+
+| cmd | sub cmd 1 | sub cmd 2 | \x00 | Data | \x00\x00 |
+| 1b  |    1b     |    1b     |      |  nb  |    2b    |
++-----+-----------+-----------+------+------+----------+
 """
 import core.blue_services as blue
 import core.LAN_services as LAN
@@ -33,11 +33,11 @@ class Connection:
 
   @staticmethod
   def resolve_frame(data):
+    package = data.split(b'\x00\x00')[0]
+    rest = data[len(package)+2:]
     if len(data) < Connection.header_length: return [None]*5
-    header = data[:Connection.header_length]
+    header, data = package.split(b'\x00')
     cmd = header[0]
     sub_cmd1 = header[1]
     sub_cmd2 = header[2]
-    package_length = struct.unpack('d', header[3:])
-    data = data[len(header) : package_length]
-    return (header, cmd, sub_cmd1, sub_cmd2, data)
+    return (cmd, sub_cmd1, sub_cmd2, data, rest)

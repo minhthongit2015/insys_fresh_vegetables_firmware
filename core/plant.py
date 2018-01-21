@@ -123,7 +123,7 @@ class Plant:
     self.planting_date = datetime.datetime(day=int(day), month=int(month), year=int(year))
     self.growth_stages = growth_stages
 
-  def attach_details(self, plant_lib):
+  def save(self, plant_lib):
     pass
 
   def get_current_growth_stage(self):

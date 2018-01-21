@@ -55,7 +55,7 @@ class BluetoothService:
     self.running_thread = threading.Thread(target=self._run)
     self.running_thread.start()
     
-  def join():
+  def join(self):
     try: self.discoverableThread.join()
     except: pass
     for client_thread in self.clientThreads:
@@ -68,7 +68,7 @@ class BluetoothService:
     client_sock = client[0]
     client_info = client[1]
     try:
-      data = b''
+      data,rest = b'',b''
       while True:
         # ready = select.select([client_sock], [], [], 15)
         # if ready[0]:
@@ -76,11 +76,13 @@ class BluetoothService:
         # else:
           # client_sock.close()
           # return
-        if len(data) <= 0:
+        if len(rest) <= 0:
           data += client_sock.recv(1024)
           print("[BLUETOOTH] > recv: {}".format(data), flush=True)
+        else:
+          data = rest
         
-        header, cmd, sub_cmd1, sub_cmd2, data = Connection.resolve_frame(data)
+        cmd, sub_cmd1, sub_cmd2, data, rest = Connection.resolve_frame(data)
         if not header: continue
         self.request_handle(data, cmd, sub_cmd1, sub_cmd2, client_sock)
     except Exception as e:

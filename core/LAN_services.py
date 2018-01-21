@@ -6,8 +6,6 @@ import socketserver
 import threading
 import struct
 from core.connection import *
-import asyncio
-import websockets
 
 class LANHandler(socketserver.BaseRequestHandler):
   # def request_handle(self, data, cmd, sub_cmd):

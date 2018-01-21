@@ -191,12 +191,12 @@ class InsysFirmware(InSysServices):
           pH = self.sensors['pH'].value
           device_state = "{}|{}|{}|{}".format(time(), hutemp[0], hutemp[1], pH)
           self.connection.send(client, device_state)
-        elif sub1 is 1: # get records for last 6 hours
+        elif sub1 is 2: # get records for last 6 hours
           print("[BLUESRV] > transfer records for last 6 hours ({} records).".format(len(records)))
           records = self.logger.get_records_last_6h()
           sz_records = json.dumps(records)
           self.connection.send(client, sz_records)
-        elif sub1 is 2: # get records since a exactly time
+        elif sub1 is 3: # get records since a exactly time
           pass
       elif cmd is 5: # Manage Plant
         if sub1 is 1: # Get Plants List
@@ -223,11 +223,12 @@ class InsysFirmware(InSysServices):
     self.connection_thread.start()
 
   def join(self):
-    try:
-      self.sensorThread.join()
-      self.controlThread.join()
-    except:
-      pass
+    try: self.connection.join()
+    except: pass
+    try: self.sensorThread.join()
+    except: pass
+    try: self.controlThread.join()
+    except: pass
 
   def clean(self):
     clean()
