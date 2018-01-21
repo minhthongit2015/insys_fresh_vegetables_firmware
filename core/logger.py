@@ -53,11 +53,11 @@ class Logger:
     flog = open("{}/{} {}.log".format(self.log_dir, self.log_name, now), "r")
     pass
 
-
   def get_records_last_6h(self):
     if not self.envs_log: return
     now = datetime.datetime.now()
-    flog = open("{}/{} {}.log".format(self.log_dir, self.log_name, now.strftime(self.log_name_time_format)), "r")
+    try: flog = open("{}/{} {}.log".format(self.envs_log['dir'], self.envs_log['type'], now.strftime(self.log_name_time_format)), "r")
+    except: return []
     last_6_hours = now - 6*3600
     records = []
     for line in flog.readlines():
