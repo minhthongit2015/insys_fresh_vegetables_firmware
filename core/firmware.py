@@ -186,13 +186,13 @@ class InsysFirmware(InSysServices):
         self.connection.send(client, device_state)
       elif cmd is 4: # get sensors value
         if sub1 is 1: # get realtime sensors value
-          print("[BLUESRV] > transfer realtime sensors value: {}".format(device_state), flush=True)
           hutemp = self.sensors['hutemp'].value
           pH = self.sensors['pH'].value
           device_state = "{}|{}|{}|{}".format(time(), hutemp[0], hutemp[1], pH)
+          print("[BLUESRV] > realtime sensors value: {}".format(device_state), flush=True)
           self.connection.send(client, device_state)
         elif sub1 is 2: # get records for last 6 hours
-          print("[BLUESRV] > transfer records for last 6 hours ({} records).".format(len(records)))
+          print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)))
           records = self.logger.get_records_last_6h()
           sz_records = json.dumps(records)
           self.connection.send(client, sz_records)
