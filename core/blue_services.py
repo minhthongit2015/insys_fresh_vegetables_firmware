@@ -47,8 +47,8 @@ class BluetoothService:
         t = threading.Thread(target=self.serve, kwargs=dict(client=client))
         t.start()
         self.client_threads.append(t)
-      except:
-        print("[BLUETOOTH] > Something went wrong with client: {}", client[1], flush=True)
+      except Exception as err:
+        print("[BLUETOOTH] > Something went wrong with client {}: {}".format(client[1], err), flush=True)
         # self.sock.close()
 
   def run(self):
