@@ -34,11 +34,11 @@ class Connection:
   def resolve_package(data):
     package = data.split(b'\x00\x00')[0]
     rest = data[len(package)+2:]
-    if len(data) < Connection.header_length: return [None]*5
+    if len(data) < Connection.header_length: return [None, None, None, b'',b'']
     print("[CONNECTION] > recv package: {}".format(package))
     header, data = package.split(b'\xfe')
-    cmd = header[0]
-    sub_cmd1 = header[1]
-    sub_cmd2 = header[2]
+    cmd = struct.unpack('b', struct.pack('B', header[0]))[0]
+    sub_cmd1 = struct.unpack('b', struct.pack('B', header[1]))[0]
+    sub_cmd2 = struct.unpack('b', struct.pack('B', header[2]))[0]
     print("[CONNECTION] > package resolved: {}".format((cmd, sub_cmd1, sub_cmd2, data, rest)))
     return (cmd, sub_cmd1, sub_cmd2, data, rest)
