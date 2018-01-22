@@ -10,9 +10,13 @@ class WebSocketServer:
     self.resolve_package = resolve_package
   
   async def on_request(self, socket, path):
-    print("[WEBSOCKET] > Connection from {}: {}".format(websockets, path))
-    print(socket.recv())
-    pass
+    print("[WEBSOCKET] > Connection from {}: {}".format(socket.remote_address, path))
+    while True:
+      data = await socket.recv()
+      cmd, sub_cmd1, sub_cmd2, data, rest = self.resolve_package(bytes(list(map(ord,data))))
+      if cmd: await socket.send(self.request_handle(data, cmd, sub_cmd1, sub_cmd2, None))
+      if len(rest) <= 1: break
+      else: data = rest
   
   @property
   def ipv4(self):
@@ -24,5 +28,6 @@ class WebSocketServer:
 
   def run(self):
     print("[WEBSOCKET] > Websocket server is listening on {}:{}".format(self.ipv4, self.port))
-    asyncio.get_event_loop().run_until_complete(websockets.serve(self.on_request, self.host, self.port))
+    self.server = websockets.serve(self.on_request, self.host, self.port)
+    asyncio.get_event_loop().run_until_complete(self.server)
     asyncio.get_event_loop().run_forever()

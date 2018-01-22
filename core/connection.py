@@ -42,7 +42,8 @@ class Connection:
     delta = time() - self._last
     if delta < 2: sleep(2-delta)
     self._last = time()
-    client.send(package)
+    if client: client.send(package)
+    else: return package
 
   @staticmethod
   def resolve_package(data):

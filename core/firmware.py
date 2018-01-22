@@ -150,63 +150,62 @@ class InsysFirmware(InSysServices):
       self.putSensorData()
 
   def onClientConnect(self, data, cmd, sub1, sub2, client):
-      if cmd is 1: # Connection/handshake + Authentication
-        if self._deviceId == data.decode("utf-8"):
-          self.token = random.randint(0, 255)
-          self.connection.send(client, self.deviceId)
-          print("[BLUESRV] > bluetooth handshake: {} => {}".format(req[1:], self.token), flush=True)
-        if sub1 is 1: # connect via Bluetooth
-          # Recv Wifi UUID and Password
-          # If have than connect to wifi and return [IP address]
-          print("[BLUESRV] > handshake: return address {}:".format(self.connection.websocket_handle.ipv4, self.connection.websocket_handle.port))
-          self.connection.send(client, "{}:{}".format(self.connection.websocket_handle.ipv4, self.connection.websocket_handle.port), cmd, sub1, sub2)
+    if cmd is 1: # Connection/handshake + Authentication
+      if self._deviceId == data.decode("utf-8"):
+        self.token = random.randint(0, 255)
+        return self.connection.send(client, self.deviceId)
+        print("[BLUESRV] > bluetooth handshake: {} => {}".format(req[1:], self.token), flush=True)
+      if sub1 is 1: # connect via Bluetooth
+        # Recv Wifi UUID and Password
+        # If have than connect to wifi and return [IP address]
+        print("[BLUESRV] > handshake: return address {}:".format(self.connection.websocket_handle.ipv4, self.connection.websocket_handle.port))
+        return self.connection.send(client, "{}:{}".format(self.connection.websocket_handle.ipv4, self.connection.websocket_handle.port), cmd, sub1, sub2)
+        pass
+      elif sub1 is 2: # connect via LAN return [1]
+        pass
+      elif sub1 is 2: # Authentication/Account Manager: recv username/password, check and return [Token]
+        if sub2 is 1: # Register: [username, password]
           pass
-        elif sub1 is 2: # connect via LAN return [1]
+        elif sub2 is 2: # Login: [username, password]
           pass
-        elif sub1 is 2: # Authentication/Account Manager: recv username/password, check and return [Token]
-          if sub2 is 1: # Register: [username, password]
-            pass
-          elif sub2 is 2: # Login: [username, password]
-            pass
-          elif sub2 is 3: # Delete
-            pass
-          elif sub2 is 4: # Change password: [pass_lenght:oldpass|pass_length:newpass]
-            pass
+        elif sub2 is 3: # Delete
           pass
-      elif cmd is 2: # Control device
-        pinIndex = int(data[1])
-        state = bool(data[2])
-        print("[BLUESRV] > via bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state), flush=True)
-        self.controllers.pins[pinIndex].turn(state)
-        self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
-        self.connection.send(client, "OK")
-      elif cmd is 3: # get device state
+        elif sub2 is 4: # Change password: [pass_lenght:oldpass|pass_length:newpass]
+          pass
+        pass
+    elif cmd is 2: # Control device
+      pinIndex = int(data[1])
+      state = bool(data[2])
+      print("[BLUESRV] > via bluetooth set pin {} to {}".format(self.controllers.pins[pinIndex].pin, state), flush=True)
+      self.controllers.pins[pinIndex].turn(state)
+      self.controllers.pins[pinIndex].emitter(self.controllers.pins[pinIndex])
+      return self.connection.send(client, "OK")
+    elif cmd is 3: # get device state
+      hutemp = self.sensors['hutemp'].value
+      pH = self.sensors['pH'].value
+      device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
+      print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
+      return self.connection.send(client, device_state)
+    elif cmd is 4: # get sensors value
+      if sub1 is 1: # get realtime sensors value
         hutemp = self.sensors['hutemp'].value
         pH = self.sensors['pH'].value
-        device_state = "{}/{}|{}|{}".format(str(self.controllers), hutemp[0], hutemp[1], pH)
-        print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
-        self.connection.send(client, device_state)
-      elif cmd is 4: # get sensors value
-        if sub1 is 1: # get realtime sensors value
-          hutemp = self.sensors['hutemp'].value
-          pH = self.sensors['pH'].value
-          device_state = "{}|{}|{}|{}".format(time(), hutemp[0], hutemp[1], pH)
-          print("[BLUESRV] > realtime sensors value: {}".format(device_state), flush=True)
-          self.connection.send(client, device_state, cmd, sub1, sub2)
-        elif sub1 is 2: # get records for last 6 hours
-          records = self.logger.get_records_last_6h()
-          sz_records = json.dumps(records)
-          print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)), flush=True)
-          print(sz_records, flush=True)
-          self.connection.send(client, sz_records.replace(' ',''), cmd, sub1, sub2)
-        elif sub1 is 3: # get records since a exactly time
-          pass
-      elif cmd is 5: # Manage Plant
-        if sub1 is 1: # Get Plants List
-          name,planting_date = data.split("|")
-          new_plant = Plant()
-      
-    
+        device_state = "{}|{}|{}|{}".format(time(), hutemp[0], hutemp[1], pH)
+        print("[BLUESRV] > realtime sensors value: {}".format(device_state), flush=True)
+        return self.connection.send(client, device_state, cmd, sub1, sub2)
+      elif sub1 is 2: # get records for last 6 hours
+        records = self.logger.get_records_last_6h()
+        sz_records = json.dumps(records)
+        print("[BLUESRV] > records for last 6 hours ({} records).".format(len(records)), flush=True)
+        print(sz_records, flush=True)
+        return self.connection.send(client, sz_records.replace(' ',''), cmd, sub1, sub2)
+      elif sub1 is 3: # get records since a exactly time
+        pass
+    elif cmd is 5: # Manage Plant
+      if sub1 is 1: # Get Plants List
+        name,planting_date = data.split("|")
+        new_plant = Plant()
+    return ''
 
   def run(self):
     print("[SYS] >> Starts checking hardware (just sensors)", flush=True)
