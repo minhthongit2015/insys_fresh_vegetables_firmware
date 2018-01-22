@@ -11,6 +11,7 @@ import core.blue_services as blue
 import core.LAN_services as LAN
 import core.websocket as websocket
 import struct
+from time import time, sleep
 
 class Connection:
   header_length = 3
@@ -19,6 +20,7 @@ class Connection:
     # self.LAN_handle = LAN.LANServices(host, port, request_handle)
     self.bluetooth_handle = blue.BluetoothService(request_handle, Connection.resolve_package)
     self.websocket_handle = websocket.WebSocketServer(host, port, request_handle, Connection.resolve_package)
+    self._last = 0
 
   def run(self):
     # self.LAN_handle.run()
@@ -37,6 +39,9 @@ class Connection:
     sub1 = chr(struct.unpack('B', struct.pack('b', sub1))[0])
     sub2 = chr(struct.unpack('B', struct.pack('b', sub2))[0])
     package = "{}{}{}\xfe{}\x00\x00".format(cmd, sub1, sub2, data)
+    delta = time() - self._last
+    if delta < 2: sleep(2-delta)
+    self._last = time()
     client.send(package)
 
   @staticmethod
