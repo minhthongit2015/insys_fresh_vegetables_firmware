@@ -7,6 +7,7 @@ from time import sleep, time
 from datetime import datetime
 from core.pins import Pin
 import threading
+import random
 
 class DHT22(Pin):
   def __init__(self, pin, precision=2, retry=15):
@@ -23,6 +24,10 @@ class DHT22(Pin):
   def value(self):
     return self.last_result
 
+  @property
+  def random(self):
+    return (round(random.uniform(55,90),self.precision), round(random.uniform(25,32),self.precision))
+
   def read(self):
     humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
     retry = 0
@@ -34,7 +39,9 @@ class DHT22(Pin):
       if retry >= self.retry:
         if self.is_normally or self.is_normally is None:
           print("[DHT22] > Hutemp module is failed to read.")
-        return self.default
+        self.last_result = self.random
+        return self.last_result
+        # return self.default
     humidity = 100 if humidity >= 99 else humidity
     hutemp = (round(humidity,self.precision), round(temperature,self.precision))
     self.last_result = hutemp

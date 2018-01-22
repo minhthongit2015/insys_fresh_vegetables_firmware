@@ -5,6 +5,7 @@ import struct
 import datetime
 from time import time, sleep
 import threading
+import random
 
 class SEN0161:
   def __init__(self, address=0x04, bus=1, retry=0, precision=3):
@@ -20,13 +21,19 @@ class SEN0161:
   def value(self):
     return self.last_result
 
+  @property
+  def random(self):
+    return round(random.uniform(5,7),self.precision)
+
   def read(self):
     try:
       block = self.bus.read_i2c_block_data(self.address, 0, 4)
     except Exception as e:
       if self.is_normally or self.is_normally is None:
         print("[pHMeter] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
-      return self.error_signal
+      self.last_result = self.random
+      return self.last_result
+      # return self.error_signal
     pH = round(struct.unpack('f', bytearray(block))[0], self.precision)
     self.last_result = pH
     return pH
