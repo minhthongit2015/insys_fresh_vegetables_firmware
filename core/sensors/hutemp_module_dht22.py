@@ -15,7 +15,7 @@ class DHT22(Pin):
     self.sensor = Adafruit_DHT.DHT22
     self.precision = precision
     self.default = (80, 20)
-    self.last_result = self.default
+    self.last_result = self.random # Simulation
     self.retry = retry
     self.is_normally = None
     self.min_result_freq_time = 10
@@ -39,7 +39,7 @@ class DHT22(Pin):
       if retry >= self.retry:
         if self.is_normally or self.is_normally is None:
           print("[DHT22] > Hutemp module is failed to read.")
-        self.last_result = self.random
+        self.last_result = self.random # Simulation
         return self.last_result
         # return self.default
     humidity = 100 if humidity >= 99 else humidity
