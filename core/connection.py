@@ -16,7 +16,7 @@ from time import time, sleep
 class Connection:
   header_length = 3
 
-  def __init__(self, host="localhost", port=4444, request_handle=None):
+  def __init__(self, host="0.0.0.0", port=4444, request_handle=None):
     # self.LAN_handle = LAN.LANServices(host, port, request_handle)
     self.bluetooth_handle = blue.BluetoothService(request_handle, Connection.resolve_package)
     self.websocket_handle = websocket.WebSocketServer(host, port, request_handle, Connection.resolve_package)

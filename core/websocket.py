@@ -3,7 +3,7 @@ import websockets
 import socket
 
 class WebSocketServer:
-  def __init__(self, host="localhost", port=4444, request_handle=None, resolve_package=None):
+  def __init__(self, host="0.0.0.0", port=4444, request_handle=None, resolve_package=None):
     self.host = host
     self.port = port
     self.request_handle = request_handle
