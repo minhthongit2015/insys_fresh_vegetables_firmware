@@ -9,8 +9,9 @@ class WebSocketServer:
     self.request_handle = request_handle
     self.resolve_package = resolve_package
   
-  async def on_request(self, websocket, path):
+  async def on_request(self, socket, path):
     print("[WEBSOCKET] > Connection from {}: {}".format(websockets, path))
+    print(socket.recv())
     pass
   
   @property

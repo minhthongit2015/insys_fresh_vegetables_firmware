@@ -219,7 +219,7 @@ class InsysFirmware(InSysServices):
 
     print("[SYS] >> Start 'Control' thread", flush=True)
     self.controlThread = threading.Thread(target=self.getSwitchStatesLoop)
-    self.controlThread.start()
+    # self.controlThread.start()
 
     print("[SYS] >> Start 'Bluetooth Control' thread", flush=True)
     self.connection_thread = threading.Thread(target=self.connection.run)
