@@ -158,6 +158,8 @@ class InsysFirmware(InSysServices):
         if sub1 is 1: # connect via Bluetooth
           # Recv Wifi UUID and Password
           # If have than connect to wifi and return [IP address]
+          print("[BLUESRV] > handshake: return address {}:".format(self.connection.websocket_handle.ipv4, self.connection.websocket_handle.port))
+          self.connection.send(client, "{}:{}".format(self.connection.websocket_handle.ipv4, self.connection.websocket_handle.port), cmd, sub1, sub2)
           pass
         elif sub1 is 2: # connect via LAN return [1]
           pass
