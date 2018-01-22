@@ -9,21 +9,27 @@
 """
 import core.blue_services as blue
 import core.LAN_services as LAN
+import core.websocket as websocket
 import struct
 
 class Connection:
   header_length = 3
 
   def __init__(self, host="localhost", port=4444, request_handle=None):
-    self.LAN_handle = LAN.LANServices(host, port, request_handle)
+    # self.LAN_handle = LAN.LANServices(host, port, request_handle)
     self.bluetooth_handle = blue.BluetoothService(request_handle, Connection.resolve_package)
+    self.websocket_handle = websocket.WebSocketServer(host, port, request_handle, Connection.resolve_package)
 
   def run(self):
-    self.LAN_handle.run()
+    # self.LAN_handle.run()
     self.bluetooth_handle.run()
+    # self.websocket_handle.run()
+  
+  def startWebsocketServer(self):
+    self.websocket_handle.run()
 
   def join(self):
-    self.LAN_handle.join()
+    # self.LAN_handle.join()
     self.bluetooth_handle.join()
 
   def send(self, client, data, cmd=-1, sub1=-1, sub2=-1):

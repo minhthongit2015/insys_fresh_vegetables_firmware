@@ -19,7 +19,7 @@ class LANHandler(socketserver.BaseRequestHandler):
         if len(data) <= 0:
           data = self.request.recv(1024).strip()
           print("[LAN] > recv: {}".format(data))
-        header, cmd, sub_cmd1, sub_cmd2, data = Connection.resolve_frame(data)
+        header, cmd, sub_cmd1, sub_cmd2, data = Connection.resolve_package(data)
         if not header: continue
         self.request_handle(data, cmd, sub_cmd1, sub_cmd2, self)
     except Exception as e:
@@ -34,10 +34,6 @@ class LANServices:
     self.host = host
     self.port = port
     LANHandler.request_handle = request_handle
-
-  async def hello(self, uri):
-    async with websockets.connect(uri) as websocket:
-      await websocket.send("Hello world!")
 
   @property
   def ipv4(self):

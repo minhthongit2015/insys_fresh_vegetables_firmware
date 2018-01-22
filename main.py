@@ -34,6 +34,8 @@ if __name__ == "__main__":
     gardener.appendPlant(butterhead_lettuce)
     gardener.work()
 
+    device.startWebsocketServer()
+
     device.join()
     gardener.join()
   except KeyboardInterrupt:

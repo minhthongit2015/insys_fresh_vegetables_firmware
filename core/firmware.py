@@ -233,3 +233,6 @@ class InsysFirmware(InSysServices):
 
   def clean(self):
     clean()
+
+  def startWebsocketServer(self):
+    self.connection.startWebsocketServer()
