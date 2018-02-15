@@ -89,8 +89,8 @@ def setup():
   install_service('insys_update', generate_service_file('insys_update', 'update', cwd, 'INSYS FRESH VEGETABLES - UPDATE SERVICE'))
 
   # Install Camera streaming service
-  cmd('chmod +x ./camera')
-  install_service('insys_camera', generate_service_file('insys_camera', 'camera', cwd, 'INSYS FRESH VEGETABLES - CAMERA TRACKING SERVICE'))
+  cmd('chmod +x ./core/modules/camera')
+  install_service('insys_camera', generate_service_file('insys_camera', 'core/modules/camera', cwd, 'INSYS FRESH VEGETABLES - CAMERA TRACKING SERVICE'))
 
   # Base
   cmd('chmod +x ./uninstall.py')
