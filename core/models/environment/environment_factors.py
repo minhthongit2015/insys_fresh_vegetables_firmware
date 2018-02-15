@@ -41,10 +41,10 @@ class EnvironmentFactor:
     else:
       print("[EnvFactor] > equipment_set or user_plant is None")
   
-  def stop_ensure_living_environment(self, callback):
+  def stop_ensure_living_environment(self, callback=None):
     self.is_ensure_living_environment = False
     self.ensure_thread.join()
-    callback()
+    if callback: callback()
 
   def restart(self):
     self.stop_ensure_living_environment(self.start_ensure_living_environment)
