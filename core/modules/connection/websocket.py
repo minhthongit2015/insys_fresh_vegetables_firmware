@@ -9,7 +9,7 @@ class WebSocketServer:
     self.on_request = on_request
   
   async def request_handle(self, socket, path):
-    print("[WEBSOCKET] > Connection from {}: {}".format(socket.remote_address, path))
+    print("[WebSocket] > Connection from {}: {}".format(socket.remote_address, path))
     data = ''
     while True:
       data += await socket.recv()
@@ -26,7 +26,12 @@ class WebSocketServer:
     return ip
 
   def run(self):
-    print("[WEBSOCKET] > Websocket server is listening on {}:{}".format(self.ipv4, self.port))
-    self.server = websockets.serve(self.request_handle, self.host, self.port)
-    asyncio.get_event_loop().run_until_complete(self.server)
-    asyncio.get_event_loop().run_forever()
+    print("[WebSocket] > Websocket server is listening on {}:{}".format(self.ipv4, self.port))
+    try:
+      self.server = websockets.serve(self.request_handle, self.host, self.port)
+      asyncio.get_event_loop().run_until_complete(self.server)
+      asyncio.get_event_loop().run_forever()
+      return True
+    except:
+      print("[WebSocket] > Failed to start server on {}:{}".format(self.ipv4, self.port))
+      return False
