@@ -72,7 +72,7 @@ class Updater:
     cmd('chmod +x ./update')
     cmd('chmod +x ./update.py')
     cmd('sudo systemctl restart insys_update.service')
-    cmd('chmod +x ./camera')
+    cmd('chmod +x ./core/modules/camera')
     cmd('sudo systemctl restart insys_camera.service')
 
 if __name__ == "__main__":

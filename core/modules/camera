@@ -2,4 +2,4 @@
 
 export TERM=xterm
 clear
-python3 core/camera.py
+python3 core/modules/camera.py
