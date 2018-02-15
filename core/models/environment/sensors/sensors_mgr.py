@@ -8,12 +8,14 @@ import json
 import random
 
 class SensorsManager:
-  def __init__(self, pH_i2c_addr, hutemp_GPIO):
-    self.pHSensor = SEN0161(pH_i2c_addr)
-    self.hutempSensor = DHT22(hutemp_GPIO)
+  def __init__(self, pH_i2c_addr, hutemp_GPIO, simulator=False):
+    self.pHSensor = SEN0161(pH_i2c_addr, simulator)
+    self.hutempSensor = DHT22(hutemp_GPIO, simulator)
 
     self.pHSensor.run()
     self.hutempSensor.run()
+
+    self.simulator = simulator
 
   @property
   def state(self):

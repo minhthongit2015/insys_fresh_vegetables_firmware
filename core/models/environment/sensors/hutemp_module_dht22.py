@@ -11,7 +11,7 @@ import threading
 import random
 
 class DHT22(Pin):
-  def __init__(self, pin, precision=2, retry=15):
+  def __init__(self, pin, precision=2, retry=15, simulator=False):
     Pin.__init__(self, pin, False)
     self.sensor = Adafruit_DHT.DHT22
     self.precision = precision
@@ -20,6 +20,7 @@ class DHT22(Pin):
     self.retry = retry
     self.is_normally = None
     self.min_result_freq_time = 10
+    self.simulator = simulator
 
   @property
   def value(self):
@@ -33,16 +34,17 @@ class DHT22(Pin):
     humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
     retry = 0
     while humidity is None or temperature is None or humidity > 100 or humidity < 0 or (temperature == 0 and humidity == 0):
-      # print("[DHT22] > Hutemp module is failed to read. Retry %d" % retry, flush=True)
-      retry += 1
-      humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
-      sleep(2)
-      if retry >= self.retry:
-        if self.is_normally or self.is_normally is None:
-          print("[DHT22] > Hutemp module is failed to read.")
-        self.last_result = self.random # Simulation
+      if self.simulator:
+        self.last_result = self.random
         return self.last_result
-        # return self.default
+      else:
+        retry += 1
+        humidity, temperature = Adafruit_DHT.read(self.sensor, self.pin)
+        sleep(2)
+        if retry >= self.retry:
+          if self.is_normally or self.is_normally is None:
+            print("[DHT22] > Hutemp module is failed to read.")
+          return self.default
     humidity = 100 if humidity >= 99 else humidity
     hutemp = (round(humidity,self.precision), round(temperature,self.precision))
     self.last_result = hutemp

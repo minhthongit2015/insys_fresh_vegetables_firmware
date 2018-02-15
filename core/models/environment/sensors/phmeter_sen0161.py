@@ -8,7 +8,7 @@ import threading
 import random
 
 class SEN0161:
-  def __init__(self, address=0x04, bus=1, retry=0, precision=3):
+  def __init__(self, address=0x04, bus=1, retry=0, precision=3, simulator=False):
     self.address = address
     self.bus = smbus.SMBus(bus)
     self.precision = precision
@@ -16,6 +16,7 @@ class SEN0161:
     self.last_result = self.error_signal
     self.is_normally = None
     self.min_result_freq_time = 4
+    self.simulator = simulator
   
   @property
   def value(self):
@@ -23,17 +24,19 @@ class SEN0161:
 
   @property
   def random(self):
-    return round(random.uniform(5,7),self.precision)
+    return round(random.uniform(5,7), self.precision)
 
   def read(self):
     try:
       block = self.bus.read_i2c_block_data(self.address, 0, 4)
     except Exception as e:
       if self.is_normally or self.is_normally is None:
-        print("[pHMeter] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
-      self.last_result = self.random
+        if not self.simulator:
+          print("[pHMeter] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
+          self.last_result = self.error_signal
+        else:
+          self.last_result = self.random
       return self.last_result
-      # return self.error_signal
     pH = round(struct.unpack('f', bytearray(block))[0], self.precision)
     self.last_result = pH
     return pH

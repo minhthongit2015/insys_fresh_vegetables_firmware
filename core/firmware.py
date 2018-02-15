@@ -9,7 +9,7 @@ from core.modules.logger import Logger
 
 class InSysFirmware:
   def __init__(self):
-    self.equipment_mgr = EquipmentManager()
+    self.equipment_mgr = EquipmentManager(True)
 
     self.central_equipment = self.equipment_mgr.central_equipments
     self.gardener = Gardener(self.equipment_mgr)

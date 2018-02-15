@@ -6,14 +6,16 @@ from core.models.equipment.actions import *
 
 
 class EquipmentManager:
-  def __init__(self):
+  def __init__(self, emulate_sensors=False):
+    self.emulate_sensors = emulate_sensors
+
     self.cfg = ConfigManager('EquipmentConfig')
     self.central_equipments = CentralSet(self.cfg.getz('Central'))
 
     list_equipment_sets = self.cfg.getz('EquipmentSets')
     self.equipment_sets = []
     for equipment_set in list_equipment_sets:
-      self.equipment_sets.append(EquipmentSet(equipment_set['name'], equipment_set['config'][0], equipment_set['config'][1:]))
+      self.equipment_sets.append(EquipmentSet(equipment_set['name'], equipment_set['config'][0], equipment_set['config'][1:], emulate_sensors))
 
   def get_by_name(self, name):
     for equipment_set in self.equipment_sets:
@@ -21,9 +23,9 @@ class EquipmentManager:
         return equipment_set
 
 class EquipmentSet:
-  def __init__(self, name, i2c_addr=0, pins=[]):
+  def __init__(self, name, i2c_addr=0, pins=[], emulate_sensors=False):
     self.name = name
-    self.sensors_mgr = SensorsManager(i2c_addr, pins[0])
+    self.sensors_mgr = SensorsManager(i2c_addr, pins[0], emulate_sensors)
     self.hardware_check_led = Pin(pins[1])
     self.envs_check_led = Pin(pins[2])
     self.automation_led = Pin(pins[3])
