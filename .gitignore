@@ -9,3 +9,4 @@
 /log
 /core/*.pyc
 /core/pHmeter/__pycache__
+__pycache__/

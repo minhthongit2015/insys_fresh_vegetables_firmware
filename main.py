@@ -17,27 +17,11 @@
        Đèn sáng khi có kết nối internet tới server
 """
 
-from core.firmware import InsysFirmware, getLocalDeviceId
-from core.gardener import Gardener
-from core.plant import Plant
-from core.plant_library import PlantLibrary
+from core.firmware import InSysFirmware
 
 if __name__ == "__main__":
   try:
-    plant_lib = PlantLibrary('./plants/vegetables.json')
-    butterhead_lettuce = plant_lib.plant_parse(plant_lib.library[0])
-
-    device = InsysFirmware(getLocalDeviceId('ID.txt'), [26,19,13,6], [4, 0x04], [17,27,22,10,9], 5, 300)
-    device.run()
-
-    gardener = Gardener(device, water_freq_time=2)
-    gardener.appendPlant(butterhead_lettuce)
-    gardener.work()
-
-    device.startWebsocketServer()
-
-    device.join()
-    gardener.join()
+    central_unit = InSysFirmware()
+    central_unit.run()
   except KeyboardInterrupt:
-    device.clean()
-    print("[SYS] >>> System shutdown!")
+    central_unit.shutdown()

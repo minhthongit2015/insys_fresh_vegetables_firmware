@@ -1,0 +1,72 @@
+[
+  {
+    "plant_name": "Xà lách mỡ (Butterhead Lettuce)",
+    "plant_type": "butterhead_lettuce",
+    "growth_stages": [
+      {
+        "stage_order": 1,
+        "stage_name": "Ươm mầm",
+        "start": 1, "end": 7,
+        "living_environment": [
+          { "name": "water",
+            "water": [
+              { "time": "6:20, 17:20", "duration": "15" },
+              { "every": "6", "duration": "1" }
+            ] },
+          { "name": "temperature", "temperature": [25, 28, 3] },
+          { "name": "pH", "pH": [6.5, 7.5] },
+          { "name": "ppm", "ppm": [2000, 100] },
+          { "name": "light", "light": "3 tiếng sáng sớm hoặc chiều" }
+        ]
+      },
+      {
+        "stage_order": 2,
+        "stage_name": "Chăm cây mầm",
+        "start": 7, "end": 14,
+        "living_environment": [
+          { "name": "water",
+            "water": [
+              { "time": "6:20, 17:20", "duration": "15" },
+              { "every": "6", "duration": "1" }
+            ] },
+          { "name": "temperature", "temperature": [25, 28, 3] },
+          { "name": "light", "light": "3 tiếng sáng sớm hoặc chiều" },
+          { "name": "pH", "pH": [6, 6.5] },
+          { "name": "ppm", "ppm": [2000, 100] }
+        ]
+      },
+      {
+        "stage_order": 3,
+        "stage_name": "Phát triển tuần 1,2",
+        "start": 14, "end": 28,
+        "living_environment": [
+          { "name": "water",
+            "water": [
+              { "time": "6:20, 17:20", "duration": "15" },
+              { "every": "6", "duration": "1" }
+            ] },
+          { "name": "temperature", "temperature": [25, 28, 3] },
+          { "name": "light", "light": "ưa ánh sáng và bóng râm" },
+          { "name": "pH", "pH": [6, 6.5] },
+          { "name": "ppm", "ppm": [2000, 100] }
+        ]
+      },
+      {
+        "stage_order": 4,
+        "stage_name": "Phát triển tuần 3,4,5",
+        "start": 28, "end": 49,
+        "living_environment": [
+          { "name": "water",
+            "water": [
+              { "time": "6:20, 17:20", "duration": "15" },
+              { "every": "6", "duration": "1" }
+            ] },
+          { "name": "temperature",  "temperature": [25, 28, 3] },
+          { "name": "light", "light": "ưa ánh sáng và bóng râm" },
+          { "name": "pH", "pH": [6, 6.5] },
+          { "name": "ppm", "ppm": [2000, 100] }
+        ]
+      }
+    ]
+  }
+]

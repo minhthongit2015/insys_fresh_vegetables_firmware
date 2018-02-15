@@ -1,0 +1,10 @@
+[{
+  "name": "Trụ Khí Canh 01",
+  "equipment_set_name": "Hydroponic_01",
+  "plants": [{
+    "alias": "Xà Lách 01",
+    "plant_type": "butterhead_lettuce",
+    "plant_id": "butterhead_lettuce-01",
+    "planting_date": "16/1/2018"
+  }]
+}]
