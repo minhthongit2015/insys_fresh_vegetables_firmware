@@ -14,18 +14,29 @@ class ConfigManager(cfg.ConfigParser):
     self.save()
 
   def read(self):
-    super().read(self.config_file_path, encoding='utf-8')
+    try:
+      super().read(self.config_file_path, encoding='utf-8')
+    except:
+      with open(self.config_file_path, 'w') as fp: fp.close()
 
   def set(self, key, value, section=''):
-    if section != '': self.section = section
+    if not section: section = self.section
     self.read()
-    self.set(self.section, key, json.dumps(value, ensure_ascii=False))
+    super().set(section, key, json.dumps(value, ensure_ascii=False))
     self.save()
   
   def getz(self, key, section=''):
     self.read()
-    if section != '': self.section = section
-    return json.loads(super().get(section=self.section, option=key))
+    if not section: section = self.section
+    try: value = super().get(section=section, option=key)
+    except: return None
+    return json.loads(value)
+
+  def getc(self, key, section=''):
+    if not section: section = self.section
+    try: value = super().get(section=section, option=key)
+    except: return None
+    return json.loads(value)
   
   def save(self):
     with open(self.config_file_path, 'w') as fp:

@@ -74,17 +74,21 @@ class ConnectionManager:
 
   @staticmethod
   def build_header(cmd, sub1=255, sub2=255):
-    cmd = chr(struct.unpack('B', struct.pack('b', cmd))[0])
-    sub1 = chr(struct.unpack('B', struct.pack('b', sub1))[0])
-    sub2 = chr(struct.unpack('B', struct.pack('b', sub2))[0])
+    cmd = chr(cmd)
+    sub1 = chr(sub1)
+    sub2 = chr(sub2)
     return "{}{}{}".format(cmd, sub1, sub2)
 
 
   @staticmethod
   def resolve_package(data):
-    default = [None, None, None, b'', data]
+    is_str = False
+    if 'str' in str(type(data)):
+      is_str = True
 
-    packages = data.split(b'\x00\x00')
+    default = [None, None, None, '' if is_str else b'', data]
+
+    packages = data.split('\x00\x00' if is_str else b'\x00\x00')
     if len(packages) < 2:
       return default
 
@@ -93,11 +97,11 @@ class ConnectionManager:
     if len(data) < ConnectionManager.header_length:
       return default
     try:
-      header, data = package.split(b'\xfe')
+      header, data = package.split('\xfe' if is_str else b'\xfe')
     except:
       return default
-    cmd = struct.unpack('b', struct.pack('B', header[0]))[0]
-    sub_cmd1 = struct.unpack('b', struct.pack('B', header[1]))[0]
-    sub_cmd2 = struct.unpack('b', struct.pack('B', header[2]))[0]
-    print("[CONNECTION] > package: {}".format((cmd, sub_cmd1, sub_cmd2, data, rest)))
-    return (cmd, sub_cmd1, sub_cmd2, data, rest)
+    cmd = ord(header[0]) if is_str else header[0]
+    sub1 = ord(header[1]) if is_str else header[1]
+    sub2 = ord(header[2]) if is_str else header[2]
+    print("[CONNECTION] > package: {}".format((cmd, sub1, sub2, data, rest)))
+    return (cmd, sub1, sub2, data, rest)

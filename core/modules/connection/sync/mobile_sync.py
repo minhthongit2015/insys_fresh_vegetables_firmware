@@ -11,7 +11,10 @@ class MobileSync:
     self.gardener = gardener
     self.conn_mgr = conn_mgr
 
+    self.conn_mgr.register_request_handle(1, self.request_handle)
     self.conn_mgr.register_request_handle(2, self.request_handle)
+    self.conn_mgr.register_request_handle(3, self.request_handle)
+    self.conn_mgr.register_request_handle(4, self.request_handle)
   
   def request_handle(self, cmd, sub1, sub2, data, client):
     # if cmd is 1: # Connection/handshake + Authentication
@@ -47,13 +50,12 @@ class MobileSync:
         cylinder_name = json.loads(data)
         package = self.gardener.dump()
         return self.conn_mgr.send(client, package)
-        pass
       # print("[BLUESRV] > transfer device state: {}".format(device_state), flush=True)
-    elif cmd is 3: # cmd 3: Receive command
+    elif cmd is 3: # cmd 3: Receive user command
       # [ cylinder_name, equipment_id, state ]
-      cylinder_name, equipment_id, state = json.loads(data, encoding='utf-8')
-      self.gardener.command_handle(cylinder_name, equipment_id, state)
-      return self.conn_mgr.send(client, "OK")
+      cylinder_id, equipment, state = json.loads(data, encoding='utf-8')
+      self.gardener.command_handle(cylinder_id, equipment, state)
+      return self.conn_mgr.send(client, cmd, sub1, sub2, "YUP")
     # elif cmd is 4: # get sensors value
     #   if sub1 is 1: # get realtime sensors value
     #     hutemp = self.sensors['hutemp'].value

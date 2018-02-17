@@ -9,13 +9,17 @@ class WebSocketServer:
     self.on_request = on_request
   
   async def request_handle(self, socket, path):
-    print("[WebSocket] > Connection from {}: {}".format(socket.remote_address, path))
+    print("[WebSocket] > Connection from {} (path: {}).".format(socket.remote_address, path))
     data = ''
-    while True:
-      data += await socket.recv()
-      data, package_2_send = self.on_request(bytes(list(map(ord,data))))
-      if len(package_2_send) > 0:
-        await socket.send(package_2_send)
+    try:
+      while True:
+        data += await socket.recv()
+        data, package_2_send = self.on_request(data)
+        if len(package_2_send) > 0:
+          await socket.send(package_2_send)
+    except:
+      print("[Websocket] > Client disconnected ({}).".format(socket.remote_address))
+      pass
   
   @property
   def ipv4(self):
@@ -26,12 +30,12 @@ class WebSocketServer:
     return ip
 
   def run(self):
-    print("[WebSocket] > Websocket server is listening on {}:{}".format(self.ipv4, self.port))
+    print("[WebSocket] >> Websocket server is listening on {}:{}".format(self.ipv4, self.port))
     try:
       self.server = websockets.serve(self.request_handle, self.host, self.port)
       asyncio.get_event_loop().run_until_complete(self.server)
       asyncio.get_event_loop().run_forever()
       return True
     except:
-      print("[WebSocket] > Failed to start server on {}:{}".format(self.ipv4, self.port))
+      print("[WebSocket] >> Failed to start server on {}:{}".format(self.ipv4, self.port))
       return False

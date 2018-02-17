@@ -22,6 +22,7 @@ class Gardener:
 
   @auto.setter
   def auto(self, state):
+    print("[Gardener] > Automation mode is set to {}".format(state))
     self.cfg.set('automation', state)
 
   def start_working(self):
@@ -34,7 +35,8 @@ class Gardener:
       print("[Gardener] > Automation mode is off.")
 
   def _work(self):
-    self.hydroponic_mgr.start_ensure_living_environment()
+    # self.hydroponic_mgr.start_ensure_living_environment()
+    pass
 
   def keep_working(self):
     print("[Gardener] >> Keep working.")
@@ -48,10 +50,10 @@ class Gardener:
     
     self.hydroponic_mgr.stop_ensure_living_environment()
 
-  def command_handle(self, cylinder_name, equipment, state):
-    hydroponic_cylinder = self.hydroponic_mgr.get_hydroponic_by_name(cylinder_name)
-    if equipment is 'pump':
-      hydroponic_cylinder.equipment_set.pump.turn('UserSet', state)
+  def command_handle(self, cylinder_id, equipment, state):
+    self.hydroponic_mgr.set_state(cylinder_id, equipment, state, 'UserSet')
+    # if equipment == 'pump':
+    #   hydroponic_cylinder.equipment_set.pump.turn('UserSet', state)
 
   def dump(self):
     return self.hydroponic_mgr.dump()

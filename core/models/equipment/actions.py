@@ -39,7 +39,7 @@ class Action:
     except:
       print("[ACTIONLIST] >> Failed to load plant library ({})".format(action_path))
 
-  def add_listener(self, event='', reason='', listener=None):
+  def addEventListener(self, event='', listener=None, reason=''):
     """ Lắng nghe sự kiện ``event`` xảy ra bởi nguyên nhân ``reason``. Nếu ``reason`` để trống sẽ lắng nghe trên tất cả nguyên nhân."""
     if listener is None: return
     if reason is '': reason = '*'
@@ -95,27 +95,31 @@ class Action:
     print("[Action] > \"{}\" started cause \"{}\".".format(self.action_name, reason), flush=True)
     if reason in self.start_listeners:
       for listener in self.start_listeners[reason]:
-        listener()
-      for listener in self.start_listeners['*']:
-        listener()
+        listener(reason)
+    for listener in self.start_listeners['*']:
+      listener(reason)
 
   def on_stoped(self, reason=''):
     print("[Action] > \"{}\" stoped cause \"{}\".".format(self.action_name, reason), flush=True)
     if reason in self.stop_listeners:
       for listener in self.stop_listeners[reason]:
-        listener()
-      for listener in self.stop_listeners['*']:
-        listener()
+        listener(reason)
+    for listener in self.stop_listeners['*']:
+      listener(reason)
 
 class WaterAction(Action):
   def __init__(self, pump_pin, default_reason=''):
     super().__init__(Pin(pump_pin, reverse=True), default_reason, 'Water')
 
 class NutrientAction(Action):
-  def __init__(self, valve_pin, default_reason):
+  def __init__(self, valve_pin, default_reason=''):
     super().__init__(Pin(valve_pin, reverse=True), default_reason, 'Nutrient')
 
+class LightAction(Action):
+  def __init__(self, valve_pin, default_reason=''):
+    super().__init__(Pin(valve_pin, reverse=True), default_reason, 'Light')
+
 class SignalAction(Action):
-  def __init__(self, signal_led_pin, default_reason, signal_name):
-    super().__init__(signal_led_pin, default_reason, "Signal_{}".format(signal_name))
+  def __init__(self, signal_led_pin, signal_name='', default_reason=''):
+    super().__init__(Pin(signal_led_pin), default_reason, "Signal_{}".format(signal_name))
 
