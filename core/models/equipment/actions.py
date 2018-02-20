@@ -53,7 +53,7 @@ class Action:
       if reason in event_mapping[event]:
         event_mapping[event][reason].append(listener)
 
-  def on(self, reason=''):
+  def _on(self, reason=''):
     if reason is '':
       if self.default_reason is not '':
         reason = self.default_reason
@@ -65,10 +65,19 @@ class Action:
         self.on_started(reason)
         return True
     return False
-  def start(self, reason=''):
-    return self.on(reason)
+  def on(self, reason_s=[]):
+    rs = False
+    if not reason_s: len(reason_s)
+    elif 'str' in str(type(reason_s)):
+      rs = self._on(reason_s)
+    else:
+      for reason in reason_s: rs = rs or self._on(reason)
+    return rs
+  def start(self, reason_s=[]):
+    return self.on(reason_s)
   
-  def off(self, reason=''):
+  
+  def _off(self, reason=''):
     if reason is '':
       if self.default_reason is not '':
         reason = self.default_reason
@@ -82,14 +91,22 @@ class Action:
           return True
       except: pass
     return False
-  def stop(self, reason=''):
-    return self.off(reason)
+  def off(self, reason_s=[]):
+    rs = False
+    if not reason_s: len(reason_s)
+    elif 'str' in str(type(reason_s)):
+      rs = self._off(reason_s)
+    else:
+      for reason in reason_s: rs = rs or self._off(reason)
+    return rs
+  def stop(self, reason_s=[]):
+    return self.off(reason_s)
 
-  def turn(self, state, reason=''):
-    if state: self.on(reason)
-    else: self.off(reason)
-  def set(self, state, reason=''):
-    self.turn(state, reason)
+  def turn(self, state, reason_s=[]):
+    if state: return self.on(reason_s)
+    else: return self.off(reason_s)
+  def set(self, state, reason_s=[]):
+    return self.turn(state, reason_s)
 
   def on_started(self, reason=''):
     print("[Action] > \"{}\" started cause \"{}\".".format(self.action_name, reason), flush=True)
@@ -106,6 +123,10 @@ class Action:
         listener(reason)
     for listener in self.stop_listeners['*']:
       listener(reason)
+  
+  def clear_reasons(self):
+    for reason in self.reasons:
+      self._off(reason)
 
 class WaterAction(Action):
   def __init__(self, pump_pin, default_reason=''):

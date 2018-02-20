@@ -65,13 +65,19 @@ class UserPlant:
       if stage.start <= daypass.days + 1 <= stage.end:
         return stage
     return None
+  
+  @property
+  def harvest_time(self):
+    if self.plant: return self.plant.growth_stages[-1].end
+    else: return 0
 
   def dump(self):
     user_plant = {
       "alias": self.alias,
       "plant_type": self.plant_type,
       "plant_id": self.plant_id,
-      "planting_date": self.planting_date
+      "planting_date": self.planting_date,
+      "harvest_time": self.harvest_time
     }
     return user_plant
 
@@ -92,12 +98,18 @@ class ListUserPlant:
   - Điều kiện môi trường kỳ vọng.
   """
   def __init__(self, plants, plant_lib):
+    self.plants = []
     self.load(plants, plant_lib)
 
   def load(self, plants, plant_lib):
-    self.plants = []
     for plant in plants:
       self.plants.append(UserPlant.normalize(plant, plant_lib))
+
+  def remove_plant(self, plant_id):
+    for plant in self.plants:
+      if plant.plant_id == plant_id:
+        self.plants.remove(plant)
+        break
 
   def dump(self):
     plants = []

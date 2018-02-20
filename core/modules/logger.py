@@ -4,14 +4,14 @@ import os
 from time import time
 
 class Logger:
-  def __init__(self, log_dir='.', log_name='', time_format='%Y-%m-%d'):
+  def __init__(self, log_name='', log_dir='.', time_format='%Y-%m-%d'):
     self.log_dir = log_dir
     self.log_name = log_name
     self.log_name_time_format = time_format
     self.flog = None
     self.logs = []
     self.envs_log = None
-    if not os.path.exists(log_dir): os.makedirs(log_dir)
+    os.makedirs(log_dir, exist_ok=True)
 
   def create_log_type(self, log_type, log_dir=''):
     if len(log_dir) <= 0: log_dir = self.log_dir
@@ -23,49 +23,45 @@ class Logger:
     if log_type == 'envs': self.envs_log = new_log
     return new_log
 
-  def dump_record(self, log, data):
-    now = datetime.datetime.now().strftime(self.log_name_time_format)
-    flog = open("{}/{} {}.log".format(log['dir'], log['type'], now), "a+")
-    flog.write("{} {}\n".format(int(time()), data))
-    flog.close()
-
-  def record(self, line, keep_open=False, log_name='', dump_time=True):
-    """
-    * `line`: string store information need to log
-    * `keep_open`: keep the file open (to increse performance)
-    * `log_name`: overwrite default log name file
-    * `dump_time`: append timestamp to logfile or not (default is True)
-    """
-    now = datetime.datetime.now().strftime(self.log_name_time_format)
-    if self.flog == None or log_name != '' or keep_open == False:
-      if log_name != '': self.log_name = log_name
-      self.flog = open("{}/{} {}.log".format(self.log_dir, self.log_name, now), "a+")
-
-    time_now = datetime.datetime.now().strftime('[%H:%M:%S] ') if dump_time else ''
-    self.flog.write('{}{}\n'.format(time_now, line))
-
-    if not keep_open: self.flog.close()
-    return self.flog
-
-  def get_record_since(self):
-    if not self.envs_log: return
-    now = datetime.datetime.now().strftime(self.log_name_time_format)
-    flog = open("{}/{} {}.log".format(self.log_dir, self.log_name, now), "r")
-    pass
-
-  def get_records_last_6h(self):
-    if not self.envs_log: return
-    try: flog = open("{}/{} {}.log".format(self.envs_log['dir'], self.envs_log['type'], datetime.datetime.now().strftime(self.log_name_time_format)), "r")
-    except: return []
-    last_6_hours = time() - 6*3600
+  @staticmethod
+  def log(record, file_name='', path='log', keep_open=False):
+    if not os.path.exists(path): os.makedirs(path)
+    with open("{}/{}_{}".format(path, file_name, Logger.today()), "a+") as fp:
+      fp.write('{}\xc4{}\n'.format(round(time()), record))
+      if keep_open: return fp
+      else: fp.close()
+  
+  @staticmethod
+  def get_log(file_name, path, hours_ago=6):
     records = []
-    for line in flog.readlines():
-      if len(line) <= 1: continue
-      record = line[:-1].split(" ")
-      if int(record[0]) >= last_6_hours:
-        records.append(record)
-    flog.close()
-    return records
+    if not os.path.exists(path): return []
+    else:
+      today = Logger.today()
+      pivot = time() - hours_ago*3600
+      start = pivot
+      pivot_date = Logger.pivot(start)
+      while pivot_date <= today:
+        with open("{}/{}_{}".format(path, file_name, pivot_date), "r") as fp: # today
+          for line in fp:
+            record_time, record_data = line[:-1].split("\xc4")
+            if float(record_time) >= pivot:
+              records.append([float(record_time), record_data]) # [time, record]
+        start += 86400
+        pivot_date = Logger.pivot(start)
+      return records
+
+
+  @staticmethod
+  def pivot(timestamp):
+    return datetime.datetime.fromtimestamp(timestamp).strftime('%Y_%m_%d')
+
+  @staticmethod
+  def today():
+    return datetime.datetime.now().strftime('%Y_%m_%d')
+
+  @staticmethod
+  def today_obj():
+    return datetime.datetime.fromtimestamp(time()-86400)
 
   @staticmethod
   def time():

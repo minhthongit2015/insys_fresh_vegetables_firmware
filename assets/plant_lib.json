@@ -1,7 +1,7 @@
 [
   {
-    "plant_name": "Xà lách mỡ (Butterhead Lettuce)",
-    "plant_type": "butterhead_lettuce",
+    "plant_name": "Xà lách (Lettuce)",
+    "plant_type": "lettuce",
     "growth_stages": [
       {
         "stage_order": 1,

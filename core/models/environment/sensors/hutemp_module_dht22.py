@@ -1,6 +1,7 @@
 # coding=utf-8
 
 from core.models.gpio.gpio import Pin
+from core.modules.thread_looping import ThreadLooping
 
 try: import Adafruit_DHT
 except: import dummy.Adafruit_DHT as Adafruit_DHT
@@ -12,7 +13,8 @@ import random
 
 class DHT22(Pin):
   def __init__(self, pin, precision=2, retry=15, simulator=False):
-    Pin.__init__(self, pin, False)
+    super().__init__(pin, False)
+    self.name = "HuTemp"
     self.sensor = Adafruit_DHT.DHT22
     self.precision = precision
     self.default = (80, 20)
@@ -51,37 +53,29 @@ class DHT22(Pin):
     return hutemp
 
   def run(self):
-    self.running_thread = threading.Thread(target=self._run)
-    self.running_thread.start()
-    self.checking_thread = threading.Thread(target=self.check)
+    self.reading_thread = ThreadLooping(target=self.read)
+    self.reading_thread.start()
+    self.checking_thread = ThreadLooping(target=self.check)
     self.checking_thread.start()
   
-  def join(self):
-    self.running_thread.join()
-    self.checking_thread.join()
-
-  def _run(self):
-    last_result_time = 0
-    while True:
-      delta = time() - last_result_time
-      if delta < self.min_result_freq_time:
-        sleep(self.min_result_freq_time - delta)
-      last_result_time = time()
-      self.read()
+  def stop(self):
+    self.reading_thread.stop()
+    self.checking_thread.stop()
 
   def check(self):
-    while True:
-      if self.value == self.default:
-        if self.is_normally or self.is_normally is None:
-          print("[DHT22] > Hutemp module is not working normally.")
-          self.is_normally = False
-          self.on_broken()
-      else:
-        if not self.is_normally or self.is_normally is None:
-          print("[DHT22] > Hutemp module is working normally.")
-          self.is_normally = True
-          self.on_working()
-      sleep(self.min_result_freq_time)
+    if self.value == self.default:
+      if self.is_normally or self.is_normally is None:
+        print("[DHT22] > Hutemp module is not working normally.")
+        self.is_normally = False
+        self.on_broken()
+        self.on_state_change(self, False)
+    else:
+      if not self.is_normally or self.is_normally is None:
+        print("[DHT22] > Hutemp module is working normally.")
+        self.is_normally = True
+        self.on_working()
+        self.on_state_change(self, True)
+    sleep(self.min_result_freq_time)
 
   def on_broken(self):
     """override to add event listener for broken event"""
@@ -89,4 +83,8 @@ class DHT22(Pin):
 
   def on_working(self):
     """override to add event listener for working good event"""
+    pass
+
+  def on_state_change(self, sensor, state):
+    """override to add event listener for both working well and broken event"""
     pass

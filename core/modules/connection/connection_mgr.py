@@ -22,6 +22,10 @@ class ConnectionManager:
     self.websocket_handle = websocket.WebSocketServer(host, port, self.on_request)
     self._last_send = 0
     self.handle_mapping = { }
+  
+  @property
+  def host(self):
+    return self.websocket_handle.host
 
   def register_request_handle(self, cmd, handle=None):
     if handle is not None:

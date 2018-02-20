@@ -1,6 +1,7 @@
 
 from core.modules.timepoint import TimePointGroup
 from core.modules.logger import Logger
+from core.modules.thread_looping import ThreadLooping
 
 from time import time, sleep
 import threading
@@ -9,15 +10,11 @@ class EnvironmentFactor:
   def __init__(self, name, info_in_lib=None):
     self.name = name
     self.is_ensure_living_environment = False
+    self.ensure_thread = ThreadLooping(target=self._ensure_living_environment, wait_time=2)
     # self.parse_from_lib(info_in_lib)
 
   def parse_from_lib(self, info_in_lib):
     pass
-
-  def _ensure_living_environment_loop(self):
-    while self.is_ensure_living_environment:
-      self._ensure_living_environment()
-      sleep(2)
 
   def _ensure_living_environment(self):
     """ Kiểm tra thông số môi trường có hợp lệ và đưa ra hành động cần thiết để điều chỉnh
@@ -35,19 +32,16 @@ class EnvironmentFactor:
     if equipment_set is not None and user_plant is not None:
       self._save_equipmentset_plantinfo(equipment_set, user_plant)
     if self.equipment_set is not None and self.user_plant is not None:
-      self.is_ensure_living_environment = True
-      self.ensure_thread = threading.Thread(target=self._ensure_living_environment_loop)
       self.ensure_thread.start()
     else:
       print("[EnvFactor] > equipment_set or user_plant is None")
   
-  def stop_ensure_living_environment(self, callback=None):
-    self.is_ensure_living_environment = False
-    self.ensure_thread.join()
-    if callback: callback()
+  def stop_ensure_living_environment(self):
+    self.ensure_thread.stop()
 
-  def restart(self):
-    self.stop_ensure_living_environment(self.start_ensure_living_environment)
+  def restart_ensure_living_environment(self):
+    self.stop_ensure_living_environment()
+    self.start_ensure_living_environment()
 
 class WaterCondition(EnvironmentFactor):
   def __init__(self, info_in_lib):

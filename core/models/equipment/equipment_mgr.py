@@ -23,14 +23,6 @@ class EquipmentManager:
         return equipment_set
 
 class EquipmentSet:
-  short_mapping = {
-    "hardware": "hardware_check_led",
-    "envs": "envs_check_led",
-    "auto": "automation_led",
-    "pump": "pump",
-    "nutrient": "nutrient",
-    "light": "light"
-  }
   def __init__(self, name, i2c_addr=0, pins=[], emulate_sensors=False):
     self.name = name
     self.sensors_mgr = SensorsManager(i2c_addr, pins[0], emulate_sensors)
@@ -41,36 +33,40 @@ class EquipmentSet:
     self.nutrient = NutrientAction(pins[5])
     self.light = LightAction(pins[6])
 
+    self.equip_mapping = {
+      "hardware": self.hardware_check_led,
+      "environment": self.envs_check_led,
+      "automation": self.automation_led,
+      "pump": self.pump,
+      "nutrient": self.nutrient,
+      "light": self.light
+    }
+
   def load_state(self, cfg):
     """ Nạp dữ liệu từ file config lên (cfg lưu đối tượng ConfigManager) """
-    if not cfg: return
-    hardware = cfg.getz('hardware')
-    envs  = cfg.getc('environment')
-    auto  = cfg.getc('automation')
-    pump = cfg.getc('pump')
-    nutrient = cfg.getc('nutrient')
-    light = cfg.getc('light')
-    if hardware: self.hardware_check_led.turn(hardware[0], hardware[1])
-    if envs: self.envs_check_led.turn(envs[0], envs[1])
-    if auto: self.automation_led.turn(auto[0], auto[1])
-    if pump: self.pump.turn(pump[0], pump[1])
-    if nutrient: self.nutrient.turn(nutrient[0], nutrient[1])
-    if light: self.light.turn(light[0], light[1])
+    cfg.read()
+    for equip in self.equip_mapping:
+      equip_cfg = cfg.getc(equip)
+      if equip_cfg is not None:
+        self.equip_mapping[equip].turn(equip_cfg[0], equip_cfg[1])
   
   def set_state(self, equipment, state, reason, cfg):
-    cfg.set(equipment, [state, reason])
-    if equipment == "hardware": return self.hardware_check_led.turn(state, reason)
-    elif equipment == "environment": return self.envs_check_led.turn(state, reason)
-    elif equipment == "automation":
-      if state:
-        self.pump.turn(False, 'UserSet')
-        self.nutrient.turn(False, 'UserSet')
-        self.light.turn(False, 'UserSet')
-      return self.automation_led.turn(state, reason)
-    elif equipment == "pump": return self.pump.turn(state, reason)
-    elif equipment == "nutrient": return self.nutrient.turn(state, reason)
-    elif equipment == "light": return self.light.turn(state, reason)
+
+    equip = self.equip_mapping[equipment]
+    if reason == "UserSet": equip.clear_reasons() # If reason is User Set then remove all others
+    rs = equip.turn(state, reason)
+    cfg.set(equipment, [state, equip.reasons])
   
+    if equipment == "automation" and state is True:
+      self.pump.turn(False, 'UserSet')
+      self.nutrient.turn(False, 'UserSet')
+      self.light.turn(False, 'UserSet')
+      cfg.set("pump", [self.pump.state, self.pump.reasons])
+      cfg.set("nutrient", [self.pump.state, self.nutrient.reasons])
+      cfg.set("light", [self.pump.state, self.light.reasons])
+
+    return rs
+
   def dump(self):
     equipment_set = {
       "name": self.name,

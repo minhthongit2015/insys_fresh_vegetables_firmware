@@ -1,5 +1,6 @@
 
 from core.modules.connection.connection_mgr import *
+from core.modules.connection.bluetoothctl import Bluetoothctl
 
 try: from bluetooth import *
 except: from dummy.bluetooth import *
@@ -16,10 +17,10 @@ class BluetoothService:
     self.on_request = on_request
     self.clients = []
     self.client_threads = []
+    # self.blctl = Bluetoothctl()
   
   def _run(self):
-    self.discoverableThread = threading.Thread(target=self.discoverable, args=[False])
-    self.discoverableThread.start()
+    # self.blctl.make_discoverable()
 
     self.sock = BluetoothSocket(RFCOMM)
     self.sock.bind(("", PORT_ANY))
@@ -59,8 +60,6 @@ class BluetoothService:
     self.running_thread.start()
     
   def join(self):
-    try: self.discoverableThread.join()
-    except: pass
     for client_thread in self.client_threads:
       try: client_thread.join()
       except: pass
@@ -88,10 +87,8 @@ class BluetoothService:
       self.clients.remove(client)
 
   def trust_client(self, client):
-    cmd('sudo echo "pair {}\ntrust {}\n" | bluetoothctl'.format(client[1][0],client[1][0]))
-
-  def lock(self):
-    self.discoverable(False)
+    # self.blctl.pair(client[1][0])
+    pass
   
   @staticmethod
   def setupBluetooth():
@@ -130,14 +127,7 @@ ExecStartPost=/bin/chmod 662 /var/run/sdp"""
     cmd('sudo systemctl enable var-run-sdp.path')
     cmd('sudo systemctl enable var-run-sdp.service')
     cmd('sudo systemctl start var-run-sdp.path')
-  
-  @staticmethod
-  def discoverable(on=True):
-    if on:
-      cmd('sudo echo "power on\ndiscoverable on\npairable on\nagent NoInputNoOutput\n"; tee > /dev/null | bluetoothctl')
-    else:
-      cmd('sudo echo "power off\npower on\ndiscoverable off\npairable on\nagent on\ndefault-agent"; tee > /dev/null | bluetoothctl')
-
+    
 # Lỗi khác
 """[advertise_service raise BluetoothError]
 
