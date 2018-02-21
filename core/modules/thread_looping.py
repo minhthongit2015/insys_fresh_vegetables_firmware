@@ -3,14 +3,14 @@ import threading
 from time import time, sleep
 
 class ThreadLooping:
+  """ Tạo thread và chạy vòng lặp dạng như Interval. Đảm bảo thời gian giữa 2 vòng là bằng nhau."""
   def __init__(self, target, wait_time=60, check_freq=0.5, args=(), kwargs={}):
     self.target = target
+    self.wait_time = wait_time
+    self.check_freq = check_freq
     self.args = args
     self.kwargs = kwargs
     self._running_flag = False
-    self.wait_time = wait_time
-    self.check_freq = check_freq
-
 
   def _loop(self):
     last = 0

@@ -4,9 +4,6 @@ from core.modules.thread_looping import ThreadLooping
 try: import smbus
 except: import dummy.smbus as smbus
 import struct
-import datetime
-from time import time, sleep
-import threading
 import random
 
 class SEN0161:
@@ -45,9 +42,9 @@ class SEN0161:
     return pH
 
   def run(self):
-    self.reading_thread = ThreadLooping(target=self.read)
+    self.reading_thread = ThreadLooping(target=self.read, wait_time=self.min_result_freq_time)
     self.reading_thread.start()
-    self.checking_thread = ThreadLooping(target=self.check)
+    self.checking_thread = ThreadLooping(target=self.check, wait_time=self.min_result_freq_time)
     self.checking_thread.start()
   
   def stop(self):
@@ -67,7 +64,6 @@ class SEN0161:
         self.is_normally = True
         self.on_working()
         self.on_state_change(self, True)
-    sleep(self.min_result_freq_time)
 
   def on_broken(self):
     """override to add event listener for broken event"""

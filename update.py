@@ -30,14 +30,14 @@ class Updater:
       f = open('version.ini', 'r+')
       self.cur_version = LooseVersion(f.read())
       f.close()
-      print("[UPDATER] > Current firmware version: {}".format(self.cur_version.vstring))
+      print("[Updater] > Current firmware version: {}".format(self.cur_version.vstring))
     except:
       self.cur_version = LooseVersion('0.0.0.0')
-      pass
   
-  def keep_up_date(self):
+  def keep_update(self):
     self.thread = threading.Thread(target=self.update)
     self.thread.start()
+    self.thread.join()
 
   def update(self):
     while True:
@@ -53,11 +53,11 @@ class Updater:
     lines = result.split('\r\n')
     if len(lines) <= 0: return
     new_version = LooseVersion(lines[0])
-    print('[UPDATER] > Newest version: {}'.format(new_version.vstring))
+    print('[Updater] > Newest version: {}'.format(new_version.vstring))
     if new_version <= self.cur_version: return
     else:
-      print("[UPDATER] > Newer firmware found. Start installing newer version!")
-      print("[UPDATER] > Update from {} to {}".format(self.cur_version.vstring, new_version.vstring))
+      print("[Updater] > Newer firmware found. Start installing newer version!")
+      print("[Updater] > Update from {} to {}".format(self.cur_version.vstring, new_version.vstring))
       self.cur_version = new_version
       self.hard_update()
 
@@ -84,13 +84,12 @@ if __name__ == "__main__":
 
   args = parser.parse_args()
   if args.r:
-    print('[UPDATER] > Hard update current firmware ({})'.format(insys_updater.cur_version.vstring))
+    print('[Updater] > Hard update current firmware ({})'.format(insys_updater.cur_version.vstring))
     insys_updater.hard_update()
   elif args.v:
-    print('[UPDATER] > Current Firmware Version: {}'.format(insys_updater.cur_version.vstring))
+    print('[Updater] > Current Firmware Version: {}'.format(insys_updater.cur_version.vstring))
   else:
-    print('[UPDATER] > InSys Updating Service Started Up!')
-    print("[UPDATER] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
-    print("[UPDATER] > Firmware Version: {}".format(getFirmwareVersion()))
-    insys_updater.keep_up_date()
-    insys_updater.thread.join()
+    print('[Updater] > InSys Updating Service Started Up!')
+    print("[Updater] > Time: {}".format(datetime.datetime.now().strftime('%Y/%m/%d %H:%M:%S')))
+    print("[Updater] > Firmware Version: {}".format(getFirmwareVersion()))
+    insys_updater.keep_update()

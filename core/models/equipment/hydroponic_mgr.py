@@ -5,9 +5,6 @@ from core.modules.config_mgr import ConfigManager
 
 import json
 
-import threading
-from time import time, sleep
-
 class Hydroponic:
   def __init__(self, info, plant_lib, equipment_set, config_file_path=''):
     self.name = info['name']

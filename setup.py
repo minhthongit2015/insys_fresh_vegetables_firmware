@@ -81,16 +81,16 @@ def setup():
 
   # Install main service
   cmd('chmod +x ./startup')
-  install_service('insys', generate_service_file('insys', 'startup', cwd, 'INSYS FRESH VEGETABLES - CORE SERVICE'), )
+  install_service('insys', generate_service_file('insys', 'startup', cwd, 'INSYS SMART GARDEN - CORE SERVICE'), )
 
   # Install update service
   cmd('chmod +x ./update')
   cmd('chmod +x ./update.py')
-  install_service('insys_update', generate_service_file('insys_update', 'update', cwd, 'INSYS FRESH VEGETABLES - UPDATE SERVICE'))
+  install_service('insys_update', generate_service_file('insys_update', 'update', cwd, 'INSYS SMART GARDEN - UPDATE SERVICE'))
 
   # Install Camera streaming service
   cmd('chmod +x ./core/modules/camera')
-  install_service('insys_camera', generate_service_file('insys_camera', 'core/modules/camera', cwd, 'INSYS FRESH VEGETABLES - CAMERA TRACKING SERVICE'))
+  install_service('insys_camera', generate_service_file('insys_camera', 'core/modules/camera', cwd, 'INSYS SMART GARDEN - CAMERA TRACKING SERVICE'))
 
   # Base
   cmd('chmod +x ./uninstall.py')

@@ -16,7 +16,7 @@ ____________________________________
  - Trên mỗi trụ sẽ có thêm các đèn báo hiệu riêng.
    + đèn báo tình trạng hoạt động.
    + đèn báo tình trạng môi trường.
-   + đèn báo 
+   + đèn báo chế độ hoạt động
  - Dành riêng 5 GPIO cho đèn báo tại bộ xử lý trung tâm (bảng mạch chính).
 `
 

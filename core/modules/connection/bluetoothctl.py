@@ -22,7 +22,8 @@
 # along with ReachView.  If not, see <http://www.gnu.org/licenses/>.
 
 import time
-# import pexpect
+try: import pexpect
+except: pass
 import subprocess
 import sys
 

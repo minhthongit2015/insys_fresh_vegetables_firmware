@@ -7,11 +7,11 @@ from time import time, sleep
 
 class ConnectionManager:
   """#### Package structure
-  ________________________________________________________
-  |             Header          | DELM | Data | END_SIGN |
-  --------------------------------------------------------
-  | cmd | sub cmd 1 | sub cmd 2 | \xfe | Data | \x00\x00 |
-  | 1b  |    1b     |    1b     |      |  nb  |    2b    |
+  
+       |       Header          | DELM | Data | END_SIGN 
+  -----|-----------|-----------|------|------|----------
+   cmd |   sub 1   |   sub 2   | \xfe | Data | \x00\x00 
+   1b  |    1b     |    1b     |      |  nb  |    2b    
   """
   header_length = 3
   _default_cmd = 255

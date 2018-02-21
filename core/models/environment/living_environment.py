@@ -1,5 +1,4 @@
 
-from core.modules.timepoint import TimePointGroup
 
 # Main Class
 class LivingEnviroment:

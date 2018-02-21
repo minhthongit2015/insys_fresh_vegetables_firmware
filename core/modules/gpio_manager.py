@@ -3,6 +3,7 @@ from core.models.gpio.gpio import Pin, ListPin
 from core.modules.config_mgr import ConfigManager
 
 class GPIOManager:
+  """ Chưa sử dụng """
   def __init__(self):
     self.cfg = ConfigManager('GPIOConfig')
     self.list_gpio = self.cfg.get('GPIO')

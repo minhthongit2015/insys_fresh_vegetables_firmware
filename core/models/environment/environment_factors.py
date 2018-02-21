@@ -3,9 +3,6 @@ from core.modules.timepoint import TimePointGroup
 from core.modules.logger import Logger
 from core.modules.thread_looping import ThreadLooping
 
-from time import time, sleep
-import threading
-
 class EnvironmentFactor:
   def __init__(self, name, info_in_lib=None):
     self.name = name
@@ -60,8 +57,8 @@ class WaterCondition(EnvironmentFactor):
         self.water_points.append(TimePointGroup(water['time'], water['duration']))
 
   def _ensure_living_environment(self):
-    for t in self.water_points:
-      if t.is_time_for_action(self.user_plant.planting_date_obj):
+    for wp in self.water_points:
+      if wp.is_time_for_action(self.user_plant.planting_date_obj):
         if self.equipment_set.pump.start('timing'):
           print("[EnvFactor] > Start watering by time: {}".format(Logger.time()))
         break

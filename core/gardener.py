@@ -12,10 +12,10 @@ class Gardener:
   def __init__(self, equipment_mgr, plant_lib_path='./assets/plant_lib.json'):
     self.cfg = ConfigManager('Gardener')
     self.plant_lib = PlantLibrary(plant_lib_path)
-    auto = self.auto
-    for equipment_set in equipment_mgr.equipment_sets:
-      equipment_set.automation_led.turn(auto)
-      equipment_set.hardware_check_led.turn(equipment_set.sensors_mgr.state)
+    # auto = self.auto
+    # for equipment_set in equipment_mgr.equipment_sets:
+    #   equipment_set.automation_led.turn(auto)
+    #   equipment_set.hardware_check_led.turn(equipment_set.sensors_mgr.state)
     self.hydroponic_mgr = HydroponicManager(self.plant_lib, equipment_mgr)
 
     self.logger = Logger()

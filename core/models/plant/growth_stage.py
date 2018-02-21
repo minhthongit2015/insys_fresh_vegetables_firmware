@@ -1,16 +1,14 @@
 
-"""
-#### Thông tin giai đoạn sinh trưởng của cây trồng
 
-
-**GrowthStage** - Quản lý thông tin các giai đoạn phát triển cây trồng
-  * Thứ tự giai đoạn
-  * Tên giai đoạn
-  * Ngày bắt đầu và kết thúc của giai đoạn
-  * Lịch trình tưới nước trong giai đoạn đó
-"""
 class GrowthStage:
-  """ Thông tin 1 giai đoạn phát triển cây trồng """
+  """
+  #### Thông tin giai đoạn sinh trưởng của cây trồng
+  **GrowthStage** - Quản lý thông tin các giai đoạn phát triển cây trồng
+    * Thứ tự giai đoạn
+    * Tên giai đoạn
+    * Ngày bắt đầu và kết thúc của giai đoạn
+    * Điều kiện môi trường cho cây phát triển
+  """
   def __init__(self, stage_order=0, stage_name='', time_range=(), living_environment=None):
     self.stage_order = stage_order                # Số thứ tự của giai đoạn (1,2,3...)
     self.stage_name = stage_name                  # Tên giai đoạn phát triển (ươm mầm,...)

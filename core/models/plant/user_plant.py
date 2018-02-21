@@ -116,7 +116,3 @@ class ListUserPlant:
     for plant in self.plants:
       plants.append(plant.dump())
     return plants
-
-  def save(self, plants_path):
-    with open(plants_path, 'w', encoding='utf-8') as fp:
-      fp.write(str(self.plants))

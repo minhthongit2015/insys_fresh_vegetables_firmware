@@ -2,9 +2,6 @@
 from core.models.environment.sensors.hutemp_module_dht22 import DHT22
 from core.models.environment.sensors.phmeter_sen0161 import SEN0161
 
-from core.modules.config_mgr import ConfigManager
-
-import json
 import random
 
 class SensorsManager:
