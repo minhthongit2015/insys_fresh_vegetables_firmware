@@ -16,6 +16,20 @@
         "plant_id": "carrot-001",
         "planting_date": "22/02/2018",
         "harvest_time": 0
+      },
+      {
+        "alias": "Cà Chua",
+        "plant_type": "tomato",
+        "plant_id": "tomato-001",
+        "planting_date": "22/02/2018",
+        "harvest_time": 0
+      },
+      {
+        "alias": "Khoai Tây",
+        "plant_type": "potato",
+        "plant_id": "potato-001",
+        "planting_date": "23/02/2018",
+        "harvest_time": 0
       }
     ]
   }

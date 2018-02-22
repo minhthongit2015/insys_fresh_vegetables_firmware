@@ -9,50 +9,15 @@ class MobileSync:
     self.gardener = gardener
     self.conn_mgr = conn_mgr
 
-    self.conn_mgr.register_request_handle(1, self.request_handle)
+    # self.conn_mgr.register_request_handle(1, self.request_handle)
     self.conn_mgr.register_request_handle(2, self.request_handle)
     self.conn_mgr.register_request_handle(3, self.request_handle)
     self.conn_mgr.register_request_handle(4, self.request_handle)
 
-    self.password = "1234"
+    self.security = self.conn_mgr.security
   
   def request_handle(self, cmd, sub1, sub2, data, client):
-    if cmd is 1: # [Connection/handshake + Authentication]
-      # if self._deviceId == data.decode("utf-8"):
-      #   self.token = random.randint(0, 255)
-      #   return self.conn_mgr.send(client, self.deviceId)
-      #   print("[BLUESRV] > bluetooth handshake: {} => {}".format(data[1:], self.token), flush=True)
-      if sub1 is 1: # Check device signature
-        package = json.dumps({"Identify": "Garden", "password":False}, ensure_ascii=False)
-      elif sub1 is 2: # Authentication
-        if data == self.password:
-          package = "OK"
-        else:
-          package = "WrongSecurityCode"
-      elif sub1 is 3: # Config wifi
-        if sub2 is 1: # Stage 1: retrieve wifi list to let user choose
-          package = json.dumps([
-            {"SSID": "Minh Thai", "Pass": "nhatrang9x"},
-            {"SSID": "IUHYRA", "Pass": "iuhyra@123"},
-            {"SSID": "moidoiten", "Pass": "passla123"}
-          ], ensure_ascii=False)
-        elif sub2 is 2: # Stage 2: User choose one and send password of that wifi to us. Then we connect and resend the host.
-          SSID, password = data.split(":")
-          self.conn_mgr.connectWifi(SSID, password)
-          package = "{}".format(self.conn_mgr.host)
-    #   elif sub1 is 2: # connect via LAN return [1]
-    #     pass
-    #   elif sub1 is 2: # Authentication/Account Manager: recv username/password, check and return [Token]
-    #     if sub2 is 1: # Register: [username, password]
-    #       pass
-    #     elif sub2 is 2: # Login: [username, password]
-    #       pass
-    #     elif sub2 is 3: # Delete
-    #       pass
-    #     elif sub2 is 4: # Change password: [pass_lenght:oldpass|pass_length:newpass]
-    #       pass
-    #     pass
-    elif cmd is 2: # cmd 2: [Get Garden State]
+    if cmd is 2: # cmd 2: [Get Garden State]
       if sub1 is 1: # get info of all cylinder
         package = json.dumps(self.gardener.dump(), ensure_ascii=False)
       elif sub1 is 2: # get info of a specific cylinder
