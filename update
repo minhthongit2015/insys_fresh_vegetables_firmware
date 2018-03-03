@@ -2,4 +2,4 @@
 
 export TERM=xterm
 clear
-python3 update.py -r
+python3 update.py
