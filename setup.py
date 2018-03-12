@@ -43,7 +43,7 @@ def install_service(service_name, service_file):
 def setup():
   # cmd('sudo apt-get install python3')
   # cmd('sudo apt-get update')
-  cmd('sudo apt-get install build-essential python-dev')
+  # cmd('sudo apt-get install build-essential python-dev')
 
   while True:
     try:
@@ -89,8 +89,8 @@ def setup():
   install_service('insys_update', generate_service_file('insys_update', 'update', cwd, 'INSYS SMART GARDEN - UPDATE SERVICE'))
 
   # Install Camera streaming service
-  cmd('chmod +x ./core/modules/camera')
-  install_service('insys_camera', generate_service_file('insys_camera', 'core/modules/camera', cwd, 'INSYS SMART GARDEN - CAMERA TRACKING SERVICE'))
+  cmd('chmod +x ./camera')
+  install_service('insys_camera', generate_service_file('insys_camera', 'camera', cwd, 'INSYS SMART GARDEN - CAMERA TRACKING SERVICE'))
 
   # Base
   cmd('chmod +x ./uninstall.py')
