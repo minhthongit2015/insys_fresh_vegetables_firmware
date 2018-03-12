@@ -2,7 +2,6 @@
   {
     "name": "Trụ Khí Canh 01",
     "id": "Hydroponic_01",
-    "mac_addr": "AF:CF:DE:4F:7D:54",
     "plants": [
       {
         "alias": "Xà Lách 01",
@@ -23,6 +22,13 @@
         "plant_type": "chili",
         "plant_id": "chili-001",
         "planting_date": "23/02/2018",
+        "harvest_time": 0
+      },
+      {
+        "alias": "Cà Rốt",
+        "plant_type": "carrot",
+        "plant_id": "carrot-001",
+        "planting_date": "03/03/2018",
         "harvest_time": 0
       }
     ]

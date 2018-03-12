@@ -1,5 +1,6 @@
 
-import secrets
+try: import secrets
+except: import core.modules.connection.secrets as secrets
 from time import time
 
 class Security:
