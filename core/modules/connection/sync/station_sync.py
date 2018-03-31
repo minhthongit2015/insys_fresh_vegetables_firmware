@@ -26,7 +26,7 @@ class StationSync:
   def on_message(self, msg):
     station_id = msg.split("_")[0]
     msg_body = msg[len(station_id)+1 : ]
-    if len(msg) == len(station_id): # msg: B01  (Trụ mới khởi động và kết nối đến hệ thống)
+    if msg == station_id + "_N": # msg: B01  (Trụ mới khởi động và kết nối đến hệ thống)
       if self.gardener.attach_station(station_id, self):
         pass
     else:
