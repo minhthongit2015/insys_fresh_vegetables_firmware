@@ -63,8 +63,8 @@ class StationSync:
     print("[EmuStation] > {}".format(msg))
     station_id = msg.split("_")[0]
     msg_body = msg[len(station_id)+1 : ]
-    temp, humi = self.gardener.station_mgr.stations[0].equipment_set.sensor_mgr.hutempSensor.random
+    temp, humi = self.gardener.station_mgr.stations[0].equipment_set.sensors_mgr.hutempSensor.random
     if msg == station_id + '_S': # data: B1_S (Server yêu cầu dữ liệu cảm biến từ máy trạm)
-      sensor_data = "{}_T27.5_H80".format(station_id)
+      sensor_data = "{}_T{}_H{}".format(station_id, temp, humi)
       self.serial.send(sensor_data)
       print('[EmuStation] > send: {}'.format(sensor_data))
