@@ -53,13 +53,18 @@ class RS485:
       self.listeners.append(listener)
 
   def _message_stream(self):
+    message = b''
     while True:
       try:
-        message = self.serial.read_until(self.terminator)
-        if len(message) > 0:
+        message += self.serial.read_all()
+        if len(message) > 0 and self.terminator in message:
+          if str(message[0] != '#'):
+            message = b''
+            continue
           self._message_handler(message)
       except Exception as e:
-        print("[RS485] > error: {}".format(e))
+        # print("[RS485] > error: {}".format(e))
+        pass
 
   def _message_handler(self, message):
     message = message.decode('utf-8')
