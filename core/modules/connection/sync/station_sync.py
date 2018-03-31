@@ -46,7 +46,7 @@ class StationSync:
 
   def read(self, station, sensor):
     if station is None:
-      raise "[StationSync] > Station is None"
+      raise Exception("[StationSync] > Station is None")
     self.serial.send("#{}S".format(station.id))
 
   def on(self, station, switch):
@@ -56,4 +56,4 @@ class StationSync:
     self.serial.send("#{}m0".format(station.id))
 
   def _emulate_station(self, data):
-    print("[StationSync] > {}".format(data))
+    print("[EmuStation] > {}".format(data))

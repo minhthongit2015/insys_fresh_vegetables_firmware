@@ -53,20 +53,13 @@ class RS485:
       self.listeners.append(listener)
 
   def _message_stream(self):
-    message = b''
     while True:
-      # try:
-      message = self.serial.read_until(self.terminator)
-      if len(message) > 0:
-        print("[RS485] > {}".format(message), flush=True)
-        end = message.index(self.terminator)
-        data = message[:end]
-        self._message_handler(data)
-        message = message[ end + len(self.terminator) : ]
-      # except Exception as e:
-      #   print("[RS485] > error: {}".format(e))
-      #   message = b''
-      #   pass
+      try:
+        message = self.serial.read_until(self.terminator)
+        if len(message) > 0:
+          self._message_handler(message)
+      except Exception as e:
+        print("[RS485] > error: {}".format(e))
 
   def _message_handler(self, message):
     message = message.decode('utf-8')
@@ -75,6 +68,6 @@ class RS485:
 
   def send(self, data):
     try:
-      self.serial.write(data + self.terminator)
-    except:
+      self.serial.write(bytes(data, 'utf-8') + self.terminator)
+    except Exception as e:
       pass
