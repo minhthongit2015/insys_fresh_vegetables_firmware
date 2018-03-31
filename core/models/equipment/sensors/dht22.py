@@ -10,7 +10,7 @@ class DHT22(Sensor):
 
   @property
   def random(self):
-    return (round(random.uniform(55,90),self.precision), round(random.uniform(25,32),self.precision))
+    return (round(random.uniform(25,32),self.precision), round(random.uniform(55,90),self.precision))
 
   @property
   def value(self):

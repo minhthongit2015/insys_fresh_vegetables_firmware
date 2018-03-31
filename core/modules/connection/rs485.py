@@ -67,6 +67,7 @@ class RS485:
       except Exception as e:
         # print("[RS485] > error: {}".format(e))
         pass
+      sleep(0.005)
 
   def _message_handler(self, message):
     message = message.decode('utf-8')

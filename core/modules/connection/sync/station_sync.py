@@ -30,9 +30,9 @@ class StationSync:
       if self.gardener.attach_station(station_id, self):
         pass
     else:
-      # if msg_body[0] in ['T', 'H']:
-      #   sensor_data = self.resolve_sensor_data(msg_body)
-      #   self.gardener.update_station_sensors(station_id, sensor_data)
+      if msg_body[0] in ['T', 'H']:
+        sensor_data = self.resolve_sensor_data(msg_body)
+        self.gardener.update_station_sensors(station_id, sensor_data)
       pass
     pass
   
