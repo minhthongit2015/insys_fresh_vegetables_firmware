@@ -74,6 +74,7 @@ class RS485:
       listener(message)
 
   def send(self, data):
+    print("[RS485] > Send: {}".format(data))
     self.send_queue.append(data)
     self.notify_send()
   

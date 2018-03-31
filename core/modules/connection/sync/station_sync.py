@@ -30,9 +30,9 @@ class StationSync:
       if self.gardener.attach_station(station_id, self):
         pass
     else:
-      if msg_body[0] in ['T', 'H']:
-        sensor_data = self.resolve_sensor_data(msg_body)
-        self.gardener.update_station_sensors(station_id, sensor_data)
+      # if msg_body[0] in ['T', 'H']:
+      #   sensor_data = self.resolve_sensor_data(msg_body)
+      #   self.gardener.update_station_sensors(station_id, sensor_data)
       pass
     pass
   
@@ -63,7 +63,7 @@ class StationSync:
     print("[EmuStation] > {}".format(msg))
     station_id = msg.split("_")[0]
     msg_body = msg[len(station_id)+1 : ]
-    temp, humi = self.gardener.station_mgr.stations[0].equiment_mgr.sensor_mgr.hutempSensor.random
+    temp, humi = self.gardener.station_mgr.stations[0].equipment_set.sensor_mgr.hutempSensor.random
     if msg == station_id + '_S': # data: B1_S (Server yêu cầu dữ liệu cảm biến từ máy trạm)
       sensor_data = "{}_T27.5_H80".format(station_id)
       self.serial.send(sensor_data)
