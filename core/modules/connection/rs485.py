@@ -74,6 +74,6 @@ class RS485:
 
   def send(self, data):
     try:
-      self.serial.write(bytes(data, 'utf-8') + self.terminator)
+      self.serial.write(b'#' + bytes(data, 'utf-8') + self.terminator)
     except Exception as e:
       pass

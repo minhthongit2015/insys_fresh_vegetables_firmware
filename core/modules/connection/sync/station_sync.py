@@ -49,16 +49,17 @@ class StationSync:
   def read(self, station, sensor):
     if station is None:
       raise Exception("[StationSync] > Station is None")
-    self.serial.send("#{}S".format(station.id))
+    self.serial.send("{}S".format(station.id))
 
   def on(self, station, switch):
-    self.serial.send("#{}m1".format(station.id))
+    self.serial.send("{}m1".format(station.id))
 
   def off(self, station, switch):
-    self.serial.send("#{}m0".format(station.id))
+    self.serial.send("{}m0".format(station.id))
 
-  def _emulate_station(self, data):
-    print("[EmuStation] > {}".format(data))
-    station_id = data[1:3]
-    if len(data) == 4 and data[3] is 'S': # data = #B1S (Server yêu cầu dữ liệu cảm biến từ máy trạm)
-       self.serial.send("#{}_T27.5_H80".format(station_id))
+  def _emulate_station(self, msg):
+    print("[EmuStation] > {}".format(msg))
+    station_id = msg.split("_")[0]
+    msg_body = msg[len(station_id)+1 : ]
+    if len(msg) == len(station_id)+1 and msg[-1:] is 'S': # data = B1S (Server yêu cầu dữ liệu cảm biến từ máy trạm)
+       self.serial.send("{}_T27.5_H80".format(station_id))
