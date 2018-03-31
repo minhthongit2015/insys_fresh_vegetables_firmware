@@ -58,10 +58,11 @@ class RS485:
       try:
         message += self.serial.read_all()
         if len(message) > 0 and self.terminator in message:
-          if str(message[0] != '#'):
-            message = b''
+          package = message.split(self.terminator)[0]
+          message = message[len(package) + len(self.terminator): ] # rest
+          if str(package[0] != '#'): # if package is broken then just skip it
             continue
-          self._message_handler(message)
+          self._message_handler(package)
       except Exception as e:
         # print("[RS485] > error: {}".format(e))
         pass
