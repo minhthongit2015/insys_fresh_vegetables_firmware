@@ -7,7 +7,10 @@ import threading
 from time import sleep
 
 class RS485:
-  def __init__(self, port=['COM5', "/dev/ttyS0"], baudrate=19200, timeout=0.05, terminator="\r\n"):
+  def __init__(self, port=['COM5', "/dev/ttyS0"], baudrate=19200, timeout=0.05, terminator=b"\r\n"):
+    """
+    ``terminator``: bytes
+    """
     self.port = port
     self.baudrate = baudrate
     self.timeout = timeout
@@ -54,16 +57,19 @@ class RS485:
     while True:
       # try:
       message = self.serial.read_until(self.terminator)
-      print("[RS485] > {}".format(message), flush=True)
-      end = message.index(self.terminator)
-      self._message_handler(message[:end])
-      message = message[ end + len(self.terminator) : ]
+      if len(message) > 0:
+        print("[RS485] > {}".format(message), flush=True)
+        end = message.index(self.terminator)
+        data = message[:end]
+        self._message_handler(data)
+        message = message[ end + len(self.terminator) : ]
       # except Exception as e:
       #   print("[RS485] > error: {}".format(e))
       #   message = b''
       #   pass
 
   def _message_handler(self, message):
+    message = message.decode('utf-8')
     for listener in self.listeners:
       listener(message)
 
