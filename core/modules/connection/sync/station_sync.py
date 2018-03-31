@@ -12,7 +12,8 @@ class StationSync:
   
   def _run(self):
     self.serial.start()
-    if self.serial.serial.port == "/dev/ttyS0":
+    # if self.serial.serial.port == "/dev/ttyS0":
+    if self.serial.serial.port == "COM5":
       self.serial.add_message_listener(self._emulate_station)
     else:
       self.serial.add_message_listener(self.on_message)
