@@ -50,10 +50,11 @@ class RS485:
       self.listeners.append(listener)
 
   def _message_stream(self):
-    message = ''
+    message = b''
     while True:
       try:
         message += self.serial.read_until(self.terminator)
+        message = message.decode('utf-8')
         print("[RS485] > {}".format(message), flush=True)
         end = message.index(self.terminator)
         self._message_handler(message[:end])
