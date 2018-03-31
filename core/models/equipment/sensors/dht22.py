@@ -4,7 +4,7 @@ import random
 
 class DHT22(Sensor):
   def __init__(self, serial_port=None, owner_station=None, emulate_sensors=False):
-    super().__init__("dht22", serial_port, owner_station=owner_station)
+    super().__init__("dht22", serial_port, owner_station=owner_station, emulate_sensors=emulate_sensors)
     self._temperature = self._humidity = self.random if emulate_sensors else None
     self.emulate_sensors = emulate_sensors
 
@@ -14,11 +14,12 @@ class DHT22(Sensor):
 
   @property
   def value(self):
-    return (self._temperature, self._humidity)
+    return (self.temperature, self.humidity)
 
   @value.setter
   def value(self, val):
-    self.last_result
+    self.temperature = val[0]
+    self.humidity = val[1]
 
   @property
   def temperature(self):

@@ -54,7 +54,7 @@ class PlantLibrary:
     for stage in plant_in_lib['growth_stages']:
       env_factors = []
       for env in stage['living_environment']:
-        env_factor = ENV_MAP_TYPE[env['name']](env)
+        env_factor = ENV_TYPE_MAPPING[env['name']](env)
         env_factors.append(env_factor)
       growth_stages.append(GrowthStage(stage['stage_order'], stage['stage_name'], (stage['start'], stage['end']), LivingEnviroment(env_factors)))
     return Plant(plant_in_lib['plant_name'], plant_in_lib['plant_type'], growth_stages)

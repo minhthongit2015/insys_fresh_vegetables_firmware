@@ -78,12 +78,13 @@ class TemperatureCondition(EnvironmentFactor):
   
   def _ensure_living_environment(self):
     env_temp = self.equipment_set.sensors_mgr.temperature
-    if env_temp > self.max_temp + self.offset:
-      if self.equipment_set.pump.start('temperature'):
-        print("[EnvFactor] > Start watering by temperature: {}°C > {}+{}°C ({})".format(env_temp, self.max_temp, self.offset, Logger.time()))
-    else:
-      if self.equipment_set.pump.stop('temperature'):
-        print("[EnvFactor] > Stop watering by temperature: {}°C <= {}+{}°C ({})".format(env_temp, self.max_temp, self.offset, Logger.time()))
+    if env_temp is not None:
+      if env_temp > self.max_temp + self.offset:
+        if self.equipment_set.pump.start('temperature'):
+          print("[EnvFactor] > Start watering by temperature: {}°C > {}+{}°C ({})".format(env_temp, self.max_temp, self.offset, Logger.time()))
+      else:
+        if self.equipment_set.pump.stop('temperature'):
+          print("[EnvFactor] > Stop watering by temperature: {}°C <= {}+{}°C ({})".format(env_temp, self.max_temp, self.offset, Logger.time()))
 
 class HumidityCondition(EnvironmentFactor):
   def __init__(self, info_in_lib):
@@ -102,7 +103,7 @@ class pHCondition(EnvironmentFactor):
     super().__init__('pH')
 
 
-ENV_MAP_TYPE = {
+ENV_TYPE_MAPPING = {
   "water": WaterCondition,
   "temperature": TemperatureCondition,
   "humidity": HumidityCondition,

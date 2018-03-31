@@ -52,15 +52,18 @@ class StationSync:
     self.serial.send("{}_S".format(station.id))
 
   def on(self, station, switch):
-    self.serial.send("{}_m1".format(station.id))
+    if switch.name in ['Water']:
+      self.serial.send("{}_m1".format(station.id))
 
   def off(self, station, switch):
-    self.serial.send("{}_m0".format(station.id))
+    if switch.name in ['Water']:
+      self.serial.send("{}_m0".format(station.id))
 
   def _emulate_station(self, msg):
     print("[EmuStation] > {}".format(msg))
     station_id = msg.split("_")[0]
     msg_body = msg[len(station_id)+1 : ]
+    temp, humi = self.gardener.station_mgr.stations[0].equiment_mgr.sensor_mgr.hutempSensor.random
     if msg == station_id + '_S': # data: B1_S (Server yêu cầu dữ liệu cảm biến từ máy trạm)
       sensor_data = "{}_T27.5_H80".format(station_id)
       self.serial.send(sensor_data)

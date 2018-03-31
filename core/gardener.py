@@ -15,8 +15,8 @@ class Gardener:
     self.station_mgr = StationManager(self.plant_lib)
 
     self.logger = Logger()
-    self.logging = 300 # second = 5 minutes
-    self.logging_thread = ThreadLooping(self._logging_handle, self.logging)
+    self.logging_interval_time = 300 # second = 5 minutes
+    self.logging_thread = ThreadLooping(self._logging_handle, self.logging_interval_time)
 
   @property
   def auto(self):
@@ -66,6 +66,8 @@ class Gardener:
     for station in self.station_mgr.stations:
       temperature = station.equipment_set.sensors_mgr.temperature
       humidity = station.equipment_set.sensors_mgr.humidity
+      if temperature is None or humidity is None:
+        continue
       record = "{},{}".format(temperature, humidity)
       Logger.log(record, 'envs', './log/{}'.format(station.id))
 

@@ -22,8 +22,10 @@ class ThreadLooping:
         if not self._running_flag: return
         wait_time_remaining -= self.check_freq
       last = time()
-
-      self.target(*self.args, **self.kwargs)
+      try:
+        self.target(*self.args, **self.kwargs)
+      except Exception as e:
+        print(e)
 
   def start(self):
     self._running_flag = True

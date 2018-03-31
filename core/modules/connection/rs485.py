@@ -17,6 +17,7 @@ class RS485:
     self.terminator = terminator
     self.listeners = []
     self.is_stated = False
+    self.send_queue = []
   
   def open_port(self, port=None):
     if port == None:
@@ -73,7 +74,16 @@ class RS485:
       listener(message)
 
   def send(self, data):
+    self.send_queue.append(data)
+    self.notify_send()
+  
+  def notify_send(self):
+    if len(self.send_queue) == 0:
+      return
     try:
-      self.serial.write(b'#' + bytes(data, 'utf-8') + self.terminator)
+      msg = self.send_queue.pop(0)
+      self.serial.write(b'#' + bytes(msg, 'utf-8') + self.terminator)
     except Exception as e:
       pass
+    sleep(0.005)
+    self.notify_send()

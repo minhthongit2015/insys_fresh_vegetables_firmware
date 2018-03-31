@@ -5,14 +5,13 @@ import random
 
 
 class Sensor():
-  def __init__(self, name="", serial_port=None, owner_station=None, precision=2, emulate_sensors=True):
+  def __init__(self, name="", serial_port=None, owner_station=None, precision=2, emulate_sensors=False):
     self.name = name
     self.serial_port = serial_port
     self.owner_station = owner_station
     self.precision = precision
     self.default = None
-    # self.last_result = self.default # Commented for Simulation
-    self.last_result = self.random # Simulation
+    self.last_result = self.random if emulate_sensors else self.default
     self.is_normally = None
     self.min_result_freq_time = 10
     self.emulate_sensors = emulate_sensors

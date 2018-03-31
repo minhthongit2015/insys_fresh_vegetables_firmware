@@ -111,7 +111,7 @@ class Action:
       listener(reason)
 
   def on_stoped(self, reason=''):
-    print("[{}] > \"{}\" stoped cause \"{}\".".format(self.owner_station.id, self.action_name, reason), flush=True)
+    print("[Action:{}] > \"{}\" stoped cause \"{}\".".format(self.owner_station.id, self.action_name, reason), flush=True)
     if reason in self.stop_listeners:
       for listener in self.stop_listeners[reason]:
         listener(reason)
