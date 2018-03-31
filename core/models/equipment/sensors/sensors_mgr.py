@@ -16,6 +16,8 @@ class SensorsManager:
 
     self.listeners = []
     self.emulate_sensors = emulate_sensors
+
+    self.sensor_name_map = {'temperature': self.temperature, 'humidity': self.humidity}
   
   def run(self):
     self.pHSensor.run()
@@ -25,6 +27,11 @@ class SensorsManager:
     self.serial_port = serial_port
     self.pHSensor.attach_serial_port(serial_port)
     self.hutempSensor.attach_serial_port(serial_port)
+  
+  def update_sensors(self, sensor_data):
+    for factor in sensor_data:
+      if factor in self.sensor_name_map:
+        self.sensor_name_map[factor] = sensor_data[factor]
 
   @property
   def state(self):
@@ -45,10 +52,16 @@ class SensorsManager:
   @property
   def humidity(self):
     return self.hutempSensor.value[0]
+  @humidity.setter
+  def humidity(self, val):
+    self.hutempSensor.humidity = val
 
   @property
   def temperature(self):
     return self.hutempSensor.value[1]
+  @temperature.setter
+  def temperature(self, val):
+    self.hutempSensor.temperature = val
 
   @property
   def ppm(self):

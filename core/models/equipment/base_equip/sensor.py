@@ -10,7 +10,7 @@ class Sensor():
     self.serial_port = serial_port
     self.owner_station = owner_station
     self.precision = precision
-    self.default = (80, 20)
+    self.default = None
     # self.last_result = self.default # Commented for Simulation
     self.last_result = self.random # Simulation
     self.is_normally = None
@@ -28,12 +28,15 @@ class Sensor():
       self.serial_port.read(self.owner_station, self)
 
   @property
-  def value(self):
-    return self.last_result
+  def random(self):
+    return random.randint(0, 100)
 
   @property
-  def random(self):
-    return (round(random.uniform(55,90),self.precision), round(random.uniform(25,32),self.precision))
+  def value(self):
+    return self.last_result
+  @value.setter
+  def value(self, val):
+    self._last_result = val
 
   def run(self):
     self.reading_thread = ThreadLooping(target=self.read, wait_time=self.min_result_freq_time)

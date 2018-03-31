@@ -97,4 +97,4 @@ class Gardener:
     self.station_mgr.attach_serial_port(serial_port)
 
   def update_station_sensors(self, station_id, sensors_data):
-    pass
+    self.station_mgr.update_station_sensors(station_id, sensors_data)

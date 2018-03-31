@@ -34,6 +34,9 @@ class Station:
     self.serial_port = serial_port
     self.equipment_set.attach_serial_port(serial_port)
   
+  def update_station_sensors(self, sensor_data):
+    self.equipment_set.sensors_mgr.update_sensors(sensor_data)
+  
   def on_sensors_state_change(self, state):
     print("[Station:{}] > Check Sensors result: {}".format(self.id, state), flush=True)
     self.equipment_set.hardware_check_led.turn(state, "workwell")

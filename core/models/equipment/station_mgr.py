@@ -52,6 +52,11 @@ class StationManager:
                              serial_port = serial_port)
       self.stations.append(new_station)
       self.save()
+
+  def update_station_sensors(self, station_id, sensor_data):
+    station = self.get_station_by_id(station_id)
+    if station is not None:
+      station.update_station_sensors(sensor_data)
   
   def get_station_by_name(self, name):
     for station in self.stations:

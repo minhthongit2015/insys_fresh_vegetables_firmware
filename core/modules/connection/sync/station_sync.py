@@ -24,25 +24,26 @@ class StationSync:
     self._running_thread.start()
 
   def on_message(self, msg):
-    cylinderID = msg[1:3] # 2 ký tự id trụ
-    msgBody = msg[3:]
-    if len(msg) == 3: # Trụ mới khởi động và kết nối đến hệ thống
-      if self.gardener.attach_station(cylinderID, self):
+    station_id = msg.split("_")[0]
+    msg_body = msg[len(station_id)+1 : ]
+    if len(msg) == 3: # msg: B01  (Trụ mới khởi động và kết nối đến hệ thống)
+      if self.gardener.attach_station(station_id, self):
         pass
     else:
-      if msgBody[0] in ['T', 'H']:
-        self.gardener.update_station_sensors(cylinderID, msgBody)
+      if msg_body[0] in ['T', 'H']:
+        self.gardener.update_station_sensors(station_id, msg_body)
       pass
     pass
+  
+  def resolve_sensor_data(self, sensor_data): # T27.5_H80
+    T, H = sensor_data.split("_")
+    return { "temperature": float(T[1:]), "humidity": float(H[1:]) }
 
   # def get_info(self, callback):
   #   self.serial.get("#01I", callback)
   
   # def get_state(self, callback):
   #   self.serial.get("#S", callback)
-  
-  def translate(self, msg):
-    pass
 
   def read(self, station, sensor):
     if station is None:
@@ -57,3 +58,6 @@ class StationSync:
 
   def _emulate_station(self, data):
     print("[EmuStation] > {}".format(data))
+    station_id = data[1:3]
+    if len(data) == 4 and data[3] is 'S': # data = #B1S (Server yêu cầu dữ liệu cảm biến từ máy trạm)
+       self.serial.send("#{}_T27.5_H80".format(station_id))
