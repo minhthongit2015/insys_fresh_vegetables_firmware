@@ -51,14 +51,14 @@ class SensorsManager:
 
   @property
   def humidity(self):
-    return self.hutempSensor.value[0]
+    return self.hutempSensor.value[1]
   @humidity.setter
   def humidity(self, val):
     self.hutempSensor.humidity = val
 
   @property
   def temperature(self):
-    return self.hutempSensor.value[1]
+    return self.hutempSensor.value[0]
   @temperature.setter
   def temperature(self, val):
     self.hutempSensor.temperature = val

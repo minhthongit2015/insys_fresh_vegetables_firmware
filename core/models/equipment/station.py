@@ -10,6 +10,8 @@ class Station:
     self.serial_port = serial_port
     if 'plants' in info:
       self.list_user_plant = ListUserPlant(info['plants'], plant_lib)
+    else:
+      self.list_user_plant = ListUserPlant([], plant_lib)
 
     self.equipment_set = EquipmentSet(owner_station=self, serial_port=self.serial_port)
     self.equipment_set.automation_led.addEventListener("on", self.start_ensure_living_environment)

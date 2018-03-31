@@ -26,7 +26,7 @@ class StationSync:
   def on_message(self, msg):
     station_id = msg.split("_")[0]
     msg_body = msg[len(station_id)+1 : ]
-    if len(msg) == 3: # msg: B01  (Trụ mới khởi động và kết nối đến hệ thống)
+    if len(msg) == len(station_id): # msg: B01  (Trụ mới khởi động và kết nối đến hệ thống)
       if self.gardener.attach_station(station_id, self):
         pass
     else:
@@ -62,4 +62,6 @@ class StationSync:
     station_id = msg.split("_")[0]
     msg_body = msg[len(station_id)+1 : ]
     if len(msg) == len(station_id)+1 and msg[-1:] is 'S': # data = B1S (Server yêu cầu dữ liệu cảm biến từ máy trạm)
-       self.serial.send("{}_T27.5_H80".format(station_id))
+      sensor_data = "{}_T27.5_H80".format(station_id)
+      self.serial.send(sensor_data)
+      print('[EmuStation] > send: {}'.format(sensor_data))
