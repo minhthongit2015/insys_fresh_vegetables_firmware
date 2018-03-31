@@ -7,16 +7,20 @@ import struct
 import random
 
 class SEN0161:
-  def __init__(self, address=0x04, bus=1, retry=0, precision=3, simulator=False):
+  def __init__(self, i2c_address=0x04, bus=1, serial_port=None, retry=0, precision=3, emulate_sensors=False):
     self.name = "pH_Meter"
-    self.address = address
+    self.i2c_address = i2c_address
     self.bus = smbus.SMBus(bus)
+    self.serial_port = serial_port
     self.precision = precision
     self.error_signal = -1
     self.last_result = self.error_signal
     self.is_normally = None
     self.min_result_freq_time = 4
-    self.simulator = simulator
+    self.emulate_sensors = emulate_sensors
+
+  def attach_serial_port(self, serial_port):
+    self.serial_port = serial_port
   
   @property
   def value(self):
@@ -28,11 +32,11 @@ class SEN0161:
 
   def read(self):
     try:
-      block = self.bus.read_i2c_block_data(self.address, 0, 4)
+      block = self.bus.read_i2c_block_data(self.i2c_address, 0, 4)
     except Exception as e:
       if self.is_normally or self.is_normally is None:
-        if not self.simulator:
-          print("[pHMeter] > Unable to detect device on I2C address: {}.".format(self.address), flush=True)
+        if not self.emulate_sensors:
+          print("[pHMeter] > Unable to detect device on I2C address: {}.".format(self.i2c_address), flush=True)
           self.last_result = self.error_signal
         else:
           self.last_result = self.random

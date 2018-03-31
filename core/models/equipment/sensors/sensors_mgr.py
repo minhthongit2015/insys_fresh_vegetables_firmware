@@ -1,26 +1,35 @@
 
-from core.models.environment.sensors.hutemp_module_dht22 import DHT22
-from core.models.environment.sensors.phmeter_sen0161 import SEN0161
+# from core.models.environment.sensors.hutemp_module_dht22 import DHT22
+# from core.models.environment.sensors.phmeter_sen0161 import SEN0161
+
+from core.models.equipment.sensors.dht22 import DHT22
+from core.models.equipment.sensors.sen0161 import SEN0161
 
 import random
 
 class SensorsManager:
-  def __init__(self, pH_i2c_addr, hutemp_GPIO, simulator=False):
-    self.pHSensor = SEN0161(pH_i2c_addr, simulator=simulator)
+  def __init__(self, serial_port=None, owner_station=None, emulate_sensors=False):
+    self.pHSensor = SEN0161(serial_port=serial_port, owner_station=owner_station)
     self.pHSensor.on_state_change = self.on_state_change
-    self.hutempSensor = DHT22(hutemp_GPIO, simulator=simulator)
+    self.hutempSensor = DHT22(serial_port=serial_port, owner_station=owner_station)
     self.hutempSensor.on_state_change = self.on_state_change
 
     self.listeners = []
+    self.emulate_sensors = emulate_sensors
+  
+  def run(self):
     self.pHSensor.run()
     self.hutempSensor.run()
 
-    self.simulator = simulator
+  def attach_serial_port(self, serial_port):
+    self.serial_port = serial_port
+    self.pHSensor.attach_serial_port(serial_port)
+    self.hutempSensor.attach_serial_port(serial_port)
 
   @property
   def state(self):
-    if self.pHSensor.is_normally is None and self.hutempSensor.is_normally is None: return None
-    return self.pHSensor.is_normally and self.hutempSensor.is_normally
+    if self.hutempSensor.is_normally is None: return None
+    return self.hutempSensor.is_normally
 
   def on_state_change(self, sensor, state):
     for listener in self.listeners:

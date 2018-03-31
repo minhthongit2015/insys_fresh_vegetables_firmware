@@ -1,6 +1,6 @@
 
 from core.models.plant.plant_library import PlantLibrary
-from core.models.equipment.hydroponic_mgr import HydroponicManager
+from core.models.equipment.station_mgr import StationManager
 from core.modules.config_mgr import ConfigManager
 from core.modules.logger import Logger
 from core.modules.thread_looping import ThreadLooping
@@ -9,18 +9,14 @@ import threading
 from time import sleep, time
 
 class Gardener:
-  def __init__(self, equipment_mgr, plant_lib_path='./assets/plant_lib.json'):
+  def __init__(self, plant_lib_path='./assets/plant_lib.json'):
     self.cfg = ConfigManager('Gardener')
     self.plant_lib = PlantLibrary(plant_lib_path)
-    # auto = self.auto
-    # for equipment_set in equipment_mgr.equipment_sets:
-    #   equipment_set.automation_led.turn(auto)
-    #   equipment_set.hardware_check_led.turn(equipment_set.sensors_mgr.state)
-    self.hydroponic_mgr = HydroponicManager(self.plant_lib, equipment_mgr)
+    self.station_mgr = StationManager(self.plant_lib)
 
     self.logger = Logger()
-    self.tracking_wait_time = 300 # second = 5 minutes
-    self.tracking_thread = ThreadLooping(self._tracking_handle, self.tracking_wait_time)
+    self.logging = 300 # second = 5 minutes
+    self.logging_thread = ThreadLooping(self._logging_handle, self.logging)
 
   @property
   def auto(self):
@@ -42,7 +38,8 @@ class Gardener:
 
   def _work(self):
     # self.hydroponic_mgr.start_ensure_living_environment()
-    self.start_tracking()
+    self.station_mgr.run()
+    self.start_logging()
     pass
 
   def keep_working(self):
@@ -56,42 +53,48 @@ class Gardener:
     except: pass
     self.stop_tracking()
     
-    self.hydroponic_mgr.stop_ensure_living_environment()
+    self.station_mgr.stop_ensure_living_environment()
 
-  def command_handle(self, cylinder_id, equipment, state):
-    self.hydroponic_mgr.set_state(cylinder_id, equipment, state, 'UserSet')
+  def command_handle(self, station_id, equipment, state):
+    self.station_mgr.set_state(station_id, equipment, state, 'UserSet')
   
-  def get_cylinder_info(self, cylinder_id):
-    cylinder = self.hydroponic_mgr.get_hydroponic_by_id(cylinder_id)
-    return cylinder.dump()
+  def get_station_info(self, station_id):
+    station = self.station_mgr.get_station_by_id(station_id)
+    return station.dump()
 
-  def _tracking_handle(self):
-    for cylinder in self.hydroponic_mgr.hydroponics:
-      temperature = cylinder.equipment_set.sensors_mgr.temperature
-      humidity = cylinder.equipment_set.sensors_mgr.humidity
+  def _logging_handle(self):
+    for station in self.station_mgr.stations:
+      temperature = station.equipment_set.sensors_mgr.temperature
+      humidity = station.equipment_set.sensors_mgr.humidity
       record = "{},{}".format(temperature, humidity)
-      Logger.log(record, 'envs', './log/{}'.format(cylinder.id))
+      Logger.log(record, 'envs', './log/{}'.format(station.id))
 
-  def start_tracking(self):
-    self.tracking_thread.start()
+  def start_logging(self):
+    self.logging_thread.start()
 
   def stop_tracking(self):
-    self.tracking_thread.stop()
+    self.logging_thread.stop()
 
-  def get_records_from(self, cylinder_id, hours_ago=6):
-    cylinder = self.hydroponic_mgr.get_hydroponic_by_id(cylinder_id)
-    records = Logger.get_log('envs', './log/{}'.format(cylinder.id), hours_ago)
+  def get_records_from(self, station_id, hours_ago=6):
+    station = self.station_mgr.get_station_by_id(station_id)
+    records = Logger.get_log('envs', './log/{}'.format(station.id), hours_ago)
     records_map = []
     for record in records:
       data = record[1].split(',')
       records_map.append([record[0], [float(data[0]), float(data[1])]])
     return records_map
 
-  def plant_new_plant(self, cylinder_id, plant_type, planting_date, alias):
-    self.hydroponic_mgr.plant_new_plant(cylinder_id, plant_type, planting_date, alias)
+  def plant_new_plant(self, station_id, plant_type, planting_date, alias):
+    self.station_mgr.plant_new_plant(station_id, plant_type, planting_date, alias)
 
-  def remove_plant(self, cylinder_id, plant_id):
-    self.hydroponic_mgr.remove_plant(cylinder_id, plant_id)
+  def remove_plant(self, station_id, plant_id):
+    self.station_mgr.remove_plant(station_id, plant_id)
 
-  def dump(self):
-    return self.hydroponic_mgr.dump()
+  def attach_station(self, station_id, serial_port):
+    self.station_mgr.attach_station(station_id, serial_port)
+
+  def attach_serial_port(self, serial_port):
+    self.station_mgr.attach_serial_port(serial_port)
+
+  def update_station_sensors(self, station_id, sensors_data):
+    pass

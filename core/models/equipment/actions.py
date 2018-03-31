@@ -1,10 +1,4 @@
 
-
-class ActionManager:
-  def __init__(self, ):
-    pass
-
-
 """
 ### Quản lý các hành động có thể của hệ thống phần cứng
 - Tưới nước (mỗi trụ)
@@ -14,38 +8,38 @@ class ActionManager:
 - Bật đèn hiệu tại
 """
 
-from core.models.gpio.gpio import Pin
-
+from core.models.equipment.base_equip.switch import Switch
+from core.modules.logger import Logger
 import json
 
 class Action:
-  def __init__(self, pin, default_reason='', action_name=''):
+  def __init__(self, serial_port=None, default_reason='', action_name='', owner_station=None):
+    self.owner_station = owner_station
     self.action_name = action_name
     self.default_reason = default_reason
     self.reasons = []
     self.start_listeners = {'*':[]} # { reason: [listener_array] }
     self.stop_listeners = {'*':[]}
-    self._pin = pin # Pin object - must be setup at child class (WaterAction, NutrientAction...)
+    self._switch = Switch(name=action_name, serial_port=serial_port, owner_station=owner_station)
+
+  def attach_serial_port(self, serial_port):
+    self._switch.attach_serial_port(serial_port)
   
+  def set_owner_station(self, station):
+    self.owner_station = station
+    self._switch.set_owner_station(station)
+
   @property
   def state(self):
-    return self._pin.state
-  
-  def load(self, action_path):
-    try:
-      with open(action_path, 'r', encoding='utf-8') as fp:
-        self.action_list = json.load(fp, encoding="utf-8")
-      print("[ACTIONLIST] >> Plant library loaded.")
-    except:
-      print("[ACTIONLIST] >> Failed to load plant library ({})".format(action_path))
+    return self._switch.state
 
   def addEventListener(self, event='', listener=None, reason=''):
     """ Lắng nghe sự kiện ``event`` xảy ra bởi nguyên nhân ``reason``. Nếu ``reason`` để trống sẽ lắng nghe trên tất cả nguyên nhân."""
     if listener is None: return
     if reason is '': reason = '*'
-    event_mapping = { "on": self.start_listeners,\
-                      "start": self.start_listeners,\
-                      'off': self.stop_listeners,\
+    event_mapping = { "on": self.start_listeners,
+                      "start": self.start_listeners,
+                      'off': self.stop_listeners,
                       'stop': self.stop_listeners }
     if event in event_mapping:
       if reason not in event_mapping[event]:
@@ -59,9 +53,9 @@ class Action:
         reason = self.default_reason
     if reason is not '' and reason not in self.reasons:
       self.reasons.append(reason)
-      print("[Action] > Adding reason \"{}\" to \"{}\" action.".format(reason, self.action_name))
+      print("[Action:{}] > Adding reason \"{}\" to \"{}\" action. ({})".format(self.owner_station.id, reason, self.action_name, Logger.time()))
       if len(self.reasons) is 1:
-        self._pin.on()
+        self._switch.on()
         self.on_started(reason)
         return True
     return False
@@ -84,9 +78,9 @@ class Action:
     if reason is not '':
       try:
         self.reasons.remove(reason)
-        print("[Action] > Remove reason \"{}\" from \"{}\" action.".format(reason, self.action_name))
+        print("[Action:{}] > Remove reason \"{}\" from \"{}\" action. ({})".format(self.owner_station.id, reason, self.action_name, Logger.time()))
         if len(self.reasons) is 0:
-          self._pin.off()
+          self._switch.off()
           self.on_stoped(reason)
           return True
       except: pass
@@ -109,7 +103,7 @@ class Action:
     return self.turn(state, reason_s)
 
   def on_started(self, reason=''):
-    print("[Action] > \"{}\" started cause \"{}\".".format(self.action_name, reason), flush=True)
+    print("[Action:{}] > \"{}\" started cause \"{}\".".format(self.owner_station.id, self.action_name, reason), flush=True)
     if reason in self.start_listeners:
       for listener in self.start_listeners[reason]:
         listener(reason)
@@ -117,7 +111,7 @@ class Action:
       listener(reason)
 
   def on_stoped(self, reason=''):
-    print("[Action] > \"{}\" stoped cause \"{}\".".format(self.action_name, reason), flush=True)
+    print("[{}] > \"{}\" stoped cause \"{}\".".format(self.owner_station.id, self.action_name, reason), flush=True)
     if reason in self.stop_listeners:
       for listener in self.stop_listeners[reason]:
         listener(reason)
@@ -129,18 +123,18 @@ class Action:
       self._off(reason)
 
 class WaterAction(Action):
-  def __init__(self, pump_pin, default_reason=''):
-    super().__init__(Pin(pump_pin, reverse=True), default_reason, 'Water')
+  def __init__(self, serial_port=None, default_reason='', owner_station=None):
+    super().__init__(serial_port, default_reason=default_reason, action_name='Water', owner_station=owner_station)
 
 class NutrientAction(Action):
-  def __init__(self, valve_pin, default_reason=''):
-    super().__init__(Pin(valve_pin, reverse=True), default_reason, 'Nutrient')
+  def __init__(self, serial_port=None, default_reason='', owner_station=None):
+    super().__init__(serial_port, default_reason=default_reason, action_name='Nutrient', owner_station=owner_station)
 
 class LightAction(Action):
-  def __init__(self, valve_pin, default_reason=''):
-    super().__init__(Pin(valve_pin, reverse=True), default_reason, 'Light')
+  def __init__(self, serial_port=None, default_reason='', owner_station=None):
+    super().__init__(serial_port, default_reason=default_reason, action_name='Light', owner_station=owner_station)
 
 class SignalAction(Action):
-  def __init__(self, signal_led_pin, signal_name='', default_reason=''):
-    super().__init__(Pin(signal_led_pin), default_reason, "Signal_{}".format(signal_name))
+  def __init__(self, serial_port=None, signal_name='', default_reason='', owner_station=None):
+    super().__init__(serial_port, default_reason=default_reason, action_name="Signal_{}".format(signal_name), owner_station=owner_station)
 
