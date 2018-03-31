@@ -14,6 +14,7 @@ class StationSync:
     self.serial.start()
     if self.serial.serial.port == "/dev/ttyS0":
       self.serial.add_message_listener(self._emulate_station)
+      print("[StationSync] > Emulate station")
     else:
       self.serial.add_message_listener(self.on_message)
     print("[StationSync] >> Stations synchronize handler stated on port {}!".format(self.serial.serial.port))

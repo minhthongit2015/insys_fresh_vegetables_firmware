@@ -59,6 +59,7 @@ class RS485:
         self._message_handler(message[:end])
         message = message[ end + len(self.terminator) : ]
       except Exception as e:
+        print("[RS485] > error: {}".format(e))
         message = ''
         pass
 
