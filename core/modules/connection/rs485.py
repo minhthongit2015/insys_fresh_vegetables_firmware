@@ -54,6 +54,7 @@ class RS485:
     while True:
       try:
         message += self.serial.read_until(self.terminator)
+        print("[RS485] > {}".format(message), flush=True)
         end = message.index(self.terminator)
         self._message_handler(message[:end])
         message = message[ end + len(self.terminator) : ]
