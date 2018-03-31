@@ -60,7 +60,7 @@ class RS485:
         if len(message) > 0 and self.terminator in message:
           package = message.split(self.terminator)[0]
           message = message[len(package) + len(self.terminator): ] # rest
-          if str(package[0] != '#'): # if package is broken then just skip it
+          if chr(package[0]) != '#': # if package is broken then just skip it
             continue
           self._message_handler(package)
       except Exception as e:
