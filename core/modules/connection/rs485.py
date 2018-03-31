@@ -62,7 +62,7 @@ class RS485:
           message = message[len(package) + len(self.terminator): ] # rest
           if chr(package[0]) != '#': # if package is broken then just skip it
             continue
-          self._message_handler(package)
+          self._message_handler(package[1:])
       except Exception as e:
         # print("[RS485] > error: {}".format(e))
         pass
