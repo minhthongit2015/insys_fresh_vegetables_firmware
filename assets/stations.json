@@ -1,0 +1,36 @@
+[
+  {
+    "name": "Trụ Khí Canh 01",
+    "id": "B1",
+    "plants": [
+      {
+        "alias": "Xà Lách 01",
+        "plant_type": "lettuce",
+        "plant_id": "lettuce-01",
+        "planting_date": "16/1/2018",
+        "harvest_time": 49
+      },
+      {
+        "alias": "Khoai Tây",
+        "plant_type": "potato",
+        "plant_id": "potato-001",
+        "planting_date": "23/02/2018",
+        "harvest_time": 0
+      },
+      {
+        "alias": "Ớt",
+        "plant_type": "chili",
+        "plant_id": "chili-001",
+        "planting_date": "23/02/2018",
+        "harvest_time": 0
+      },
+      {
+        "alias": "Cà Rốt",
+        "plant_type": "carrot",
+        "plant_id": "carrot-001",
+        "planting_date": "03/03/2018",
+        "harvest_time": 0
+      }
+    ]
+  }
+]
