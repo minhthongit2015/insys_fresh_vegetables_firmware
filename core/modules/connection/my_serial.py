@@ -7,7 +7,7 @@ import threading
 from time import sleep
 
 class MySerial:
-  def __init__(self, port=['COM5', "/dev/ttyS0"], baudrate=19200, timeout=0.05, terminator=b"\r\n"):
+  def __init__(self, port=['COM5', "/dev/ttyS0"], baudrate=19200, timeout=0.05, signature=b'#', terminator=b"\r\n"):
     """
     ``terminator``: bytes
     """
@@ -15,6 +15,7 @@ class MySerial:
     self.baudrate = baudrate
     self.timeout = timeout
     self.terminator = terminator
+    self.signature = signature
     self.listeners = []
     self.is_stated = False
     self.send_queue = []
@@ -80,7 +81,7 @@ class MySerial:
     self.notify_send()
   
   def pack(self, msg):
-    return b'#' + bytes(msg, 'utf-8') + self.terminator
+    return self.signature + bytes(msg, 'utf-8') + self.terminator
   
   def notify_send(self):
     if len(self.send_queue) == 0:
