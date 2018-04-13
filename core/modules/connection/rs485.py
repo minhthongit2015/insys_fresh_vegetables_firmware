@@ -31,7 +31,6 @@ class RS485(MySerial):
 
           # Nếu tín hiệu đã bắt đầu thì đọc đến khi gặp ký hiệu kết thúc
           if self.ETX in buffer:
-
             # Tách thông điệp ra khỏi frame đầu tiên trong buffer
             message += buffer[buffer.index(self.STX) + 1 : buffer.index(self.ETX)]
             # Đặt buffer về phần còn lại (có thể chứa các frame khác)
@@ -42,6 +41,8 @@ class RS485(MySerial):
               package = message[message.index(self.signature) + len(self.signature) : message.index(self.terminator)] # Tách package đầu tiên
               message = message[message.index(self.terminator) + len(self.terminator) : ] # rest
               self._message_handler(package)
+          else:
+            break
       except Exception as e:
         # print("[RS485] > error: {}".format(e))
         buffer = b''
