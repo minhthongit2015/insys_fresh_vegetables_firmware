@@ -44,9 +44,15 @@ class EquipmentSet:
   
   def set_state(self, equipment, state, reason, cfg):
     equip = self.equip_mapping[equipment]
-    if reason == "UserSet": equip.clear_reasons() # If reason is User Set then remove all others
+    
+    # Nếu là do người dùng đặt thì ưu tiên lên trên và gỡ bỏ các lý do khác
+    if reason == "UserSet": equip.clear_reasons()
+    
+    # Điều khiển thiết bị theo yêu cầu
     rs = equip.turn(state, reason)
-    cfg.set(equipment, [state, equip.reasons])
+    cfg.set(equipment, [state, equip.reasons]) # Lưu trạng thái thiết bị
+
+    # Khi bật chế độ tự động => Tắt tất cả các thiết bị và chuyển quyển về hệ thống
     if equipment == "automation" and state is True:
       self.pump.turn(False, 'UserSet')
       self.nutrient.turn(False, 'UserSet')
