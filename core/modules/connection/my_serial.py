@@ -55,6 +55,7 @@ class MySerial:
       self.listeners.append(listener)
 
   def _message_stream(self):
+    print("[Serial] > Start message stream")
     message = b''
     while True:
       try:

@@ -16,6 +16,7 @@ class RS485(MySerial):
     self.ETX = b'\x03'
 
   def _message_stream(self):
+    print("[RS485] > Start message stream")
     message = b''
     buffer = b''
     is_start_frame = False
