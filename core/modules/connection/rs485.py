@@ -27,8 +27,6 @@ class RS485(MySerial):
 
         # Vòng lặp tách tất cả frame có trong buffer bỏ vào message để xử lý
         while len(buffer) > 0 and self.STX in buffer:
-          print("[RS485] > buffer: {}".format(buffer))
-
           # Nếu tín hiệu đã bắt đầu thì đọc đến khi gặp ký hiệu kết thúc
           if self.ETX in buffer:
             # Tách thông điệp ra khỏi frame đầu tiên trong buffer
