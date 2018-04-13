@@ -7,7 +7,7 @@ import threading
 from time import sleep
 
 class RS485(MySerial):
-  def __init__(self, port=['COM5', "/dev/ttyS0"], baudrate=19200, timeout=0.05, signature=b'#', terminator=b"\r\n"):
+  def __init__(self, port=['COM4','COM5','COM6' "/dev/ttyS0"], baudrate=19200, timeout=0.05, signature=b'#', terminator=b"\r\n"):
     """
     ``terminator``: bytes
     """
@@ -27,6 +27,7 @@ class RS485(MySerial):
 
         # Vòng lặp tách tất cả frame có trong buffer bỏ vào message để xử lý
         while len(buffer) > 0 and self.STX in buffer:
+          print("[RS485] > buffer: {}".format(buffer))
 
           # Nếu tín hiệu đã bắt đầu thì đọc đến khi gặp ký hiệu kết thúc
           if self.ETX in buffer:

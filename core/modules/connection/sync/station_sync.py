@@ -6,7 +6,7 @@ from threading import Thread
 
 class StationSync:
   def __init__(self, gardener):
-    self.serial = RS485(port=['COM5', '/dev/ttyS0'])
+    self.serial = RS485(port=['COM4','COM5','COM6', '/dev/ttyS0'])
     self.gardener = gardener
     self.send_queue = []
   
