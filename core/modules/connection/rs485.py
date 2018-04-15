@@ -7,7 +7,7 @@ import threading
 from time import sleep
 
 class RS485(MySerial):
-  def __init__(self, port=['COM4','COM5','COM6' "/dev/ttyS0"], baudrate=19200, timeout=0.05, signature=b'#', terminator=b"\r\n"):
+  def __init__(self, port=['COM5','COM6','COM7', "/dev/ttyS0"], baudrate=19200, timeout=0.05, signature=b'#', terminator=b"\n"):
     """
     ``terminator``: bytes
     """
@@ -43,6 +43,8 @@ class RS485(MySerial):
             break
       except Exception as e:
         # print("[RS485] > error: {}".format(e))
+        is_start_frame = False
+        message = b''
         buffer = b''
         pass
       sleep(0.005)
@@ -53,7 +55,16 @@ class RS485(MySerial):
     self.notify_send()
   
   def pack(self, msg):
-    return b'\x02' + super().pack(msg) + b'\x03' + self.calc_crc8(msg) + b'\x00'
+    return b'\x02' + super().pack(msg) + b'\x03' + self.calc_crc8(msg)
 
   def calc_crc8(self, msg):
-    return b'\xcc'
+    crc = 0
+    for c in msg:
+      inbyte = c
+      for i in range(8,0,-1):
+        mix = (crc ^ inbyte) & 0x01
+        crc >>= 1
+        if mix:
+          crc ^= 0x8C
+        inbyte >>= 1
+    return crc

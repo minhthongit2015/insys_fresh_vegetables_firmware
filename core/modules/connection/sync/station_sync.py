@@ -6,13 +6,13 @@ from threading import Thread
 
 class StationSync:
   def __init__(self, gardener):
-    self.serial = RS485(port=['COM4','COM5','COM6', '/dev/ttyS0'])
+    self.serial = RS485(port=['COM5','COM6','COM7', '/dev/ttyS0'])
     self.gardener = gardener
     self.send_queue = []
   
   def _run(self):
     self.serial.start()
-    if self.serial.serial.port == "/dev/ttyS0":
+    if False and self.serial.serial.port == "/dev/ttyS0":
       self.serial.add_message_listener(self._emulate_station)
       print("[StationSync] > Emulate station")
     else:
