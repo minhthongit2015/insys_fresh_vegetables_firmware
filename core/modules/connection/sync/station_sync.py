@@ -17,27 +17,37 @@ class StationSync:
       print("[StationSync] > Emulate station")
     else:
       self.serial.add_message_listener(self.on_message)
-    print("[StationSync] >> Stations synchronize handler stated on port {}!".format(self.serial.serial.port))
+    print("[StationSync] >> Stations synchronize handler stated on port {}".format(self.serial.serial.port))
+
+    # Yêu cầu tất cả các trạm gửi thông tin của mình về trung tâm
+    self.handshake_session()
+
+  def handshake_session(self):
+    self.serial.send("GETALL")
 
   def start(self):
     self._running_thread = Thread(target=self._run)
     self._running_thread.start()
 
   def on_message(self, msg):
-    station_id = msg.split("_")[0]
-    msg_body = msg[len(station_id)+1 : ]
-    if msg == station_id + "_N": # msg: B01  (Trụ mới khởi động và kết nối đến hệ thống)
+    part = msg.split("_")
+    msgType = part[0]
+    station_id = part[1]
+    msg_body = part[2:]
+
+    if msgType is 'I': # Trạm kết nối đến trung tâm
       if self.gardener.attach_station(station_id, self):
         pass
-    else:
-      if msg_body[0] in ['T', 'H']:
+      self.serial.send("A_{}".format(station_id))
+    if msgType is 'S':
+      try:
         sensor_data = self.resolve_sensor_data(msg_body)
         self.gardener.update_station_sensors(station_id, sensor_data)
-      pass
-    pass
-  
+      except:
+        pass
+
   def resolve_sensor_data(self, sensor_data): # T27.5_H80
-    T, H = sensor_data.split("_")
+    T, H = sensor_data
     return { "temperature": float(T[1:]), "humidity": float(H[1:]) }
 
   # def get_info(self, callback):
@@ -49,15 +59,23 @@ class StationSync:
   def read(self, station, sensor):
     if station is None:
       raise Exception("[StationSync] > Station is None")
-    self.serial.send("{}_S".format(station.id))
+    self.serial.send("S_{}".format(station.id))
 
   def on(self, station, switch):
     if switch.name in ['Water']:
-      self.serial.send("{}_m1".format(station.id))
+      self.serial.send("C_{}_M1".format(station.id))
+    elif switch.name in ['Rotate']:
+      self.serial.send("C_{}_R1".format(station.id))
+    elif switch.name in ['Light']:
+      self.serial.send("C_{}_L1".format(station.id))
 
   def off(self, station, switch):
     if switch.name in ['Water']:
-      self.serial.send("{}_m0".format(station.id))
+      self.serial.send("C_{}_M0".format(station.id))
+    elif switch.name in ['Rotate']:
+      self.serial.send("C_{}_R0".format(station.id))
+    elif switch.name in ['Light']:
+      self.serial.send("C_{}_L0".format(station.id))
 
   def _emulate_station(self, msg):
     print("[EmuStation] > {}".format(msg))

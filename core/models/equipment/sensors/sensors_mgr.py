@@ -18,7 +18,7 @@ class SensorsManager:
     self.emulate_sensors = emulate_sensors
   
   def run(self):
-    self.pHSensor.run()
+    # self.pHSensor.run()
     self.hutempSensor.run()
 
   def attach_serial_port(self, serial_port):

@@ -100,3 +100,6 @@ class Gardener:
 
   def update_station_sensors(self, station_id, sensors_data):
     self.station_mgr.update_station_sensors(station_id, sensors_data)
+
+  def get_station_list(self):
+    return self.station_mgr.stations

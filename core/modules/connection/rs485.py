@@ -29,10 +29,13 @@ class RS485(MySerial):
         while len(buffer) > 0 and self.STX in buffer:
           # Nếu tín hiệu đã bắt đầu thì đọc đến khi gặp ký hiệu kết thúc
           if self.ETX in buffer:
+            print("[RS485] > recv: {}".format(buffer))
+            
             # Tách thông điệp ra khỏi frame đầu tiên trong buffer
             message += buffer[buffer.index(self.STX) + 1 : buffer.index(self.ETX)]
             # Đặt buffer về phần còn lại (có thể chứa các frame khác)
             buffer = buffer[buffer.index(self.ETX) + 3 : ] # bỏ qua checksum và \x00
+            
 
             # tách package từ message, nếu chưa đủ package thì đợi tiếp
             while self.signature in message and self.terminator in message:
@@ -50,21 +53,22 @@ class RS485(MySerial):
       sleep(0.005)
 
   def send(self, data):
-    print("[RS485] > Send: {}".format(data))
-    self.send_queue.append(data)
-    self.notify_send()
+    print("[RS485] > send package: {}".format(self.pack(data)), flush=True)
+    if data not in self.send_queue:
+      self.send_queue.append(data)
+      self.notify_send()
   
   def pack(self, msg):
-    return b'\x02' + super().pack(msg) + b'\x03' + self.calc_crc8(msg)
+    return b'\x02' + super().pack(msg) + b'\x03' + self.calc_crc8(super().pack(msg))
 
   def calc_crc8(self, msg):
-    crc = 0
+    crc = b'\x00'
     for c in msg:
       inbyte = c
       for i in range(8,0,-1):
-        mix = (crc ^ inbyte) & 0x01
-        crc >>= 1
+        mix = (crc[0] ^ inbyte) & 0x01
+        crc = bytes([crc[0] >> 1])
         if mix:
-          crc ^= 0x8C
+          crc = bytes([crc[0] ^ 0x8C])
         inbyte >>= 1
     return crc

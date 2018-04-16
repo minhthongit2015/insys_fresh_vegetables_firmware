@@ -67,7 +67,7 @@ class MySerial:
             continue
           self._message_handler(package[1:])
       except Exception as e:
-        # print("[RS485] > error: {}".format(e))
+        # print("[Serial] > error: {}".format(e))
         pass
       sleep(0.005)
 
@@ -77,9 +77,10 @@ class MySerial:
       listener(message)
 
   def send(self, data):
-    print("[RS485] > Send: {}".format(data))
-    self.send_queue.append(data)
-    self.notify_send()
+    print("[Serial] > Send: {}".format(data))
+    if data not in self.send_queue:
+      self.send_queue.append(data)
+      self.notify_send()
   
   def pack(self, msg):
     return self.signature + bytes(msg, 'utf-8') + self.terminator
