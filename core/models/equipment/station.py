@@ -1,3 +1,4 @@
+# coding=utf-8
 
 from core.models.plant.user_plant import ListUserPlant
 from core.models.equipment.equipment_set import EquipmentSet
@@ -8,6 +9,7 @@ class Station:
     self.name = info['name']
     self.id = info['id']
     self.serial_port = serial_port
+    self.connected = False if serial_port is None else True
     if 'plants' in info:
       self.list_user_plant = ListUserPlant(info['plants'], plant_lib)
     else:
@@ -49,6 +51,7 @@ class Station:
       if user_plant.current_living_environment:
         for env in user_plant.current_living_environment:
           env.start_ensure_living_environment(self.equipment_set, user_plant)
+        break
   
   def stop_ensure_living_environment(self, reason=''):
     print("[Station:{}] > Stop ensure living environment.".format(self.id), flush=True)
@@ -70,6 +73,7 @@ class Station:
     station = {
       "name": self.name,
       "id": self.id,
+      "connected": self.connected,
       "equipment_set": self.equipment_set.dump(),
       "plants": self.list_user_plant.dump()
     }

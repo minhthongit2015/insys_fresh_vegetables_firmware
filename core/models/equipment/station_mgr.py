@@ -1,3 +1,4 @@
+# coding=utf-8
 
 from core.models.equipment.station import Station
 
@@ -26,13 +27,13 @@ class StationManager:
   
   def _generate_station_name(self):
     base_name = "Station"
-    index = 0
+    index = 1
     while True:
       for station in self.stations:
-        if station.name == "{}-{:02d}".format(base_name, index):
+        if station.name == "{} {:02d}".format(base_name, index):
           break
       else:
-        return "{}-{:02d}".format(base_name, index)
+        return "{} {:02d}".format(base_name, index)
       index += 1
 
   def attach_serial_port(self, serial_port):
@@ -45,7 +46,9 @@ class StationManager:
     # Nếu chưa thì tạo mới với bộ equipment_set mới có kèm serial_port và lưu lại dữ liệu này xuống file
     station = self.get_station_by_id(station_id)
     if station is not None:
-      station.equipment_set.attach_serial_port(serial_port)
+      if not station.connected:
+        station.connected = True
+        station.equipment_set.attach_serial_port(serial_port)
     else:
       new_station = Station( info = {"id": station_id, "name": self._generate_station_name()},
                              plant_lib = self.plant_lib,

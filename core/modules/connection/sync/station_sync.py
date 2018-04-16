@@ -1,4 +1,4 @@
-
+# coding=utf-8
 
 from core.modules.connection.rs485 import RS485
 from core.modules.thread_looping import ThreadLooping

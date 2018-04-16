@@ -1,3 +1,5 @@
+# coding=utf-8
+
 import core.modules.connection.blue_services as blue
 import core.modules.connection.LAN_services as LAN
 import core.modules.connection.websocket as websocket
@@ -79,7 +81,7 @@ class ConnectionManager:
     # self.websocket_handle.run()
   
   def startWebsocketServer(self):
-    self.websocket_handle.run()
+    return self.websocket_handle.run()
 
   def join(self):
     # self.LAN_handle.join()

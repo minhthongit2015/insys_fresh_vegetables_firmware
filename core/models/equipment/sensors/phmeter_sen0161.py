@@ -1,3 +1,4 @@
+# coding=utf-8
 
 from core.modules.thread_looping import ThreadLooping
 

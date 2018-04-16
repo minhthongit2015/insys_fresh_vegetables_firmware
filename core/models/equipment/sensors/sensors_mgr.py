@@ -1,3 +1,4 @@
+# coding=utf-8
 
 # from core.models.environment.sensors.hutemp_module_dht22 import DHT22
 # from core.models.environment.sensors.phmeter_sen0161 import SEN0161

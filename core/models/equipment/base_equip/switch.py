@@ -1,3 +1,4 @@
+# coding=utf-8
 
 class Switch():
   def __init__(self, name="", serial_port=None, default=False, owner_station=None):

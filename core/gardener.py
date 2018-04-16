@@ -1,3 +1,4 @@
+# coding=utf-8
 
 from core.models.plant.plant_library import PlantLibrary
 from core.models.equipment.station_mgr import StationManager

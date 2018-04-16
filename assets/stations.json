@@ -4,6 +4,13 @@
     "id": "B1",
     "plants": [
       {
+        "alias": "Rau xanh",
+        "plant_type": "vegetable-leaf",
+        "plant_id": "vegetable-leaf-01",
+        "planting_date": "16/4/2018",
+        "harvest_time": 0
+      },
+      {
         "alias": "Xà Lách 01",
         "plant_type": "lettuce",
         "plant_id": "lettuce-01",

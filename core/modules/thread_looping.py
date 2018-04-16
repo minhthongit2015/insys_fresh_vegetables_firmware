@@ -1,3 +1,4 @@
+# coding=utf-8
 
 import threading
 from time import time, sleep
@@ -25,7 +26,7 @@ class ThreadLooping:
       try:
         self.target(*self.args, **self.kwargs)
       except Exception as e:
-        print(e)
+        print(e, self.target)
 
   def start(self):
     self._running_flag = True

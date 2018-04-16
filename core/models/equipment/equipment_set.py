@@ -1,6 +1,7 @@
+# coding=utf-8
 
 from core.models.equipment.sensors.sensors_mgr import SensorsManager
-from core.models.equipment.actions import SignalAction, WaterAction, NutrientAction, LightAction
+from core.models.equipment.actions import SignalAction, WaterAction, NutrientAction, LightAction, RotateAction
 
 class EquipmentSet:
   def __init__(self, owner_station, serial_port=None, emulate_sensors=False):
@@ -12,6 +13,7 @@ class EquipmentSet:
     self.pump = WaterAction(serial_port=serial_port, owner_station=owner_station)
     self.nutrient = NutrientAction(serial_port=serial_port, owner_station=owner_station)
     self.light = LightAction(serial_port=serial_port, owner_station=owner_station)
+    self.rotate = RotateAction(serial_port=serial_port, owner_station=owner_station)
 
     self.equip_mapping = {
       "hardware": self.hardware_check_led,
@@ -19,7 +21,8 @@ class EquipmentSet:
       "automation": self.automation_led,
       "pump": self.pump,
       "nutrient": self.nutrient,
-      "light": self.light
+      "light": self.light,
+      "rotate": self.rotate
     }
   
   def run(self):
@@ -33,6 +36,7 @@ class EquipmentSet:
     self.pump.attach_serial_port(serial_port)
     self.nutrient.attach_serial_port(serial_port)
     self.light.attach_serial_port(serial_port)
+    self.rotate.attach_serial_port(serial_port)
 
   def load_state(self, cfg):
     """ Nạp dữ liệu từ file config lên (cfg lưu đối tượng ConfigManager) """
@@ -57,9 +61,11 @@ class EquipmentSet:
       self.pump.turn(False, 'UserSet')
       self.nutrient.turn(False, 'UserSet')
       self.light.turn(False, 'UserSet')
+      self.rotate.turn(False, 'UserSet')
       cfg.set("pump", [self.pump.state, self.pump.reasons])
-      cfg.set("nutrient", [self.pump.state, self.nutrient.reasons])
-      cfg.set("light", [self.pump.state, self.light.reasons])
+      cfg.set("nutrient", [self.nutrient.state, self.nutrient.reasons])
+      cfg.set("light", [self.light.state, self.light.reasons])
+      cfg.set("rotate", [self.rotate.state, self.rotate.reasons])
     return rs
 
   def dump(self):
@@ -67,6 +73,7 @@ class EquipmentSet:
       "pump": self.pump.state,
       "nutrient": self.nutrient.state,
       "light": self.light.state,
+      "rotate": self.rotate.state,
       "sensors": self.sensors_mgr.dump(),
       "hardware": self.hardware_check_led.state,
       "environment": self.envs_check_led.state,

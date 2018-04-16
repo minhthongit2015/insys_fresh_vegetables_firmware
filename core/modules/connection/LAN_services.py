@@ -1,3 +1,5 @@
+# coding=utf-8
+
 """
 Quản lý kết nối thông qua LAN
 """

@@ -1,3 +1,4 @@
+# coding=utf-8
 
 """
 ### Quản lý các hành động có thể của hệ thống phần cứng
@@ -133,6 +134,10 @@ class NutrientAction(Action):
 class LightAction(Action):
   def __init__(self, serial_port=None, default_reason='', owner_station=None):
     super().__init__(serial_port, default_reason=default_reason, action_name='Light', owner_station=owner_station)
+
+class RotateAction(Action):
+  def __init__(self, serial_port=None, default_reason='', owner_station=None):
+    super().__init__(serial_port, default_reason=default_reason, action_name='Rotate', owner_station=owner_station)
 
 class SignalAction(Action):
   def __init__(self, serial_port=None, signal_name='', default_reason='', owner_station=None):

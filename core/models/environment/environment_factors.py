@@ -1,3 +1,4 @@
+# coding=utf-8
 
 from core.modules.timepoint import TimePointGroup
 from core.modules.logger import Logger
@@ -43,18 +44,21 @@ class EnvironmentFactor:
 class WaterCondition(EnvironmentFactor):
   def __init__(self, info_in_lib):
     super().__init__('Water')
-    self.water_points = []
     self.parse_from_lib(info_in_lib)
 
   def parse_from_lib(self, info_in_lib):
     self.water_points = []
-    for water in info_in_lib['water']:
-      if 'duration' not in water:
-        water['duration'] = '15'  # default is water for 15 minutes
-      if 'every' in water:
-        self.water_points.append(TimePointGroup(every=water['every'], duration=water['duration']))
-      elif 'time' in water:
-        self.water_points.append(TimePointGroup(water['time'], water['duration']))
+    for water_condiction in info_in_lib['water']:
+      if 'time_range' in water_condiction: # Một quãng thời gian xác định
+        self.water_points.append(TimePointGroup(time_range=water_condiction['time_range']))
+
+      if 'duration' not in water_condiction: # Hành động theo thời gian cách quãng hay xác định kéo dài bao lâu
+        water_condiction['duration'] = '15'  # default is water for 15 minutes
+
+      if 'every' in water_condiction:  # Thời gian cách quãng
+        self.water_points.append(TimePointGroup(every=water_condiction['every'], duration=water_condiction['duration']))
+      elif 'time' in water_condiction: # Thời gian xác định
+        self.water_points.append(TimePointGroup(water_condiction['time'], water_condiction['duration']))
 
   def _ensure_living_environment(self):
     for wp in self.water_points:
@@ -93,6 +97,66 @@ class HumidityCondition(EnvironmentFactor):
 class LightCondition(EnvironmentFactor):
   def __init__(self, info_in_lib):
     super().__init__('Light')
+    self.parse_from_lib(info_in_lib)
+
+  def parse_from_lib(self, info_in_lib):
+    self.light_points = []
+    for con in info_in_lib['light']:
+      if 'lux_range' in con:
+        self.min_lux = con['lux_range'][0]
+        self.max_lux = con['lux_range'][1]
+        self.offset = con['lux_range'][2]
+      if 'time_range' in con:
+        self.light_points.append(TimePointGroup(time_range=con['time_range']))
+  
+  def _ensure_living_environment(self):
+    env_lux = self.equipment_set.sensors_mgr.light
+    if env_lux is not None:
+      if env_lux > self.max_lux + self.offset or env_lux < self.min_lux - self.offset:
+        if self.equipment_set.light.start('light'):
+          print("[EnvFactor] > Start lighting by light: {} lux out of [{}-{}]±{} lux ({})".format(env_lux, self.min_lux, self.max_lux, self.offset, Logger.time()))
+      else:
+        if self.equipment_set.light.stop('light'):
+          print("[EnvFactor] > Stop lighting by light: {} lux in range [{}-{}]±{} lux ({})".format(env_lux, self.min_lux, self.max_lux, self.offset, Logger.time()))
+
+    for lp in self.light_points:
+      if lp.is_time_for_action(self.user_plant.planting_date_obj):
+        if self.equipment_set.light.start('timing'):
+          print("[EnvFactor] > Start lighting by time: {}".format(Logger.time()))
+        break
+    else:
+      if self.equipment_set.light.stop('timing'):
+        print("[EnvFactor] > Stop lighting by time: {}".format(Logger.time()))
+        
+
+class RotateCondition(EnvironmentFactor):
+  def __init__(self, info_in_lib):
+    super().__init__('Rotate')
+    self.parse_from_lib(info_in_lib)
+
+  def parse_from_lib(self, info_in_lib):
+    self.rotate_points = []
+    for con in info_in_lib['rotate']:
+      if 'time_range' in con: # Một quãng thời gian xác định
+        self.rotate_points.append(TimePointGroup(time_range=con['time_range']))
+
+      if 'duration' not in con: # Hành động theo thời gian cách quãng hay xác định kéo dài bao lâu
+        con['duration'] = '15'  # default is water for 15 minutes
+
+      if 'every' in con:  # Thời gian cách quãng
+        self.rotate_points.append(TimePointGroup(every=con['every'], duration=con['duration']))
+      elif 'time' in con: # Thời gian xác định
+        self.rotate_points.append(TimePointGroup(con['time'], con['duration']))
+
+  def _ensure_living_environment(self):
+    for rp in self.rotate_points:
+      if rp.is_time_for_action(self.user_plant.planting_date_obj):
+        if self.equipment_set.rotate.start('timing'):
+          print("[EnvFactor] > Start rotating by time: {}".format(Logger.time()))
+        break
+    else:
+      if self.equipment_set.rotate.stop('timing'):
+        print("[EnvFactor] > Stop rotating by time: {}".format(Logger.time()))
 
 class PPMCondition(EnvironmentFactor):
   def __init__(self, info_in_lib):
@@ -108,6 +172,7 @@ ENV_TYPE_MAPPING = {
   "temperature": TemperatureCondition,
   "humidity": HumidityCondition,
   "light": LightCondition,
+  "rotate": RotateCondition,
   "ppm": PPMCondition,
   "pH": pHCondition
 }

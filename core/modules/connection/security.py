@@ -1,3 +1,4 @@
+# coding=utf-8
 
 try: import secrets
 except: import core.modules.connection.secrets as secrets

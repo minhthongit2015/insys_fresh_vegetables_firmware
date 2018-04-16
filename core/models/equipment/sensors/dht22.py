@@ -1,3 +1,4 @@
+# coding=utf-8
 
 from core.models.equipment.base_equip.sensor import Sensor
 import random

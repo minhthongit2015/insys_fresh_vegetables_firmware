@@ -1,5 +1,36 @@
 [
   {
+    "plant_name": "Rau Ăn Lá",
+    "plant_type": "vegetable-leaf",
+    "growth_stages": [
+      {
+        "stage_order": 1,
+        "stage_name": "mặc định",
+        "start": 1, "end": 999,
+        "living_environment": [
+          { "name": "water",
+            "water": [
+              { "time": "6:20, 17:20", "duration": "15" },
+              { "every": "6", "duration": "1" }
+            ] },
+          { "name": "rotate",
+            "rotate": [
+              { "time_range": ["10:00-14:30-24:00"] },
+              { "every": "6", "duration": "3" }
+            ] },
+          { "name": "temperature", "temperature": [25, 28, 3] },
+          { "name": "pH", "pH": [6.5, 7.5] },
+          { "name": "ppm", "ppm": [2000, 100] },
+          { "name": "light",
+            "light": [
+              { "lux_range": [500, 9999, 0] },
+              { "time_range": ["00:00-4:00"] }
+            ] }
+        ]
+      }
+    ]
+  },
+  {
     "plant_name": "Xà lách (Lettuce)",
     "plant_type": "lettuce",
     "growth_stages": [

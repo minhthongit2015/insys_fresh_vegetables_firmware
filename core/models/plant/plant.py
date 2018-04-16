@@ -1,4 +1,4 @@
-
+# coding=utf-8
 
 class Plant:
   """ Thông tin đầy đủ về cây trồng ở dạng đối tượng. Dữ liệu được nạp từ Plant Library. """

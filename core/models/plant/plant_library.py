@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# coding=utf-8
 
 """
 ## Quản lý thư viện chăm sóc cây trồng
@@ -24,7 +24,7 @@ ____________________________________
 
 from core.models.plant.plant import Plant
 from core.models.plant.growth_stage import GrowthStage
-from core.models.environment.environment_factors import *
+from core.models.environment.environment_factors import ENV_TYPE_MAPPING
 from core.models.environment.living_environment import LivingEnviroment
 
 import json
@@ -54,7 +54,10 @@ class PlantLibrary:
     for stage in plant_in_lib['growth_stages']:
       env_factors = []
       for env in stage['living_environment']:
-        env_factor = ENV_TYPE_MAPPING[env['name']](env)
-        env_factors.append(env_factor)
+        if env['name'] in ENV_TYPE_MAPPING:
+          env_factor = ENV_TYPE_MAPPING[env['name']](env)
+          env_factors.append(env_factor)
+        else:
+          print("[PlantLib] > Unrecognize Environment Factor: {}".format(env['name']))
       growth_stages.append(GrowthStage(stage['stage_order'], stage['stage_name'], (stage['start'], stage['end']), LivingEnviroment(env_factors)))
     return Plant(plant_in_lib['plant_name'], plant_in_lib['plant_type'], growth_stages)

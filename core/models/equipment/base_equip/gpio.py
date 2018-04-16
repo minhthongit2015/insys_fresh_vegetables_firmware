@@ -1,4 +1,4 @@
-
+# coding=utf-8
 
 try: import RPi.GPIO as GPIO
 except: import dummy.RPi.GPIO as GPIO

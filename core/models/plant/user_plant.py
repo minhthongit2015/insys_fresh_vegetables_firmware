@@ -64,7 +64,7 @@ class UserPlant:
     for stage in self.plant.growth_stages:
       if stage.start <= daypass.days + 1 <= stage.end:
         return stage
-    return self.plant.growth_stages[-1:][0]
+    return self.plant.growth_stages[-1]
   
   @property
   def harvest_time(self):
