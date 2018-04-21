@@ -124,7 +124,7 @@ void loop()
           case 'I': // Nhận được yêu cầu gửi lại thông tin định danh trạm từ trung tâm
             isConnectEstablish = false; debug("Server Get Info!","")
             SendStationIdentify break;
-          case 'A': debug("Connect Established!","")
+          case 'A': debug("Connection Established!","")
             isConnectEstablish = true;
             switchDevice('C', '1');
             break;
@@ -133,7 +133,7 @@ void loop()
             break;
           case 'C':
             next  // Lấy thông tin thiết bị cần bật và trạng thái
-            if (part) debug("dev:", part)
+            debug("dev:", part)
             switchDevice(part[0], part[1]);
             break;
           default:
@@ -177,7 +177,6 @@ bool sendSensorData(byte temp_precision, byte humi_precision)
   dtostrf(temp, temp_precision+3, temp_precision, tempBuf);
   dtostrf(humi, humi_precision+3, temp_precision, humiBuf);
   sprintf(sensorbuf, "T%s_H%s", tempBuf, humiBuf);
-  debug("sensors: ", sensorbuf)
   return RS485_SendMessage(pack(sensorbuf, 'S'), fWrite, ENABLE_PIN);
 }
 
@@ -187,12 +186,10 @@ bool recvMessage()
   bool change = RS485_ReadMessage(fAvailable, fRead, rs485Buf);
   if (!change) return false;
 
-  if (change) {
-    if (unpack()) { // Kiểm tra thông điệp có đúng cấu trúc không
-      return true;
-    } else {
-      return false;
-    }
+  if (unpack()) { // Kiểm tra thông điệp có đúng cấu trúc không
+    return true;
+  } else {
+    return false;
   }
 }
 
@@ -228,13 +225,3 @@ bool switchDevice(char deviceType, char state)
   digitalWrite(pin, state == '0' ? 0 : 1);
   return state == '0' ? 0 : 1;
 }
-
-
-
-
-
-
-
-
-
-

@@ -35,6 +35,10 @@ class TimePoint:
       self.from_time = TimePoint.parse_timedelta(from_time)
       self.to_time = TimePoint.parse_timedelta(to_time)
       self.time_cycle = time_cycle
+    
+    # Hành động thực hiện theo thời điểm xác định ở trên kéo dài bao lâu
+    if duration != None:
+      self.duration = TimePoint.parse_timedelta(duration)
 
     # Hành động vào thời điểm xác định
     if time != None:
@@ -44,10 +48,6 @@ class TimePoint:
     # Hành động cách nhau một quãng thời gian
     if every != None:
       self.every = TimePoint.parse_timedelta(every)
-    
-    # Hành động thực hiện theo thời điểm xác định ở trên kéo dài bao lâu
-    if duration != None:
-      self.duration = TimePoint.parse_timedelta(duration)
   
   @staticmethod
   def parse_timedelta(time):
@@ -72,33 +72,29 @@ class TimePointGroup:
   VD:
   >>> "6:20, 17:20" sẽ chuyển thành 2 đối tượng TimePoint có cùng duration
   """
-  def __init__(self, time_info='', duration='', every='', time_range=None):
+  def __init__(self, time_info=None, duration=None, every=None, time_range=None):
     self.duration = duration
     self.time_point_group = []
-    if time_range is not None:
-      self.append_action_time(time_range=time_range)
-    if time_info != '':
-      self.append_action_time(time_info.replace(' ','').split(','), False)
-    if every != '':
-      self.append_action_time(every.replace(' ','').split(','), True)
-  
-  def append_action_time(self, time_info='', every=False, time_range=None):
-    if time_range is not None:
-      for t_range in time_range:
-        self.time_point_group.append(TimePoint(time_range=t_range))
+
+    if time_info:
+      time_info_split = time_info.replace(' ','').split(',')
+      for t in time_info_split:
+        self.time_point_group.append(TimePoint(time=t, duration=duration, every=every))
     
-    if len(time_info) > 0:
-      for time in time_info:
-        if every: self.time_point_group.append(TimePoint(every=time, duration=self.duration))
-        else: self.time_point_group.append(TimePoint(time=time, duration=self.duration))
+    if time_range:
+      for t in time_range:
+        self.time_point_group.append(TimePoint(duration=duration, every=every, time_range=t))
   
   def is_time_for_action(self, start=None):
     now = datetime.datetime.now()
     dnow = timedelta(hours=now.hour, minutes=now.minute, seconds=now.second)
-    for time in self.time_point_group:
-      if (time.start != None and time.duration != None and time.start <= dnow <= time.start + time.duration)\
-       or (time.every != None and ((now-start) % time.every) <= time.duration)\
-       or (time.from_time != None and time.to_time != None and time.time_cycle != None
-           and ( time.from_time <= ((now-start) % time.time_cycle) <= time.to_time)):
+    dif = now - start
+    for tp in self.time_point_group:
+      time_pass = tp.time == None or (tp.time <= dnow <= tp.start + tp.duration)
+      timerange_pass = tp.time_cycle == None or (tp.from_time <= (dif % tp.time_cycle) <= tp.to_time)
+      every_pass = tp.every == None or (dif % tp.every <= tp.duration)
+
+      if every_pass and (time_pass or timerange_pass):
         return True
+
     return False

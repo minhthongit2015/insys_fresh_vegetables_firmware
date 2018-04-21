@@ -1,6 +1,5 @@
 #!/usr/bin/python3
 
-from subprocess import call
 import os
 
 def generate_service_file(service_name, exec_path, working_directory, description):
@@ -22,14 +21,11 @@ WantedBy=network.target multi-user.target
 Alias={}.service
 """.format(description, working_directory, exec_path, working_directory, service_name)
 
-def cmd(command):
-  call(command.split(' '))
-
 cmd = os.system
 
 def install_service(service_name, service_file):
   service_name = service_name.replace(' ', '')
-  print('[SETUP] > Install {} service'.format(service_name))
+  print('[Setup] > Install {} service'.format(service_name))
   insys_service_file = open('{}.service'.format(service_name), 'w')
   insys_service_file.write(service_file)
   insys_service_file.close()
@@ -45,30 +41,25 @@ def setup():
   # cmd('sudo apt-get update')
   # cmd('sudo apt-get install build-essential python-dev')
 
-  while True:
-    try:
-      import Adafruit_DHT
-      break
-    except:
-      cmd('git clone https://github.com/adafruit/Adafruit_Python_DHT.git')
-      cmd('cd Adafruit_Python_DHT')
-      cmd('sudo python3 setup.py install')
-      cmd('cd ..')
+  # while True:
+  #   try:
+  #     import Adafruit_DHT
+  #     break
+  #   except:
+  #     cmd('git clone https://github.com/adafruit/Adafruit_Python_DHT.git')
+  #     cmd('cd Adafruit_Python_DHT')
+  #     cmd('sudo python3 setup.py install')
+  #     cmd('cd ..')
 
-  while True:
-    try:
-      import bluetooth
-      break
-    except:
-      from core.blue_service import BluetoothService
-      BluetoothService.setupBluetooth()
+  try:
+    import bluetooth
+  except:
+    from core.blue_service import BluetoothService
+    BluetoothService.setupBluetooth()
 
-  while True:
-    try:
-      import websockets
-      break
-    except:
-      cmd('sudo pip3 install websockets')
+  # Websockets for websocket server
+  try: import websockets
+  except: cmd('sudo pip3 install websockets')
 
   # Camera setup
   # cmd('sudo apt-get install libmp3lame-dev -y; sudo apt-get install autoconf -y; sudo apt-get install libtool -y; sudo apt-get install checkinstall -y; sudo apt-get install libssl-dev -y')
@@ -77,6 +68,8 @@ def setup():
   # cmd('sudo apt-get install -y libx264-dev')
   # cmd('sudo apt-get install -y ffmpeg')
 
+
+  # Cài đặt quyền thực thi và các service vào hệ thống
   cwd = os.getcwd()
 
   # Install main service

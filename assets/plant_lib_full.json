@@ -11,7 +11,8 @@
           { "name": "water",
             "water": [
               { "time": "6:20, 17:20", "duration": "15" },
-              { "time_range": ["7:0-8:0"], "every": "10", "duration": "5" }
+              { "time_range": ["00:00-4:00"], "every": "10", "duration": "5" },
+              { "every": "30", "duration": "5" }
             ] },
           { "name": "rotate",
             "rotate": [
@@ -23,6 +24,7 @@
           { "name": "ppm", "ppm": [2000, 100] },
           { "name": "light",
             "light": [
+              { "lux_range": [500, 9999, 0] },
               { "time_range": ["00:00-4:00"] }
             ] }
         ]

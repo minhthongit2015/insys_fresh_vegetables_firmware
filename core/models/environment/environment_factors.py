@@ -48,17 +48,12 @@ class WaterCondition(EnvironmentFactor):
 
   def parse_from_lib(self, info_in_lib):
     self.water_points = []
-    for water_condiction in info_in_lib['water']:
-      if 'time_range' in water_condiction: # Một quãng thời gian xác định
-        self.water_points.append(TimePointGroup(time_range=water_condiction['time_range']))
-
-      if 'duration' not in water_condiction: # Hành động theo thời gian cách quãng hay xác định kéo dài bao lâu
-        water_condiction['duration'] = '15'  # default is water for 15 minutes
-
-      if 'every' in water_condiction:  # Thời gian cách quãng
-        self.water_points.append(TimePointGroup(every=water_condiction['every'], duration=water_condiction['duration']))
-      elif 'time' in water_condiction: # Thời gian xác định
-        self.water_points.append(TimePointGroup(water_condiction['time'], water_condiction['duration']))
+    for con in info_in_lib['water']:
+      self.water_points.append(TimePointGroup(
+        time_range = con['time_range'] if 'time_range' in con else None,
+        time_info = con['time'] if 'time' in con else None,
+        every = con['every'] if 'every' in con else None,
+        duration = con['duration'] if 'duration' in con else '15'))
 
   def _ensure_living_environment(self):
     for wp in self.water_points:
@@ -101,17 +96,22 @@ class LightCondition(EnvironmentFactor):
 
   def parse_from_lib(self, info_in_lib):
     self.light_points = []
+    self.max_lux = self.min_lux = self.offset = None
     for con in info_in_lib['light']:
       if 'lux_range' in con:
         self.min_lux = con['lux_range'][0]
         self.max_lux = con['lux_range'][1]
         self.offset = con['lux_range'][2]
-      if 'time_range' in con:
-        self.light_points.append(TimePointGroup(time_range=con['time_range']))
+      elif 'time_range' in con or 'time' in con or 'every' in con:
+        self.light_points.append(TimePointGroup(
+          time_range = con['time_range'] if 'time_range' in con else None,
+          time_info = con['time'] if 'time' in con else None,
+          every = con['every'] if 'every' in con else None,
+          duration = con['duration'] if 'duration' in con else '15'))
   
   def _ensure_living_environment(self):
     env_lux = self.equipment_set.sensors_mgr.light
-    if env_lux is not None:
+    if env_lux is not None and self.max_lux is not None:
       if env_lux > self.max_lux + self.offset or env_lux < self.min_lux - self.offset:
         if self.equipment_set.light.start('light'):
           print("[EnvFactor] > Start lighting by light: {} lux out of [{}-{}]±{} lux ({})".format(env_lux, self.min_lux, self.max_lux, self.offset, Logger.time()))
@@ -137,16 +137,11 @@ class RotateCondition(EnvironmentFactor):
   def parse_from_lib(self, info_in_lib):
     self.rotate_points = []
     for con in info_in_lib['rotate']:
-      if 'time_range' in con: # Một quãng thời gian xác định
-        self.rotate_points.append(TimePointGroup(time_range=con['time_range']))
-
-      if 'duration' not in con: # Hành động theo thời gian cách quãng hay xác định kéo dài bao lâu
-        con['duration'] = '15'  # default is water for 15 minutes
-
-      if 'every' in con:  # Thời gian cách quãng
-        self.rotate_points.append(TimePointGroup(every=con['every'], duration=con['duration']))
-      elif 'time' in con: # Thời gian xác định
-        self.rotate_points.append(TimePointGroup(con['time'], con['duration']))
+      self.rotate_points.append(TimePointGroup(
+        time_range = con['time_range'] if 'time_range' in con else None,
+        time_info = con['time'] if 'time' in con else None,
+        every = con['every'] if 'every' in con else None,
+        duration = con['duration'] if 'duration' in con else '15'))
 
   def _ensure_living_environment(self):
     for rp in self.rotate_points:
