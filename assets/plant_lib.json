@@ -10,20 +10,20 @@
         "living_environment": [
           { "name": "water",
             "water": [
-              { "time": "6:20, 17:20", "duration": "15" },
-              { "time_range": ["7:0-8:0"], "every": "10", "duration": "5" }
+              { "time": "6:30, 17:30", "duration": "15" },
+              { "time_range": ["7:0-8:0", "17:0-18:0"], "every": "10", "duration": "5" },
+              { "every": 15, "duration": 1 }
             ] },
           { "name": "rotate",
             "rotate": [
-              { "time_range": ["10:00-14:30-24:00"] },
-              { "every": "6", "duration": "3" }
+              { "time_range": ["10:0-15:30"], "every": "10", "duration": "5" }
             ] },
           { "name": "temperature", "temperature": [25, 28, 3] },
           { "name": "pH", "pH": [6.5, 7.5] },
           { "name": "ppm", "ppm": [2000, 100] },
           { "name": "light",
             "light": [
-              { "time_range": ["00:00-4:00"] }
+              { "time_range": ["19:00-23:59", "23:59-4:0"] }
             ] }
         ]
       }
