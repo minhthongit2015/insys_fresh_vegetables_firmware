@@ -54,7 +54,7 @@ def setup():
   try:
     import bluetooth
   except:
-    from core.blue_service import BluetoothService
+    from core.modules.connection.blue_services import BluetoothService
     BluetoothService.setupBluetooth()
 
   # Websockets for websocket server
