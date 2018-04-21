@@ -77,8 +77,9 @@ class ConnectionManager:
 
   def run(self):
     # self.LAN_handle.run()
-    self.bluetooth_handle.run()
+    # self.bluetooth_handle.run()
     # self.websocket_handle.run()
+    pass
   
   def startWebsocketServer(self):
     return self.websocket_handle.run()

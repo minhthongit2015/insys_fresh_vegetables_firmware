@@ -51,11 +51,11 @@ def setup():
   #     cmd('sudo python3 setup.py install')
   #     cmd('cd ..')
 
-  try:
-    import bluetooth
-  except:
-    from core.modules.connection.blue_services import BluetoothService
-    BluetoothService.setupBluetooth()
+  # try:
+  #   import bluetooth
+  # except:
+  #   from core.modules.connection.blue_services import BluetoothService
+  #   BluetoothService.setupBluetooth()
 
   # Websockets for websocket server
   try: import websockets
